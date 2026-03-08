@@ -1,15 +1,19 @@
-# =============================================================================
-# Module 1: Hello World Agent - Dependencies
-# =============================================================================
-# Install with: pip install -r requirements.txt
-# =============================================================================
-
-# Google Agent Development Kit
-google-adk>=1.0.0
-
-# Google Cloud AI Platform (included with google-adk but listed for clarity)
-google-cloud-aiplatform>=1.50.0
-
-# Environment variable management
-python-dotenv>=1.0.0
-
+google-adk==1.18.0
+python-dotenv
+toolbox-core 
+langchain
+google-genai
+a2a-sdk
+google-cloud-aiplatform[adk,agent_engines]==1.126.1
+locust
+google-cloud-spanner==3.56.0
+google-adk[eval]
+python-a2a
+gradio
+google-cloud-bigquery
+aiohttp
+google-cloud-storage
+google-cloud-alloydb-connector[pg8000] 
+sqlalchemy
+PyJWT[crypto]
+fastmcp==2.12.5

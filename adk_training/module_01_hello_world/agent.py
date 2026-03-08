@@ -28,7 +28,6 @@ root_agent = LlmAgent(
     # Model LLM do użycia - gemini-2.5-flash jest szybki i ekonomiczny
     # Inne opcje: gemini-2.5-flash, gemini-2.0-pro
     model="gemini-2.5-flash",
-
     # Instrukcja systemowa - definiuje osobowość i zachowanie agenta
     # To najważniejsza konfiguracja kształtująca odpowiedzi
     instruction="""Jesteś pomocnym asystentem AI. Twoje zadania to:

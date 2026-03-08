@@ -104,7 +104,7 @@ root_agent = LlmAgent(
 Zmień instrukcję, aby agent był bardziej formalny lub bardziej swobodny.
 
 ### Ćwiczenie 1.2: Wypróbuj Różne Modele
-Zmień `gemini-2.5-flash` na `gemini-2.5-flash` i zaobserwuj różnice.
+Zmień `gemini-2.5-flash` na `gemini-2.0-flash` i zaobserwuj różnice.
 
 ### Ćwiczenie 1.3: Dodaj Kontekst
 Dodaj specyficzną wiedzę do instrukcji (np. historię firmy, nazwy produktów).
