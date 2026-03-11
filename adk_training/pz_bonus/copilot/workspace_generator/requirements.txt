@@ -1,0 +1,78 @@
+# 🤖 GitHub Copilot Masterclass - Agentic Workspace Generator
+# Dependencies
+# Based on working adk_training modules (google-adk==1.18.0)
+
+# ============================================================
+# CORE ADK & GOOGLE AI (z działających modułów)
+# ============================================================
+google-adk==1.18.0
+google-cloud-aiplatform[adk,agent_engines]==1.126.1
+google-adk[eval]
+google-genai
+python-dotenv
+toolbox-core
+
+# ============================================================
+# AGENT-TO-AGENT & LANGCHAIN
+# ============================================================
+a2a-sdk
+python-a2a
+langchain
+
+# ============================================================
+# WEB SCRAPING & SEARCH
+# ============================================================
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+googlesearch-python>=1.2.0
+aiohttp
+
+# ============================================================
+# CODE VALIDATION
+# ============================================================
+javalang>=0.13.0  # Java syntax parsing
+pylint>=3.0.0     # Python linting
+
+# ============================================================
+# FILE OPERATIONS & CONFIG
+# ============================================================
+pyyaml>=6.0.0
+pydantic>=2.0.0   # Data validation (wymagane przez ADK)
+
+# ============================================================
+# GOOGLE CLOUD SERVICES (opcjonalne, dla zaawansowanych funkcji)
+# ============================================================
+google-cloud-storage
+google-cloud-bigquery
+google-cloud-spanner==3.56.0
+google-cloud-alloydb-connector[pg8000]
+sqlalchemy
+PyJWT[crypto]
+
+# ============================================================
+# MCP (Model Context Protocol) - dla modułu 7
+# ============================================================
+fastmcp==2.12.5
+
+# ============================================================
+# UI & MONITORING (opcjonalne)
+# ============================================================
+gradio
+locust
+colorlog>=6.8.0
+tqdm>=4.66.0
+
+# ============================================================
+# TESTING
+# ============================================================
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0
+
+# ============================================================
+# UTILITIES
+# ============================================================
+typing-extensions>=4.9.0
+jinja2>=3.1.0
+markdown>=3.5.0
+

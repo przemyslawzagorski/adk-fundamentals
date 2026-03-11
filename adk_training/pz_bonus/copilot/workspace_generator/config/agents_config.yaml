@@ -1,0 +1,212 @@
+# 🤖 Konfiguracja Agentów
+# Definiuje parametry dla wszystkich agentów w systemie
+
+# ============================================================
+# PLANNING PHASE AGENTS
+# ============================================================
+
+documentation_research_agent:
+  model: gemini-2.5-pro
+  temperature: 0.3  # Niższa temperatura = bardziej deterministyczne wyniki
+  max_tokens: 8192
+  tools:
+    - web_search
+  search_config:
+    max_results_per_query: 10
+    year_filter: "2026"
+    priority_domains:
+      - "docs.github.com"
+      - "github.blog"
+      - "learn.microsoft.com"
+      - "skills.github.com"
+      - "code.visualstudio.com"
+  prompts:
+    system_prompt_file: "prompts/planning/documentation_research.txt"
+
+module_structure_planner:
+  model: gemini-2.5-pro
+  temperature: 0.5  # Wyższa temperatura = więcej kreatywności w strukturze
+  max_tokens: 16384
+  thinking_mode: true  # Enable thinking mode for deep analysis
+  prompts:
+    system_prompt_file: "prompts/planning/module_structure_planner.txt"
+  constraints:
+    min_files_per_module: 5
+    max_files_per_module: 12
+    min_todos_per_file: 3
+    max_todos_per_file: 8
+    code_to_docs_ratio: 0.6  # 60% code, 40% docs/tests/config
+
+planning_aggregator:
+  model: gemini-2.5-flash
+  temperature: 0.2
+  max_tokens: 4096
+  prompts:
+    system_prompt_file: "prompts/planning/planning_aggregator.txt"
+
+# ============================================================
+# EXECUTION PHASE AGENTS
+# ============================================================
+
+java_code_agent:
+  model: gemini-2.5-flash
+  temperature: 0.7  # Wyższa temperatura = bardziej zróżnicowany kod
+  max_tokens: 8192
+  tools:
+    - code_validator
+  prompts:
+    system_prompt_file: "prompts/execution/java_code_agent.txt"
+  code_style:
+    java_version: "17"
+    formatting: "google-java-format"
+    max_line_length: 100
+    use_lombok: false
+  todo_templates:
+    - "// TODO: Use Copilot Agent Mode to {action}"
+    - "// TODO: Refactor using @workspace context"
+    - "// TODO: Implement with self-correction loop"
+    - "// TODO: Apply {pattern} pattern with Copilot"
+
+syntax_critic:
+  model: gemini-2.5-flash
+  temperature: 0.1  # Bardzo niska temperatura = strict validation
+  max_tokens: 2048
+  tools:
+    - code_validator
+  prompts:
+    system_prompt_file: "prompts/execution/syntax_critic.txt"
+  validation_rules:
+    - "Must compile with Java 17+"
+    - "TODOs must be specific and actionable"
+    - "Code complexity score < 15"
+    - "No hardcoded credentials"
+  quality_threshold: 7  # Min score 7/10 to pass
+
+didactic_content_agent:
+  model: gemini-2.5-flash
+  temperature: 0.6
+  max_tokens: 4096
+  tools:
+    - file_operations
+  prompts:
+    system_prompt_file: "prompts/execution/didactic_content_agent.txt"
+  content_types:
+    - "README.md"
+    - "EXERCISES.md"
+    - "HINTS.md"
+    - "SOLUTIONS.md"
+
+test_generator:
+  model: gemini-2.5-flash
+  temperature: 0.5
+  max_tokens: 8192
+  tools:
+    - code_validator
+    - file_operations
+  prompts:
+    system_prompt_file: "prompts/execution/test_generator.txt"
+  test_framework: "junit5"
+  test_coverage_target: 0.7  # 70% coverage
+  test_types:
+    - "unit"
+    - "integration"
+    - "characterization"  # For legacy code refactoring
+
+config_agent:
+  model: gemini-2.5-flash
+  temperature: 0.3
+  max_tokens: 2048
+  tools:
+    - file_operations
+  prompts:
+    system_prompt_file: "prompts/execution/config_agent.txt"
+  config_files:
+    - ".github/copilot-instructions.md"
+    - ".github/copilot/prompt-files/*.md"
+    - ".vscode/settings.json"
+    - "mcp-config.json"  # For Module 7 (MCP)
+
+# ============================================================
+# VALIDATION PHASE AGENTS
+# ============================================================
+
+coherence_validator:
+  model: gemini-2.5-pro
+  temperature: 0.2
+  max_tokens: 16384
+  thinking_mode: true
+  max_iterations: 3  # Max 3 validation-fix cycles
+  prompts:
+    system_prompt_file: "prompts/validation/coherence_validator.txt"
+  validation_checks:
+    - "Module dependencies are correct"
+    - "No circular dependencies"
+    - "Progression is logical (easy → hard)"
+    - "No duplicate examples"
+    - "TODOs don't require future knowledge"
+
+pedagogical_reviewer:
+  model: gemini-2.5-pro
+  temperature: 0.4
+  max_tokens: 8192
+  thinking_mode: true
+  prompts:
+    system_prompt_file: "prompts/validation/pedagogical_reviewer.txt"
+  review_criteria:
+    - "Learning objectives are clear"
+    - "Hands-on exercises are effective"
+    - "Progression is appropriate"
+    - "Materials are engaging"
+    - "TODOs lead to learning"
+  scoring:
+    min_score: 7  # Minimum acceptable score
+    max_score: 10
+
+final_reporter:
+  model: gemini-2.5-flash
+  temperature: 0.3
+  max_tokens: 4096
+  tools:
+    - file_operations
+  prompts:
+    system_prompt_file: "prompts/validation/final_reporter.txt"
+  report_format: "markdown"
+  report_sections:
+    - "Executive Summary"
+    - "Generation Metrics"
+    - "Validation Results"
+    - "Module Breakdown"
+    - "Recommendations"
+    - "Next Steps"
+
+# ============================================================
+# ORCHESTRATION CONFIG
+# ============================================================
+
+orchestration:
+  planning_phase:
+    type: "parallel"
+    timeout_minutes: 15
+  
+  execution_phase:
+    type: "sequential_batches"
+    batch_size: 3  # 3 modules per batch
+    parallel_within_batch: true
+    timeout_per_module_minutes: 30
+  
+  validation_phase:
+    type: "sequential"
+    timeout_minutes: 20
+
+# ============================================================
+# GLOBAL SETTINGS
+# ============================================================
+
+global:
+  output_dir: "./output"
+  log_level: "INFO"
+  save_intermediate_results: true
+  retry_on_failure: true
+  max_retries: 3
+  retry_delay_seconds: 5
+
