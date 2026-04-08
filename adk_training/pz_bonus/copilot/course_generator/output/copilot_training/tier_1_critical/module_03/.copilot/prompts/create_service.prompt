@@ -1,3 +1,0 @@
-Tworzę usługę Spring Boot. Wygeneruj interfejs i implementację dla usługi o nazwie `{{ServiceName}}`. Upewnij się, że używa adnotacji `@Service` i wstrzykuje `{{RepositoryName}}` przez konstruktor. Zapewnij podstawową implementację metody `findById(Long id)`. Klasy powinny znajdować się w pakiecie `com.example.springpetclinic.{{service_package}}`.
-
-@workspace #file

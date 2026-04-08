@@ -1,2 +1,0 @@
-# Pirate Navigator Agent Module
-

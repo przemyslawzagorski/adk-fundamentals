@@ -1,5 +1,0 @@
-# Module 11: Memory Bank Agent Dependencies
-google-adk>=1.0.0
-google-cloud-aiplatform>=1.50.0
-python-dotenv>=1.0.0
-

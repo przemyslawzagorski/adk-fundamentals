@@ -1,4 +1,0 @@
-google-adk>=1.28.0
-python-dotenv
-llama-index-core
-llama-index-embeddings-google

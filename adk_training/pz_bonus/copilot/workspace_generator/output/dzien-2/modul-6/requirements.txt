@@ -1,4 +1,0 @@
-# requirements.txt
-# TODO: Use Copilot Agent Mode to analyze the project and automatically add all necessary dependencies here.
-# For now, manually add basic requirements.
-pytest

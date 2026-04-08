@@ -1,3 +1,0 @@
-Jako ekspert od testów jednostkowych w Spring Boot, wygeneruj test jednostkowy dla klasy `{{ClassName}}` znajdującej się w pliku `@file:{{FilePath}}`. Użyj JUnit 5 i Mockito. Skup się na pokryciu metod publicznych i interakcji z jej zależnościami. Stwórz mocki dla wszystkich zależności, a nazwy testów powinny być zgodne ze standardem `nazwaMetody_scenariusz_oczekiwanyWynik()`.
-
-@workspace #file
