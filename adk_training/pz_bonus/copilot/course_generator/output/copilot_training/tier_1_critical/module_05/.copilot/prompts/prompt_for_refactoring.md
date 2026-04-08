@@ -1,0 +1,1 @@
+Zrefaktoryzuj metodę `findVets()` w tym pliku. Chcę, aby zwracała weterynarzy posortowanych alfabetycznie po nazwisku (lastname) przed zwróceniem kolekcji. Użyj Java Stream API do sortowania. Ogranicz kontekst tylko do tego pliku. #file

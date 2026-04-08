@@ -1,0 +1,60 @@
+EXISTING ARCHITECTURE NOTES — Polaris Platform
+================================================
+Last updated: 2025-11-15 (may be outdated)
+Author: Tomasz Nowak (Solutions Architect)
+
+## Current Infrastructure
+
+- Cloud: Azure (AKS 1.28, managed by DevOps team)
+- Service mesh: None currently — direct HTTP between services
+- API Gateway: Kong (v3.4) — handles external traffic only
+- Message broker: Kafka 3.6 (Azure Event Hubs in production, local Kafka for dev)
+- Databases: PostgreSQL 15 (managed Azure DB), Redis 7 (Azure Cache) for sessions
+- Secret management: Azure Key Vault (some teams use Vault OSS — inconsistent)
+- Monitoring: Prometheus + Grafana, some services also send to Azure Monitor
+- CI/CD: GitLab CI → Azure Container Registry → AKS via Helm charts
+- Container registry: Azure Container Registry (ACR)
+
+## CLM Core Service
+
+- Spring Boot 3.2, Java 21
+- PostgreSQL schema: clm_core (owns customer, contract, product tables)
+- Exposes REST API: /api/v2/* (internal) and /api/public/* (via Kong)
+- Currently sends emails via: JavaMailSender → internal SMTP relay
+- Kafka producer on topic: clm.core.events (domain events)
+
+## Billing Module
+
+- Spring Boot 3.1, Java 17 (scheduled upgrade to 21)
+- Separate PostgreSQL schema: billing
+- Kafka consumer: clm.core.events (listens for contract changes)
+- Kafka producer: billing.invoice.created, billing.payment.received
+- SMS: Twilio REST API, hardcoded in BillingSmsService.java
+
+## Customer Portal (Frontend)
+
+- React 18, TypeScript
+- Communicates with backend via Kong API Gateway
+- WebSocket: currently NOT implemented — in-app notifications shown via polling
+- Authentication: Keycloak OIDC (JWT tokens)
+
+## Mobile App
+
+- React Native (iOS + Android)
+- Push notifications: Firebase (using legacy HTTP API — deprecated Jan 2024!)
+- Auth: same Keycloak instance
+
+## Known Technical Debt
+
+- Firebase SDK in mobile backend is deprecated and causing build warnings
+- Twilio integration in Billing is not fault-tolerant (no retry, no dead-letter)
+- Email sending in CLM Core blocks the request thread (no async)
+- No centralized notification log — support team can't check if notification was sent
+- Template strings hardcoded in Java classes (no i18n support)
+
+## Security Posture
+
+- Internal services: currently NO authentication between services (internal network trust)
+- mTLS was discussed in 2024 architecture review but not implemented
+- Keycloak version: 23.0 (managed by security team — upgrades quarterly)
+

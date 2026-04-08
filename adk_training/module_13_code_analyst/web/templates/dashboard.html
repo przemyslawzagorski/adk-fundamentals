@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Code Analyst - Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <h1>Repozytoria</h1>
+    {% if mcp_available %}
+    <div class="alert success">Comarch MCP aktywne (Jira + GitLab + Wiki)</div>
+    {% elif mcp_configured %}
+    <div class="alert mcp-offline">Comarch MCP skonfigurowane, ale niedostepne (brak sieci firmowej)</div>
+    {% endif %}
+
+    <div class="panel">
+        <form hx-post="/repos" hx-target="#form-feedback" hx-swap="innerHTML">
+            <div class="form-row">
+                <input type="text" name="path"
+                       placeholder="Sciezka do repozytorium, np. C:\projekty\moj-backend"
+                       required class="input-path" autocomplete="off">
+                <input type="text" name="name"
+                       placeholder="Nazwa (opcjonalna)" class="input-name">
+                <button type="submit" class="btn btn-primary">Dodaj</button>
+            </div>
+            <div id="form-feedback"></div>
+        </form>
+    </div>
+
+    <div class="repo-grid">
+        {% for repo in repos %}
+        <div class="repo-card" id="repo-{{ repo.id }}">
+            <div class="repo-header">
+                <h3>{{ repo.name }}</h3>
+                <span class="badge badge-{{ repo.status }}">{{ repo.status }}</span>
+            </div>
+            <p class="repo-path">{{ repo.path }}</p>
+            <div class="repo-meta">
+                {% if repo.total_chunks > 0 %}
+                <span>{{ repo.total_chunks }} chunkow</span>
+                <span>{{ repo.indexed_files }} plikow</span>
+                {% endif %}
+                <span>Indeksowano: {{ repo.last_indexed | format_time }}</span>
+            </div>
+            <div class="repo-actions">
+                <a href="/repos/{{ repo.id }}" class="btn btn-small btn-primary">Otworz</a>
+                <button class="btn btn-small btn-danger"
+                        hx-delete="/repos/{{ repo.id }}"
+                        hx-confirm="Usunac repozytorium {{ repo.name }}?">
+                    Usun
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Brak repozytoriow. Dodaj pierwsze repozytorium powyzej.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}{{ repo.name }} - Code Analyst{% endblock %}
+
+{% block content %}
+<section class="repo-detail">
+    <div class="breadcrumb">
+        <a href="/">&larr; Dashboard</a>
+    </div>
+
+    <div class="repo-header-detail">
+        <h1>{{ repo.name }}</h1>
+        <div class="header-badges">
+            <span class="badge badge-{{ repo.status }}">{{ repo.status }}</span>
+            <span class="badge badge-agent" title="SequentialAgent: code_analyst -> solution_architect">
+                &#9881; Pipeline agentowy
+            </span>
+            {% if mcp_available %}
+            <span class="badge badge-mcp" title="Jira + Wiki + GitLab via MCP">MCP</span>
+            {% elif mcp_configured %}
+            <span class="badge badge-mcp-off" title="MCP skonfigurowane, ale siec firmowa niedostepna">MCP offline</span>
+            {% endif %}
+        </div>
+    </div>
+    <p class="repo-path">{{ repo.path }}</p>
+
+    <!-- Pipeline Info -->
+    <div class="pipeline-info panel">
+        <div class="pipeline-diagram">
+            <span class="pipe-node">&#128172; Ty</span>
+            <span class="pipe-arrow">&rarr;</span>
+            <span class="pipe-node pipe-active">&#128270; code_analyst</span>
+            <span class="pipe-arrow">&rarr;</span>
+            <span class="pipe-node pipe-active">&#128736; solution_architect</span>
+            <span class="pipe-arrow">&rarr;</span>
+            <span class="pipe-node">&#128196; Wynik</span>
+        </div>
+        <p class="pipeline-desc">
+            <strong>SequentialAgent</strong> &mdash; Dwu-etapowy pipeline agentowy.
+            Najpierw <em>code_analyst</em> przeszukuje kod (RAG{% if mcp_enabled %} + Jira/Wiki/GitLab{% endif %}),
+            potem <em>solution_architect</em> generuje propozycje, diagramy i stories.
+        </p>
+    </div>
+
+    <!-- Stats + Index Actions -->
+    <div id="stats-panel" class="panel">
+        {% include "_stats.html" %}
+    </div>
+
+    <!-- ====== WORKFLOW SCENARIOS ====== -->
+    <div class="panel">
+        <h2>&#9881; Scenariusze agentowe</h2>
+        <p class="section-desc">
+            Kliknij scenariusz aby uruchomic pelny pipeline agentowy.
+            Kazdy scenariusz przechodzi przez oba agenty automatycznie.
+        </p>
+
+        <div class="workflow-grid">
+            {% for wf_id, wf in workflows.items() %}
+            <div class="workflow-card">
+                <div class="workflow-header">
+                    <span class="workflow-icon">{{ wf.icon | safe }}</span>
+                    <h3>{{ wf.name }}</h3>
+                </div>
+                <p class="workflow-desc">{{ wf.description }}</p>
+
+                <form hx-post="/repos/{{ repo.id }}/workflow"
+                      hx-target="#workflow-results"
+                      hx-swap="afterbegin"
+                      hx-indicator="#workflow-spinner">
+                    <input type="hidden" name="workflow_id" value="{{ wf_id }}">
+                    {% if wf.input_placeholder is defined %}
+                    <div class="form-row">
+                        <input type="text" name="user_input"
+                               placeholder="{{ wf.input_placeholder }}"
+                               class="input-wf" autocomplete="off">
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-workflow">Uruchom pipeline &#9654;</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+
+        <span id="workflow-spinner" class="spinner htmx-indicator">
+            Pipeline pracuje... (code_analyst &#8594; solution_architect)
+        </span>
+
+        <div id="workflow-results"></div>
+    </div>
+
+    <!-- Two-Column: Search + Chat -->
+    <div class="columns">
+
+        <!-- Search -->
+        <div class="column">
+            <div class="panel">
+                <h2>&#128270; Szukaj w kodzie</h2>
+                <form hx-post="/repos/{{ repo.id }}/search"
+                      hx-target="#search-results"
+                      hx-swap="innerHTML"
+                      hx-indicator="#search-spinner">
+                    <div class="form-row">
+                        <input type="text" name="query"
+                               placeholder="np. autoryzacja JWT, obsluga bledow..."
+                               required class="input-search" autocomplete="off">
+                        <select name="top_k" class="select-topk">
+                            <option value="3">Top 3</option>
+                            <option value="5" selected>Top 5</option>
+                            <option value="10">Top 10</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Szukaj</button>
+                    </div>
+                </form>
+                <span id="search-spinner" class="spinner htmx-indicator">Szukam...</span>
+                <div id="search-results"></div>
+            </div>
+        </div>
+
+        <!-- Chat (SequentialAgent) -->
+        <div class="column">
+            <div class="panel">
+                <div class="chat-header">
+                    <h2>&#128172; Chat agentowy</h2>
+                    <button class="btn btn-small btn-secondary"
+                            hx-post="/repos/{{ repo.id }}/chat/reset"
+                            hx-target="#chat-messages"
+                            hx-swap="innerHTML">
+                        Reset
+                    </button>
+                </div>
+                <p class="section-desc">Wolne pytania — przechodzi przez pelny pipeline agentowy</p>
+                <div id="chat-messages" class="chat-messages"></div>
+                <form hx-post="/repos/{{ repo.id }}/chat"
+                      hx-target="#chat-messages"
+                      hx-swap="beforeend"
+                      hx-indicator="#chat-spinner"
+                      hx-on::after-request="if(event.detail.successful){this.reset();var c=document.getElementById('chat-messages');c.scrollTop=c.scrollHeight;}">
+                    <div class="form-row">
+                        <input type="text" name="message"
+                               placeholder="Zapytaj o kod... (przejdzie przez code_analyst -> solution_architect)"
+                               required class="input-chat" autocomplete="off">
+                        <button type="submit" class="btn btn-primary">Wyslij</button>
+                    </div>
+                </form>
+                <span id="chat-spinner" class="spinner htmx-indicator">Pipeline analizuje...</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

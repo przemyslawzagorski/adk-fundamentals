@@ -42,14 +42,14 @@ if SEARCH_ENGINE_ID:
     # Używanie Search Engine ID
     narzedzie_wyszukiwania = VertexAiSearchTool(
         search_engine_id=SEARCH_ENGINE_ID,
-        max_results=3  # Maksymalna liczba dokumentów do pobrania na zapytanie
+        max_results=10  # Maksymalna liczba dokumentów do pobrania na zapytanie
     )
     print(f"🔍 Skonfigurowano z Search Engine: {SEARCH_ENGINE_ID}")
 elif SEARCH_DATASTORE_ID:
     # Używanie Data Store ID bezpośrednio
     narzedzie_wyszukiwania = VertexAiSearchTool(
         data_store_id=SEARCH_DATASTORE_ID,
-        max_results=3
+        max_results=10
     )
     print(f"📚 Skonfigurowano z Data Store: {SEARCH_DATASTORE_ID}")
 else:
@@ -85,7 +85,7 @@ Odpowiadaj profesjonalnie i precyzyjnie, wykorzystując dostępną wiedzę organ
 # =============================================================================
 root_agent = LlmAgent(
     name="asystent_rag",
-    model="gemini-2.0-flash-001",
+    model="gemini-2.5-flash",
     instruction=instruction_prompt,
     description="Asystent AI z dostępem do bazy wiedzy organizacji przez RAG.",
     tools=[narzedzie_wyszukiwania]

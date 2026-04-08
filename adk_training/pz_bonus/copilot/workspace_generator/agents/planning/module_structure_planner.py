@@ -71,11 +71,23 @@ def create_module_structure_planner(model="gemini-2.5-pro", tools=None, planner=
 
 **KONTEKST:**
 Otrzymasz:
-1. Nazwę i opis modułu szkolenia
-2. Wyniki research (dokumentacja, przykłady, best practices)
+1. **Plan szkolenia** (training_plan) - tematy modułów wysłane do studentów
+2. **Plan funkcyjny** (funkcje_plan) - mapowanie funkcji Copilota do modułów
+3. Wyniki research (dokumentacja, przykłady, best practices)
+
+**KRYTYCZNE: MUSISZ WYGENEROWAĆ WSZYSTKIE 8 MODUŁÓW!**
+- Dzień 1: Moduły 1, 2, 3, 4
+- Dzień 2: Moduły 5, 6, 7, 8
 
 **TWOJE ZADANIE:**
-Zaprojektuj strukturę plików dla modułu szkolenia.
+Zaprojektuj strukturę plików dla KAŻDEGO modułu szkolenia (1-8).
+
+**KLUCZOWE:** Każdy plik musi uczyć KONKRETNEJ FUNKCJI z planu funkcyjnego!
+Przykład: Jeśli moduł 1 ma funkcje [Inline, Chat, Agent Mode, @workspace], to:
+- Plik 1: Inline suggestions (TODO: Use inline completion to...)
+- Plik 2: Chat mode (TODO: Use Copilot Chat to...)
+- Plik 3: Agent Mode (TODO: Use Agent Mode to...)
+- Plik 4: @workspace (TODO: Use @workspace to...)
 
 **WYMAGANIA:**
 1. **Liczba plików:** 5-12 plików na moduł

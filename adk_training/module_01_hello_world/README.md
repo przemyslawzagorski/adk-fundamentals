@@ -35,7 +35,7 @@ cd adk_training/module_01_hello_world
 
 # Stwórz środowisko wirtualne (opcjonalne, ale zalecane)
 python -m venv .venv
-.venv\Scripts\activate  # Windows
+.venv312\Scripts\activate  # Windows
 # source .venv/bin/activate  # macOS/Linux
 
 # Zainstaluj zależności
@@ -104,7 +104,7 @@ root_agent = LlmAgent(
 Zmień instrukcję, aby agent był bardziej formalny lub bardziej swobodny.
 
 ### Ćwiczenie 1.2: Wypróbuj Różne Modele
-Zmień `gemini-2.5-flash` na `gemini-2.0-flash` i zaobserwuj różnice.
+Zmień `gemini-2.5-flash` na `gemini-2.0-flash-001` i zaobserwuj różnice.
 
 ### Ćwiczenie 1.3: Dodaj Kontekst
 Dodaj specyficzną wiedzę do instrukcji (np. historię firmy, nazwy produktów).

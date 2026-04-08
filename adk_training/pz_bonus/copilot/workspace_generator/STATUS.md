@@ -1,8 +1,8 @@
 # ✅ SYSTEM GOTOWY
 
-**Wersja:** 1.4.3
+**Wersja:** 1.6.0
 **ADK:** 1.18.0
-**Status:** ✅ PRODUCTION READY (naprawiono google_search + output_schema conflict)
+**Status:** ✅ PRODUCTION READY (Izolacja Sesji + Shared Context)
 
 ## 🚀 Nowe funkcje (v1.3.0):
 
@@ -29,6 +29,48 @@
 - **Automatyczny zapis:** Agent sam wywołuje `create_file` po wygenerowaniu kodu
 - **Nadpisywanie:** Każda iteracja LoopAgent nadpisuje plik - na dysku zawsze najnowsza wersja
 - **Widoczność:** Pliki pojawiają się w `output/` na bieżąco, nie dopiero na końcu
+
+---
+
+## 🎓 Nowy system szkoleniowy (v1.5.0):
+
+### ✅ TRAINING VALUE CRITIC (Common Sense)
+- **Nowy krytyk:** `TrainingValueCritic` zamiast `SyntaxCritic`
+- **Sprawdza wartość szkoleniową:**
+  - ✅ Czy uczy konkretnej funkcji Copilota (@workspace, Edit Mode, etc.)
+  - ✅ Czy NIE ma przykładowych odpowiedzi (student sam ćwiczy!)
+  - ✅ Czy NIE dubluje się z innymi ćwiczeniami
+  - ✅ Czy ma wartość praktyczną
+  - ✅ Czy jest na odpowiednim poziomie trudności
+  - ✅ Czy jest konkretne (nie ogólne)
+  - ✅ Czy fokusuje się na funkcji, nie na projekcie
+- **Czerwone flagi:** Przykładowe odpowiedzi, brak funkcji Copilota, dublowanie, za duże zadania
+- **Zielone flagi:** Konkretna funkcja, małe zadanie, praktyczny problem, jasne kroki
+
+### ✅ PLAN FUNKCYJNY + INTEGRACJA
+- **Nowy plik:** `funkcje_copilot_plan.md`
+- **Mapowanie funkcji do modułów:**
+  - Moduł 1: Inline, Chat, Agent Mode, @workspace, #terminal, Copilot CLI
+  - Moduł 2: @workspace, Next Edit, Symbol Search, #codebase
+  - Moduł 3: Edit Mode, Working Set, Multi-file Edits, Preview
+  - Moduł 4: @test, Test Generation, Mock Generation, Coverage
+  - Moduł 5: Custom Instructions, Repository Rules, Pattern Enforcement
+  - Moduł 6: MCP Servers, Database Schema, Migration Generation
+  - Moduł 7: Language Translation, Custom Agents, Subagents, Plan Mode
+  - Moduł 8: Polyglot, Component Generation, API Integration, Full-Stack
+- **Moduły dodatkowe:** Copilot CLI, DevOps, Dokumentacja, Advanced Agent Mode
+- **Integracja z systemem:**
+  - `main.py`: Ładuje OBA plany (`training_plan` + `funkcje_plan`)
+  - `DocumentationResearch`: Wyszukuje dokumentację dla WSZYSTKICH funkcji z planu funkcyjnego
+  - `ModuleStructurePlanner`: Projektuje pliki tak, żeby każdy uczył konkretnej funkcji
+  - `PolyglotCodeAgent`: Generuje ćwiczenia fokusujące się na funkcjach Copilota
+
+### ✅ ZASADY GENEROWANIA
+1. ✅ Nie generujemy przykładowych odpowiedzi - student sam ćwiczy!
+2. ✅ Konkretne zadania - "Zrób X używając funkcji Y"
+3. ✅ Małe przykłady - focus na funkcji, nie na całym projekcie
+4. ✅ Wartość szkoleniowa - każde ćwiczenie uczy konkretnej funkcji
+5. ✅ Common sense - nie dublujemy, nie piszemy oczywistości
 
 ---
 

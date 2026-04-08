@@ -1,0 +1,13 @@
+{
+  "github.copilot.advanced": {
+    "debug.overrideCopilotProviderUrls": {
+      "mcp": "http://localhost:3000" // Główny MCP Server (np. Node.js lub Python z przykładu)
+    }
+  },
+  "github.copilot.internal.featureFlags": {
+    "provider.mcp.enabled": true
+  },
+  "editor.wordWrap": "on",
+  "editor.lineNumbers": "on",
+  "files.autoSave": "onWindowChange"
+}

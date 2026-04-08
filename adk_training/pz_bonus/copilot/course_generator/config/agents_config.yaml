@@ -1,0 +1,137 @@
+# 🎓 Konfiguracja Agentów - Course Generator
+# Definiuje parametry dla wszystkich 5 agentów
+
+# ============================================================
+# AGENT 1: DOCUMENTATION INGESTION
+# ============================================================
+documentation_ingestion_agent:
+  model: gemini-2.5-pro
+  temperature: 0.2  # Niska temperatura = deterministyczne grupowanie
+  max_tokens: 8192
+  thinking_mode: true
+  description: "Pobiera i grupuje dokumentację według URI"
+
+# ============================================================
+# AGENT 2: DOCUMENTATION EVALUATOR
+# ============================================================
+documentation_evaluator_agent:
+  model: gemini-2.5-pro
+  temperature: 0.3  # Niska temperatura = konsekwentne oceny
+  max_tokens: 16384
+  thinking_mode: true
+  description: "Ocenia przydatność dokumentacji (wagi 1-5)"
+  evaluation_criteria:
+    practical_value:
+      tier_1: ["MCP", "Custom Agents", "Skills", "Context Engineering"]
+      tier_2: ["Chat", "Subagents", "TDD", "Debug"]
+      tier_3: ["Inline", "Suggestions", "Best Practices"]
+    complexity_threshold: 3
+    uniqueness_threshold: 3
+
+# ============================================================
+# AGENT 3: PRIORITY-AWARE SYLLABUS PLANNER
+# ============================================================
+priority_aware_syllabus_planner:
+  model: gemini-2.5-pro
+  temperature: 0.5  # Wyższa temperatura = kreatywność w strukturze
+  max_tokens: 16384
+  thinking_mode: true
+  description: "Tworzy plan szkolenia z priorytetami"
+  time_allocation:
+    total_hours: 32
+    tier_1_percentage: 80  # ~26h
+    tier_2_percentage: 15  # ~5h
+    tier_3_percentage: 5   # ~1h
+  module_constraints:
+    tier_1:
+      min_lessons: 3
+      max_lessons: 5
+      min_exercises: 10
+      max_exercises: 15
+    tier_2:
+      min_lessons: 2
+      max_lessons: 3
+      min_exercises: 3
+      max_exercises: 5
+    tier_3:
+      min_lessons: 1
+      max_lessons: 2
+      min_exercises: 1
+      max_exercises: 2
+
+# ============================================================
+# AGENT 4: REPOSITORY FINDER
+# ============================================================
+repository_finder_agent:
+  model: gemini-2.5-flash
+  temperature: 0.3
+  max_tokens: 4096
+  description: "Znajduje optymalne repozytorium Java"
+  search_criteria:
+    language: "Java"
+    min_stars: 500
+    max_results: 20
+    preferred_topics: ["spring", "boot", "rest", "testing", "sample"]
+    size_range:
+      min_kb: 1000
+      max_kb: 10000
+  scoring_weights:
+    stars: 0.2
+    license: 0.2
+    topics: 0.2
+    size: 0.2
+    activity: 0.2
+
+# ============================================================
+# AGENT 5: PRIORITY-AWARE CONTENT GENERATOR
+# ============================================================
+priority_aware_content_generator:
+  model: gemini-2.5-flash
+  temperature: 0.6  # Wyższa temperatura = bardziej zróżnicowane treści
+  max_tokens: 8192
+  description: "Generuje materiały proporcjonalnie do wag"
+  content_templates:
+    tier_1:
+      readme_words: 3000
+      exercises_count: 12
+      config_files: 5
+      additional_files: ["ADVANCED_SCENARIOS.md", "SETUP_GUIDE.md"]
+    tier_2:
+      readme_words: 1200
+      exercises_count: 4
+      config_files: 2
+      additional_files: []
+    tier_3:
+      readme_words: 400
+      exercises_count: 1
+      config_files: 0
+      additional_files: []
+  file_structure:
+    root_files:
+      - "README.md"
+      - "SETUP.md"
+      - "LEARNING_PATH.md"
+      - "training_metadata.json"
+    tier_directories:
+      - "tier_1_critical"
+      - "tier_2_important"
+      - "tier_3_nice_to_have"
+
+# ============================================================
+# ORCHESTRATION CONFIG
+# ============================================================
+orchestration:
+  type: "sequential"
+  timeout_minutes: 60
+  save_intermediate_results: true
+  
+# ============================================================
+# GLOBAL SETTINGS
+# ============================================================
+global:
+  output_dir: "./output/copilot_training"
+  log_level: "INFO"
+  language: "pl"  # Polski
+  retry_on_failure: true
+  max_retries: 3
+

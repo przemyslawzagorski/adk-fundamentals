@@ -1,86 +1,109 @@
 """
-Module 12: Router Agent - The Captain's Command
-================================================
-
-Ten moduł demonstruje wzorzec routingu (przekierowywania) w ADK.
-Kapitan używa klasy RouterAgent, aby skierować pytania do odpowiedniego specjalisty z załogi.
-
-Kluczowe koncepcje:
-- RouterAgent do inteligentnego kierowania zapytań
-- Sub-agenci jako specjaliści w swoich domenach
-- Precyzyjne opisy (description) jako klucz do dobrego routingu
+Moduł 12: Router Agent - ROZWIĄZANIA ĆWICZEŃ
+=============================================
+Rozwiązanie obejmuje:
+1. Dodanie nowego specjalisty (Lekarz / Doctor)
+2. Wdrożenie wzorca "Agent as a Tool" (Agent jako Narzędzie)
+   zamiast standardowego przekierowania w Routerze.
 """
 
 import os
 from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
+from google.adk.tools import AgentTool
 
 load_dotenv()
 MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
 
 # =============================================================================
-# SPECJALIŚCI Z ZAŁOGI
+# 1. SPECJALIŚCI (Włączając nowego: Lekarza)
 # =============================================================================
 
 navigator_agent = LlmAgent(
     model=MODEL,
     name="navigator",
-    description="Ekspert od nawigacji, map, tras, pogody i warunków na morzu. Odpowiada na pytania o kierunki i czas podróży.",
-    instruction="""Jesteś Nawigatorem statku!
-    Odpowiadaj na pytania o trasy, nawigację, mapy i pogodę.
-    Używaj żeglarskiego żargonu (węzły, sterburt, kurs)."""
+    description="Ekspert od nawigacji, map, tras i warunków morskich.",
+    instruction="Jesteś Nawigatorem. Odpowiadaj na pytania o trasy, pogodę i szacowany czas podróży."
 )
 
 quartermaster_agent = LlmAgent(
     model=MODEL,
     name="quartermaster",
-    description="Ekspert od ładunku, zapasów, inwentarza, amunicji i napraw statku.",
-    instruction="""Jesteś Kwatermistrzem!
-    Odpowiadaj na pytania o zapasy, prowiant, stan statku i naprawy.
-    Bądź precyzyjny w wyliczeniach beczek i skrzyń."""
+    description="Ekspert od ładunku, zapasów, inwentarza i napraw statku.",
+    instruction="Jesteś Kwatermistrzem. Odpowiadaj na pytania o zapasy, amunicję i stan statku."
 )
 
 gunner_agent = LlmAgent(
     model=MODEL,
     name="gunner",
-    description="Ekspert od broni, armat, taktyk walki i obrony statku przed wrogiem.",
-    instruction="""Jesteś Głównym Artylerzystą!
-    Odpowiadaj na pytania o uzbrojenie, taktykę bitewną i obronę.
-    Wypowiadaj się z autorytetem weterana walk morskich."""
+    description="Ekspert od broni, taktyk walki i obrony statku.",
+    instruction="Jesteś Artylerzystą. Odpowiadaj na pytania o armaty, taktyki i obronę."
 )
 
 cook_agent = LlmAgent(
     model=MODEL,
     name="cook",
-    description="Ekspert od jedzenia, przygotowywania posiłków, morale załogi i racji rumu.",
-    instruction="""Jesteś Okrętowym Kucharzem!
-    Odpowiadaj na pytania o jedzenie, zdrowie załogi i racje rumu.
-    Bądź wesoły i dbaj o pełne brzuchy załogi."""
+    description="Ekspert od jedzenia, morale załogi i rozrywki.",
+    instruction="Jesteś Kucharzem. Odpowiadaj na pytania o posiłki, racje rumu i morale."
+)
+
+# NOWY AGENT - Ćwiczenie 1
+doctor_agent = LlmAgent(
+    model=MODEL,
+    name="doctor",
+    description="Ekspert od zdrowia załogi, medycyny i leczenia ran.",
+    instruction="""Jesteś Lekarzem Okrętowym (Medykiem).
+    Odpowiadaj na pytania o:
+    - Leczenie ran odniesionych w walce
+    - Zapobieganie chorobom (np. szkorbut)
+    - Zioła i zapasy medyczne
+    Używaj pirackiego, morskiego żargonu!"""
 )
 
 # =============================================================================
-# KAPITAN (ROUTER AGENT)
+# 2. WZORZEC "AGENT AS A TOOL" (Opakowanie agentów w narzędzia)
+# =============================================================================
+
+nav_tool = AgentTool(agent=navigator_agent)
+quarter_tool = AgentTool(agent=quartermaster_agent)
+gunner_tool = AgentTool(agent=gunner_agent)
+cook_tool = AgentTool(agent=cook_agent)
+doctor_tool = AgentTool(agent=doctor_agent)
+
+# =============================================================================
+# 3. KAPITAN (Korzystający z narzędzi zamiast routingu)
 # =============================================================================
 
 root_agent = LlmAgent(
-    name="captain_router",
     model=MODEL,
-    instruction="""Ahoj! Jesteś Kapitanem Czarnej Perły - inteligentnym routerem.
+    name="captain_with_tools",
+    description="Kapitan korzystający ze swojej załogi jako narzędzi do zbierania informacji.",
+    instruction="""Ahoj! Jesteś Kapitanem Czarnej Perły!
 
-    Twoim zadaniem jest przekierowanie pytań użytkownika do odpowiednich członków załogi na podstawie ich specjalizacji.
+Twoim zadaniem jest odpowiadanie na pytania użytkownika.
+Nie znasz wszystkich szczegółów operacyjnych statku, ale masz do dyspozycji swoją załogę, z której możesz korzystać jak z narzędzi:
 
-    Przeanalizuj pytanie i wybierz JEDNEGO eksperta:
-    - Nawigacja, trasy, pogoda -> navigator
-    - Zapasy, ładownia, naprawy -> quartermaster
-    - Walka, broń, taktyka -> gunner
-    - Jedzenie, picie, morale -> cook
+- navigator_tool - nawigacja, mapy, trasy
+- quartermaster_tool - zapasy, ładownia, naprawy
+- gunner_tool - broń, taktyka, obrona
+- cook_tool - jedzenie, picie, morale
+- doctor_tool - zdrowie, leczenie rannych, szkorbut
 
-    Jeśli pytanie nie pasuje, po prostu poproś o doprecyzowanie.
-    """,
-    sub_agents=[
-        navigator_agent,
-        quartermaster_agent,
-        gunner_agent,
-        cook_agent
-    ]
+Kiedy otrzymasz pytanie:
+1. Zastanów się, kogo z załogi zapytać o szczegóły.
+2. Użyj odpowiedniego narzędzia (lub KILKU NARZĘDZI po kolei!), aby wyciągnąć informacje od specjalisty.
+3. Po otrzymaniu odpowiedzi od narzędzi, TY (Kapitan) formułujesz OSTATECZNĄ ODPOWIEDŹ do użytkownika, posługując się swoim kapitańskim autorytetem.
+""",
+    tools=[nav_tool, quarter_tool, gunner_tool, cook_tool, doctor_tool]
 )
+
+# =============================================================================
+# PRZYKŁADY TESTOWANIA W ADK WEB
+# =============================================================================
+"""
+Spróbuj zadać te pytania w interfejsie webowym:
+1. "Kapitanie, ilu rannych po ostatniej bitwie możemy uleczyć?"
+   (Kapitan wezwie narzędzie doctor_tool)
+2. "Gdzie płyniemy i czy mamy wystarczająco rumu na drogę?"
+   (Kapitan użyje nav_tool ORAZ quarter_tool/cook_tool i połączy to w jedną opowieść!)
+"""

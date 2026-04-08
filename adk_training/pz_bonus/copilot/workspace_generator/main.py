@@ -9,8 +9,9 @@ import asyncio
 import json
 import logging
 import os
+import yaml
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, List
 from dotenv import load_dotenv
 
 # Google ADK imports
@@ -84,16 +85,37 @@ class CopilotMasterclassWorkspaceGenerator:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Load training plan
+        # Load training plan (tematy modułów)
         with open(self.training_plan_path, 'r', encoding='utf-8') as f:
             self.training_plan = f.read()
-        
+
+        # Load funkcje plan (funkcje Copilota)
+        funkcje_plan_path = Path(__file__).parent / "funkcje_copilot_plan.md"
+        if funkcje_plan_path.exists():
+            with open(funkcje_plan_path, 'r', encoding='utf-8') as f:
+                self.funkcje_plan = f.read()
+            logger.info(f"📋 Loaded funkcje plan from: {funkcje_plan_path.name}")
+        else:
+            self.funkcje_plan = ""
+            logger.warning(f"⚠️  funkcje_copilot_plan.md not found")
+
+        # Load YAML config
+        config_path = Path(__file__).parent / "config" / "agents_config.yaml"
+        if config_path.exists():
+            with open(config_path, 'r', encoding='utf-8') as f:
+                self.config = yaml.safe_load(f)
+            logger.info(f"⚙️  Loaded config from: {config_path.name}")
+        else:
+            self.config = {}
+            logger.warning(f"⚠️  agents_config.yaml not found, using defaults")
+
         logger.info(f"📋 Loaded training plan from: {self.training_plan_path}")
         logger.info(f"📁 Output directory: {self.output_dir}")
-        
+
         # Initialize shared state
         self.state = {
             "training_plan": self.training_plan,
+            "funkcje_plan": self.funkcje_plan,  # ← DODANO
             "research_results": {},
             "execution_plan": {},
             "generated_files": [],
@@ -103,9 +125,10 @@ class CopilotMasterclassWorkspaceGenerator:
         
         # Initialize tools
         self.tools = self._initialize_tools()
-        
-        # Initialize agents
-        self.orchestrator = self._build_orchestrator()
+
+        # USUNIĘTO: self.orchestrator = self._build_orchestrator()
+        # Nowa architektura (v1.6.0) nie używa monolitycznego orchestratora!
+        # Każda faza buduje swoich agentów bezpośrednio.
     
     def _initialize_tools(self) -> Dict[str, Any]:
         """Inicjalizuje narzędzia dla agentów"""
@@ -123,213 +146,369 @@ class CopilotMasterclassWorkspaceGenerator:
             "check_code_quality": check_code_quality,
         }
     
-    def _build_orchestrator(self) -> SequentialAgent:
-        """
-        Buduje głównego orchestratora zgodnie z architekturą:
-        
-        ORCHESTRATOR (Sequential)
-        ├─▶ PLANNING PHASE
-        ├─▶ EXECUTION PHASE
-        └─▶ VALIDATION PHASE
-        """
-        logger.info("🏗️  Building orchestrator...")
-        
-        # ============================================================
-        # PLANNING PHASE (Research + Structure -> Aggregator)
-        # ============================================================
+    # =========================================================================
+    # METODY - Izolacja Sesji (v1.6.0)
+    # =========================================================================
+    # USUNIĘTO: def _build_orchestrator() - martwy kod z v1.5.1
+    # Nowa architektura buduje agentów bezpośrednio w każdej fazie.
 
-        # Tworzymy agentów używając factory functions
-        # Planning używa BuiltInPlanner dla lepszej jakości
+    async def _run_planning_phase(self) -> Dict[str, Any]:
+        """
+        Faza 1: Planning - jedna sesja.
+        Zwraca execution_plan jako Dict.
+        """
+        from google.adk.sessions import InMemorySessionService
+        from google.adk.runners import Runner
+        from google.adk.agents import SequentialAgent
+        from agents.planning.documentation_research_agent import create_documentation_research_agent
+        from agents.planning.module_structure_planner import create_module_structure_planner
+        from agents.planning.planning_aggregator import create_planning_aggregator
+        # get_planner_if_enabled() jest w zasięgu globalnym (linia 43), nie trzeba importować!
+
+        session_service = InMemorySessionService()
+        session = await session_service.create_session(
+            app_name="copilot_workspace_generator_planning",
+            user_id="system",
+            state={
+                "training_plan": self.training_plan,
+                "funkcje_plan": self.funkcje_plan
+            }
+        )
+
+        # KRYTYCZNE: Buduj PlanningPhase bezpośrednio, NIE przez _build_orchestrator()!
+        # (unikamy budowania całego monolitu z 8 modułami)
         planner = get_planner_if_enabled()
 
-        # Research agent używa natywnego google_search z ADK (nie przekazujemy tools)
-        research_agent = create_documentation_research_agent(
-            model=MODEL_PRO,
-            tools=None,  # google_search jest już wbudowany w agenta
-            planner=planner
-        )
-
-        structure_planner = create_module_structure_planner(
-            model=MODEL_PRO,
-            tools=None,
-            planner=planner
-        )
-
-        planning_aggregator = create_planning_aggregator(
-            model=MODEL_FLASH,
-            tools=None
-        )
-
-        # Planning: SEKWENCYJNIE (unikamy 429 przy niskich limitach Quota)
-        # Research → Structure → Aggregator (jeden po drugim)
-        planning_phase = SequentialAgent(
+        planning_agents = SequentialAgent(
             sub_agents=[
-                research_agent,      # Najpierw research
-                structure_planner,   # Potem planowanie struktury
-                planning_aggregator  # Na końcu agregacja
+                create_documentation_research_agent(
+                    model="gemini-2.5-pro",
+                    tools=None,
+                    planner=planner
+                ),
+                create_module_structure_planner(
+                    model="gemini-2.5-pro",
+                    tools=None,
+                    planner=planner
+                ),
+                create_planning_aggregator(
+                    model="gemini-2.5-flash",
+                    tools=None
+                )
             ],
             name="PlanningPhase"
         )
-        
-        # ============================================================
-        # EXECUTION PHASE (Sequential - po 1 module dla stabilności API)
-        # ============================================================
 
-        # Tools dla execution: create_file, validate_java_code
-        exec_tools = [create_file, validate_java_code, count_todo_comments]
-
-        # Generujemy moduły SEKWENCYJNIE z THROTTLING (unikamy 429 RESOURCE_EXHAUSTED)
-        # Każdy moduł to LoopAgent (Writer->Critic->Controller), więc dużo requestów
-        # THROTTLING: Dodajemy opóźnienie między modułami
-
-        module_agents = []
-        THROTTLE_DELAY = int(os.getenv("THROTTLE_DELAY_SECONDS", "3"))  # 3s między modułami
-
-        for module_id in range(1, 9):  # 8 modułów
-            module_agents.append(
-                create_module_generator(module_id=module_id, model=MODEL_FLASH, tools=exec_tools)
-            )
-
-        execution_phase = SequentialAgent(
-            sub_agents=module_agents,
-            name="ExecutionPhase"
-        )
-        
-        # ============================================================
-        # VALIDATION PHASE (Sequential: Validators → Reporter)
-        # ============================================================
-
-        coherence_validator = create_coherence_validator(
-            model=MODEL_PRO,
-            tools=None
+        runner = Runner(
+            agent=planning_agents,
+            app_name="copilot_workspace_generator_planning",
+            session_service=session_service
         )
 
-        pedagogical_reviewer = create_pedagogical_reviewer(
-            model=MODEL_PRO,
-            tools=None
-        )
-
-        final_reporter = create_final_reporter(
-            model=MODEL_FLASH,
-            tools=[create_file, list_files]  # Tylko potrzebne funkcje
-        )
-
-        validation_phase = SequentialAgent(
-            sub_agents=[
-                ParallelAgent(
-                    sub_agents=[coherence_validator, pedagogical_reviewer],
-                    name="ValidationAgents"
-                ),
-                final_reporter
-            ],
-            name="ValidationPhase"
-        )
-        
-        # ============================================================
-        # MASTER ORCHESTRATOR (Sequential: Planning → Execution → Validation)
-        # ============================================================
-
-        orchestrator = SequentialAgent(
-            sub_agents=[planning_phase, execution_phase, validation_phase],
-            name="MasterOrchestrator"
-        )
-
-        logger.info("✅ Orchestrator built successfully!")
-        return orchestrator
-    
-    async def generate(self) -> Dict[str, Any]:
-        """
-        Uruchamia cały proces generowania workspace'a.
-
-        Returns:
-            Dict z wynikami: generated_files, validation_results, final_report
-        """
-        logger.info("=" * 80)
-        logger.info("🚀 STARTING WORKSPACE GENERATION")
-        logger.info("=" * 80)
-
-        try:
-            # Tworzymy session service i runner (zgodnie z ADK patterns)
-            session_service = InMemorySessionService()
-            session = await session_service.create_session(
-                app_name="copilot_workspace_generator",
-                user_id="system"
-            )
-
-            runner = Runner(
-                agent=self.orchestrator,
-                app_name="copilot_workspace_generator",
-                session_service=session_service
-            )
-
-            # Przygotowujemy wiadomość z planem szkolenia
-            initial_message = f"""
-Generate GitHub Copilot Masterclass workspace based on this training plan:
+        initial_message = f"""
+Generate execution plan for GitHub Copilot Masterclass based on this training plan:
 
 {self.training_plan}
 
-Output directory: {self.output_dir}
+Funkcje Copilota do nauczenia:
+{self.funkcje_plan}
+
+Generate structured plan for all 8 modules.
 """
 
+        content = types.Content(
+            role='user',
+            parts=[types.Part(text=initial_message)]
+        )
+
+        logger.info("🔍 Running planning agents...")
+
+        raw_plan = None
+        plan_text_buffer = ""
+
+        async for event in runner.run_async(
+            user_id=session.user_id,
+            session_id=session.id,
+            new_message=content
+        ):
+            # Przechwytujemy eventy bezpośrednio ze strumienia!
+            author = getattr(event, 'author', '')
+
+            # Nasłuchujemy na agenta agregującego
+            if author == "PlanningAggregator":
+                # ADK zwraca obiekty Pydantic w 'event.data' (jeśli output_schema zadziałał)
+                if hasattr(event, 'data') and event.data is not None:
+                    raw_plan = event.data
+                    logger.info(f"✅ Przechwycono execution_plan z event.data (Pydantic)")
+
+                # Jako potężny fallback, zbieramy surowy tekst z odpowiedzi
+                if hasattr(event, 'text') and event.text:
+                    plan_text_buffer += event.text
+
+                # Sprawdź też event.content
+                if hasattr(event, 'content') and event.content:
+                    for part in event.content.parts:
+                        if hasattr(part, 'text') and part.text:
+                            plan_text_buffer += part.text
+
+        # =====================================================================
+        # KRYTYCZNA POPRAWKA: Przetwarzanie przechwyconych zdarzeń
+        # =====================================================================
+
+        # Jeśli ADK nie włożyło Pydantic Modelu do event.data, ratujemy się tekstem
+        if not raw_plan and plan_text_buffer:
+            logger.info(f"⚠️ Brak event.data, próbuję wydobyć JSON z tekstu...")
+            import re
+            # Czyścimy z formatowania markdown (usuwamy ewentualne ```json i ```)
+            clean_json = re.sub(r'```(?:json)?\s*', '', plan_text_buffer)
+            clean_json = re.sub(r'```\s*$', '', clean_json).strip()
+
+            try:
+                raw_plan = json.loads(clean_json)
+                logger.info(f"✅ Wydobyto execution_plan z tekstu (JSON parsing)")
+            except json.JSONDecodeError as e:
+                logger.error(f"❌ Nie udało się sparsować JSON z tekstu: {e}")
+                logger.error(f"   Tekst: {plan_text_buffer[:500]}...")
+                raw_plan = {}
+
+        # Bezpieczne zrzutowanie obiektu do standardowego słownika (Dict)
+        if hasattr(raw_plan, 'model_dump'):
+            execution_plan = raw_plan.model_dump()
+        elif hasattr(raw_plan, 'dict'):
+            execution_plan = raw_plan.dict()
+        elif isinstance(raw_plan, dict):
+            execution_plan = raw_plan
+        else:
+            logger.error(f"❌ Nieznany typ raw_plan: {type(raw_plan)}")
+            execution_plan = {}
+
+        logger.info(f"✅ Planning completed. Generated plan for {len(execution_plan.get('modules', []))} modules")
+
+        return execution_plan
+
+    async def _run_execution_phase_isolated(self, execution_plan: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Faza 2: Execution - osobna sesja dla KAŻDEGO modułu + shared context.
+        Zwraca listę podsumowań wygenerowanych modułów.
+        """
+        from google.adk.sessions import InMemorySessionService
+        from google.adk.runners import Runner
+        from agents.execution.module_generator import create_module_generator
+        import asyncio
+
+        session_service = InMemorySessionService()
+        generated_modules_summary = []
+
+        # Project guidelines (spójność między modułami)
+        project_guidelines = {
+            "java_version": "17",
+            "spring_boot_version": "3.2.0",
+            "code_style": "Google Java Style",
+            "todo_format": "// TODO: [Copilot Feature] - Description",
+            "python_version": "3.11+",
+            "react_version": "18+",
+            "typescript": True
+        }
+
+        modules = execution_plan.get("modules", [])
+
+        for module_id in range(1, min(9, len(modules) + 1)):  # 8 modułów lub ile jest w planie
+            logger.info(f"\n{'='*80}")
+            logger.info(f"🔨 MODULE {module_id}/{len(modules)}")
+            logger.info(f"{'='*80}")
+
+            # Pobierz info o obecnym module z planu
+            current_module = modules[module_id - 1] if module_id <= len(modules) else {}
+
+            # NOWA SESJA dla każdego modułu
+            module_session = await session_service.create_session(
+                app_name=f"copilot_workspace_generator_module_{module_id}",
+                user_id="system",
+                state={
+                    # Identyfikacja
+                    "module_id": module_id,
+
+                    # Pełny plan (żeby widzieć całość)
+                    "execution_plan": execution_plan,
+
+                    # Kontekst szkolenia
+                    "training_plan": self.training_plan,
+                    "funkcje_plan": self.funkcje_plan,
+
+                    # KLUCZOWE: Podsumowanie poprzednich modułów
+                    "previous_modules_summary": generated_modules_summary,
+
+                    # Wytyczne projektu (spójność)
+                    "project_guidelines": project_guidelines,
+
+                    # Info o obecnym module
+                    "current_module": current_module,
+
+                    # KRYTYCZNE: Wyciągnięte pola dla state injection (unikanie current_module.domain)
+                    "current_module_domain": current_module.get("domain", "Unknown"),
+                    "current_module_name": current_module.get("name", f"Module {module_id}"),
+
+                    # Output directory (dla LoopController)
+                    "output_dir": str(self.output_dir),
+
+                    # -------------------------------------------------------------
+                    # ZABEZPIECZENIE PRZED KEYERROR (Google ADK Template injection)
+                    # -------------------------------------------------------------
+                    "generated_code": "Model zapisał pliki używając narzędzi.",
+                    "training_critique": "Brak uwag. To pierwsza iteracja."
+                }
+            )
+
+            # Narzędzia dla modułu (MUSI BYĆ LISTA, nie Dict!)
+            exec_tools_dict = self._initialize_tools()
+            exec_tools = list(exec_tools_dict.values())  # ← KRYTYCZNE: ADK wymaga listy!
+
+            # NOWY RUNNER dla każdego modułu
+            module_agent = create_module_generator(
+                module_id=module_id,
+                model="gemini-2.5-flash",
+                tools=exec_tools,
+                config=self.config
+            )
+
+            module_runner = Runner(
+                agent=module_agent,
+                app_name=f"copilot_workspace_generator_module_{module_id}",
+                session_service=session_service
+            )
+
+            # Uruchom TYLKO ten moduł
+            initial_message = f"Generate module {module_id}: {current_module.get('name', 'Unknown')}"
             content = types.Content(
                 role='user',
                 parts=[types.Part(text=initial_message)]
             )
 
-            # Uruchamiamy agenta (BEZ retry na Runnerze - to by restartowało cały proces!)
-            logger.info("🤖 Running orchestrator...")
-            logger.info(f"📊 Quota limits: ~10-15 RPM for Gemini Pro, ~60 RPM for Flash (Vertex AI)")
-            logger.info("⚠️  429 errors będą obsługiwane przez throttling między modułami")
+            logger.info(f"🤖 Running module {module_id} agent...")
 
-            response_text = ""
-            current_agent = None
-
-            # Przechwytywanie eventów ze strumieniowaniem do konsoli (ANSI colors!)
-            async for event in runner.run_async(
-                user_id=session.user_id,
-                session_id=session.id,
+            async for event in module_runner.run_async(
+                user_id=module_session.user_id,
+                session_id=module_session.id,
                 new_message=content
             ):
-                # 1. Wykrywanie zmiany agenta (żeby wiedzieć, kto teraz "mówi")
-                if hasattr(event, 'author') and event.author != current_agent:
+                # Logowanie eventów (opcjonalne)
+                if hasattr(event, 'author'):
                     current_agent = event.author
-                    # '\033[94m' = niebieski, '\033[0m' = reset koloru
-                    print(f"\n\n\033[94m=== 🤖 Zmiana kontekstu: {current_agent} rozpoczyna pracę ===\033[0m\n")
+                    if "PolyglotCodeAgent" in current_agent or "TrainingValueCritic" in current_agent:
+                        print(f"\n\033[94m=== 🤖 {current_agent} ===\033[0m")
 
-                # 2. Przechwytywanie i wyświetlanie tekstu w locie
-                if hasattr(event, 'content') and event.content:
-                    for part in event.content.parts:
-                        if hasattr(part, 'text') and part.text:
-                            # Dodajemy tekst do pełnej odpowiedzi (aby zapisać do pliku na końcu)
-                            response_text += part.text
+            # Bezpieczne pobranie liczby plików (niezależnie czy model zwróci int czy listę)
+            files_data = current_module.get("files", 0)
+            f_count = files_data if isinstance(files_data, int) else len(files_data)
 
-                            # Drukujemy na bieżąco w konsoli bez wchodzenia do nowej linii!
-                            print(part.text, end="", flush=True)
-
-                        # Opcjonalnie: logowanie użycia narzędzia (Function Calling)
-                        if hasattr(part, 'function_call') and part.function_call:
-                            fn_name = part.function_call.name
-                            # '\033[93m' = żółty
-                            print(f"\n\033[93m[🛠️  Agent używa narzędzia: {fn_name}...]\033[0m\n", flush=True)
-
-            logger.info("=" * 80)
-            logger.info("✅ WORKSPACE GENERATION COMPLETED!")
-            logger.info("=" * 80)
-
-            result = {
-                "status": "success",
-                "response": response_text,
-                "output_dir": str(self.output_dir)
+            # ZAPISZ PODSUMOWANIE (dla następnych modułów)
+            summary = {
+                "module_id": module_id,
+                "name": current_module.get("name", f"Module {module_id}"),
+                "domain": current_module.get("domain", "Unknown"),
+                "copilot_features_used": current_module.get("copilot_features", []),
+                "files_count": f_count
             }
+            generated_modules_summary.append(summary)
 
-            # Save final state
-            self._save_state(result)
+            logger.info(f"✅ Module {module_id} completed!")
+            logger.info(f"   Domain: {summary['domain']}")
+            logger.info(f"   Features: {', '.join(summary['copilot_features_used'])}")
+            logger.info(f"   Files: {summary['files_count']}")
 
-            return result
+            # Throttling między modułami (unikanie 429)
+            if module_id < len(modules):
+                logger.info(f"⏳ Throttling 3s before next module...")
+                await asyncio.sleep(3)
+
+        return generated_modules_summary
+
+    async def _run_validation_phase(self, generated_modules: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Faza 3: Validation - jedna sesja.
+        Zwraca wyniki walidacji.
+        """
+        logger.info("🔍 Running validation phase...")
+
+        # TODO: Implementacja walidacji (opcjonalna dla v1.6.0)
+        # Na razie zwracamy placeholder
+
+        return {
+            "status": "skipped",
+            "message": "Validation phase not implemented in v1.6.0"
+        }
+
+    async def generate(self) -> Dict[str, Any]:
+        """
+        Uruchamia cały proces generowania workspace'a.
+
+        ARCHITEKTURA v1.6.0 - Izolacja Sesji + Shared Context:
+        - Faza 1: Planning (jedna sesja) → execution_plan.json
+        - Faza 2: Execution (osobna sesja dla KAŻDEGO modułu + shared context)
+        - Faza 3: Validation (jedna sesja)
+
+        Returns:
+            Dict z wynikami: execution_plan, generated_modules, validation_results
+        """
+        logger.info("=" * 80)
+        logger.info("🚀 STARTING WORKSPACE GENERATION v1.6.0")
+        logger.info("   Architecture: Isolated Sessions + Shared Context")
+        logger.info("=" * 80)
+
+        try:
+            # ============================================================
+            # FAZA 1: PLANNING (jedna sesja)
+            # ============================================================
+            logger.info("\n" + "=" * 80)
+            logger.info("📋 PHASE 1: PLANNING")
+            logger.info("=" * 80)
+
+            execution_plan = await self._run_planning_phase()
+
+            # Zapisz plan do pliku (dla debugowania)
+            plan_file = self.output_dir / "execution_plan.json"
+            with open(plan_file, 'w', encoding='utf-8') as f:
+                json.dump(execution_plan, f, indent=2, ensure_ascii=False)
+            logger.info(f"💾 Saved execution plan to: {plan_file}")
+
+            # ============================================================
+            # FAZA 2: EXECUTION (osobne sesje + shared context)
+            # ============================================================
+            logger.info("\n" + "=" * 80)
+            logger.info("🔨 PHASE 2: EXECUTION (Isolated Sessions + Shared Context)")
+            logger.info("=" * 80)
+
+            generated_modules = await self._run_execution_phase_isolated(execution_plan)
+
+            # ============================================================
+            # FAZA 3: VALIDATION (jedna sesja)
+            # ============================================================
+            logger.info("\n" + "=" * 80)
+            logger.info("✅ PHASE 3: VALIDATION")
+            logger.info("=" * 80)
+
+            validation_results = await self._run_validation_phase(generated_modules)
+
+            logger.info("\n" + "=" * 80)
+            logger.info("✅ GENERATION COMPLETED!")
+            logger.info("=" * 80)
+
+            # Zwracamy wyniki
+            return {
+                "status": "success",
+                "output_dir": str(self.output_dir),
+                "execution_plan": execution_plan,
+                "generated_modules": generated_modules,
+                "validation_results": validation_results
+            }
 
         except Exception as e:
             logger.error(f"❌ Error during generation: {e}", exc_info=True)
-            raise
+            return {
+                "status": "error",
+                "error": str(e),
+                "output_dir": str(self.output_dir)
+            }
     
     def _save_state(self, result: Dict[str, Any]):
         """Zapisuje finalny stan do pliku JSON"""

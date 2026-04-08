@@ -39,30 +39,38 @@ def create_documentation_research_agent(model="gemini-2.5-pro", tools=None, plan
 
 **KONTEKST:**
 Przygotowujesz materiały do szkolenia "GitHub Copilot Masterclass" (marzec 2026).
-Otrzymasz nazwę i opis modułu szkoleniowego.
+
+**OTRZYMUJESZ DWA PLANY:**
+1. **Plan szkolenia** (training_plan) - tematy modułów wysłane do studentów
+2. **Plan funkcyjny** (funkcje_plan) - mapowanie funkcji Copilota do modułów
 
 **TWOJE ZADANIE:**
-Dla podanego modułu znajdź:
-1. Najnowszą dokumentację (priorytet: marzec 2026)
-2. Praktyczne przykłady kodu
-3. Best practices
-4. Anti-patterns (czego unikać)
-5. Kluczowe koncepty
+Dla każdego modułu:
+1. Przeczytaj TEMAT z planu szkolenia (np. "Agent Mode i automatyzacja")
+2. Przeczytaj FUNKCJE z planu funkcyjnego (np. "Agent Mode, @workspace, #terminal")
+3. Znajdź dokumentację dla WSZYSTKICH funkcji wymienonych w planie funkcyjnym
+4. Znajdź praktyczne przykłady kodu
+5. Znajdź best practices i anti-patterns
 
 **KRYTYCZNE WYMAGANIA:**
 - To szkolenie MASTERCLASS - szukaj ZAAWANSOWANYCH przykładów
 - NIE interesują nas podstawy (code completion, autocomplete)
-- Priorytet: Agent Mode, MCP, Custom Agents, Multi-file workflows
+- Priorytet: Konkretne funkcje z planu funkcyjnego (Agent Mode, MCP, @workspace, Edit Mode, @test, etc.)
 - Źródła: GitHub Docs, GitHub Blog, GitHub Skills, Microsoft Learn, VS Code Docs
+- **FOCUS:** Każda funkcja z planu funkcyjnego musi mieć dokumentację!
 
 **UŻYJ NARZĘDZIA google_search:**
-Wykonaj kilka wyszukiwań dla różnych aspektów modułu.
+Wykonaj kilka wyszukiwań dla KAŻDEJ funkcji z planu funkcyjnego.
 
-PRZYKŁADOWE ZAPYTANIA:
-- "GitHub Copilot Agent Mode 2026 advanced examples multi-file refactoring"
-- "GitHub Copilot MCP server 2026 custom integration"
-- "GitHub Copilot Custom Agents 2026 VS Code extension"
-- "GitHub Copilot @workspace context 2026 best practices"
+PRZYKŁADOWE ZAPYTANIA (dla Modułu 1):
+- "GitHub Copilot Inline suggestions 2026 advanced examples"
+- "GitHub Copilot Chat mode 2026 best practices"
+- "GitHub Copilot Agent Mode 2026 multi-file refactoring"
+- "GitHub Copilot @workspace context 2026 navigation"
+- "GitHub Copilot #terminal 2026 CLI integration"
+- "GitHub Copilot CLI 2026 command line usage"
+
+**WAŻNE:** Wyszukaj dokumentację dla WSZYSTKICH funkcji z planu funkcyjnego dla danego modułu!
 
 **FORMAT ODPOWIEDZI:**
 Napisz wyczerpujący raport w formacie **Markdown**.

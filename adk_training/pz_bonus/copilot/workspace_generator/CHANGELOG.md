@@ -1,5 +1,143 @@
 # 📝 CHANGELOG - Workspace Generator
 
+## v1.6.0 (2026-03-11) - Izolacja Sesji + Bugfixy
+
+### 🔧 Naprawa Tool Calling (KRYTYCZNA!):
+- **Problem:** Model generował kod w tekście zamiast wywoływać `create_file`
+- **Przyczyna:** Sprzeczne instrukcje: "wywołaj create_file" ORAZ "ZWRÓĆ TYLKO KOD"
+- **Rozwiązanie:**
+  - Usunięto wymóg zwracania kodu w tekście
+  - Dodano wyraźną instrukcję: "POD ŻADNYM POZOREM NIE WKLEJAJ KODU DO CZATU"
+  - Agent ma zwracać TYLKO krótkie podsumowanie (lista plików)
+  - Cały kod idzie przez narzędzie `create_file`
+
+### ✅ Załatanie LoopController (ZAIMPLEMENTOWANE!):
+- **Problem:** LoopController przepuszczał iterację mimo że pliki nie powstały
+- **Rozwiązanie:**
+  - Sprawdzanie faktycznie utworzonych plików na dysku
+  - Blokowanie iteracji jeśli `files_created == 0`
+  - Dodanie feedback do stanu: "KRYTYCZNY BŁĄD: Nie użyłeś narzędzia create_file!"
+
+### ✅ Ożywienie YAML Config (ZAIMPLEMENTOWANE!):
+- **Problem:** `agents_config.yaml` był ignorowany
+- **Rozwiązanie:**
+  - Wczytywanie YAML w `__init__` (PyYAML)
+  - Przekazywanie `config` do wszystkich agentów
+  - Używanie `temperature` z config:
+    - PolyglotCodeAgent: 0.7 (default, kreatywność)
+    - TrainingValueCritic: 0.3 (default, deterministyczność)
+
+### ✅ Izolacja Sesji + Shared Context (ZAIMPLEMENTOWANE!):
+- **Problem:** Zanik pamięci po 3-4 modułach (jedna sesja dla wszystkich)
+- **Rozwiązanie - Hybrydowa architektura:**
+  - **Faza 1: Planning** (jedna sesja) → `execution_plan.json`
+  - **Faza 2: Execution** (osobna sesja dla KAŻDEGO modułu)
+    - Każdy moduł dostaje CZYSTĄ sesję (brak zanikania pamięci)
+    - Przekazywanie `previous_modules_summary` w state (unikanie duplikacji)
+    - Przekazywanie `project_guidelines` (spójność)
+    - Przekazywanie `current_module` (kontekst)
+  - **Faza 3: Validation** (jedna sesja)
+- **Korzyści:**
+  - ✅ Czysty umysł dla każdego modułu (zawsze pamięta o `create_file`)
+  - ✅ Unikanie duplikacji klas (widzi poprzednie moduły w summary)
+  - ✅ Spójność (jednolite standardy z `project_guidelines`)
+  - ✅ Różnorodność (każdy moduł w innej domenie)
+- **State przekazywany do każdej sesji:**
+  ```python
+  {
+    "module_id": 3,
+    "execution_plan": {...},  # Pełny plan
+    "training_plan": "...",
+    "funkcje_plan": "...",
+    "previous_modules_summary": [  # KLUCZOWE!
+      {"module_id": 1, "domain": "E-commerce", "classes": ["Treasure", "Pirate"]},
+      {"module_id": 2, "domain": "Banking", "classes": ["Account", "Transaction"]}
+    ],
+    "project_guidelines": {  # Spójność
+      "java_version": "17",
+      "spring_boot_version": "3.2.0",
+      ...
+    },
+    "current_module": {  # Kontekst obecnego modułu
+      "domain": "Healthcare",
+      "copilot_features": ["Edit Mode", "Working Set"],
+      ...
+    }
+  }
+  ```
+
+### 🐛 Bugfixy (KRYTYCZNE!):
+1. **Typ narzędzi (Dict → List):**
+   - Problem: `self._initialize_tools()` zwraca Dict, ADK wymaga List
+   - Rozwiązanie: `exec_tools = list(exec_tools_dict.values())`
+
+2. **State Injection (current_module.domain):**
+   - Problem: `{{{{current_module.domain}}}}` nie działa (Dict nie ma atrybutu .domain)
+   - Rozwiązanie: Wyciągnięcie do osobnego pola `current_module_domain` w state
+
+3. **Zahardkodowana ścieżka ./output:**
+   - Problem: LoopController zawsze szukał w `./output`, ignorując `--output-dir`
+   - Rozwiązanie: Przekazywanie `output_dir` w state, używanie w LoopController
+
+4. **Zmartwychwstanie Monolitu:**
+   - Problem: `_run_planning_phase()` budowała cały orchestrator (8 modułów!)
+   - Rozwiązanie: Bezpośrednie budowanie PlanningPhase bez orchestratora
+
+---
+
+## v1.5.1 (2026-03-11) - Różnorodność domen
+
+### 🎯 Naprawa duplikacji klas:
+- **Problem:** Moduły 4, 5, 6 generowały te same klasy (InsurancePolicy, InsurancePolicyService, InsurancePolicyRepository)
+- **Przyczyna:** Brak wyraźnej instrukcji o różnorodności domen w prompcie
+- **Rozwiązanie:**
+  - Dodano mapowanie domen do modułów w `PolyglotCodeAgent`:
+    - Moduł 1: E-commerce / Pirate Treasure Shop
+    - Moduł 2: Banking / Financial Services
+    - Moduł 3: Healthcare / Medical Records
+    - Moduł 4: Logistics / Shipping & Delivery
+    - Moduł 5: HR / Employee Management
+    - Moduł 6: Real Estate / Property Management
+    - Moduł 7: Education / Online Learning Platform
+    - Moduł 8: Social Media / Content Platform
+  - Dodano czerwoną flagę w `TrainingValueCritic`: "Używa tych samych klas co poprzednie moduły"
+  - Wyraźna instrukcja: "NIE używaj klas z poprzednich modułów! Każdy moduł to NOWY projekt!"
+
+### 🔧 Zmiany techniczne:
+- `module_generator.py`: Dodano sekcję "RÓŻNORODNOŚĆ DOMEN" z mapowaniem
+- `training_value_critic.py`: Dodano czerwone flagi dla duplikacji klas i braku różnorodności
+
+---
+
+## v1.5.0 (2026-03-11) - Training Value Critic + Plan Funkcyjny
+
+### 🎓 Nowy system szkoleniowy:
+- **TrainingValueCritic:** Nowy krytyk z wysokim common sense
+  - Sprawdza czy ćwiczenie uczy konkretnej funkcji Copilota
+  - Wykrywa przykładowe odpowiedzi (czerwona flaga!)
+  - Sprawdza dublowanie z innymi ćwiczeniami
+  - Ocenia wartość praktyczną i poziom trudności
+  - Score 1.0-10.0 (8.0+ = approved)
+- **Plan funkcyjny:** `funkcje_copilot_plan.md`
+  - Mapowanie funkcji Copilota do 8 modułów
+  - Inline, Chat, Agent Mode, @workspace, Edit Mode, @test, MCP, Custom Agents
+  - Moduły dodatkowe: CLI, DevOps, Dokumentacja, Advanced
+- **Zasady generowania:**
+  - Nie generujemy przykładowych odpowiedzi
+  - Konkretne zadania ("Użyj @workspace do...")
+  - Małe przykłady (focus na funkcji)
+  - Wartość szkoleniowa (każde ćwiczenie uczy)
+
+### 🔧 Zmiany techniczne:
+- `module_generator.py`: TrainingValueCritic zamiast SyntaxCritic
+- `LoopController`: Sprawdza `training_critique` zamiast `critique`
+- `track_iteration`: Inicjalizuje `training_critique` w stanie
+- `main.py`: Ładuje OBA plany (`training_plan` + `funkcje_plan`) i przekazuje do state
+- `documentation_research_agent.py`: Wyszukuje dokumentację dla WSZYSTKICH funkcji z planu funkcyjnego
+- `module_structure_planner.py`: Projektuje pliki tak, żeby każdy uczył konkretnej funkcji
+
+---
+
 ## v1.4.3 (2026-03-11) - Rozdzielenie Research od Formatowania
 
 ### ✅ Zmiany:

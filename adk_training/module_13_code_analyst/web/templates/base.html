@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Code Analyst{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Code Analyst</a>
+            <span class="subtitle">ADK Module 13 &mdash; Persistent RAG Web UI</span>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <script>
+        // Render markdown in agent chat responses after HTMX swap
+        marked.setOptions({ breaks: true, gfm: true });
+        document.addEventListener('htmx:afterSwap', function(e) {
+            e.detail.target.querySelectorAll('[data-markdown]').forEach(function(el) {
+                var raw = el.textContent;
+                el.innerHTML = marked.parse(raw);
+                el.removeAttribute('data-markdown');
+            });
+        });
+    </script>
+</body>
+</html>

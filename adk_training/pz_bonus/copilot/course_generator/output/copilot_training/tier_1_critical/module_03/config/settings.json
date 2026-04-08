@@ -1,0 +1,14 @@
+{
+  "github.copilot.advanced": {
+    "agentHooks": {
+      "onCodeGenerated": {
+        "command": "npm run format-code -- --file {{file_path}}",
+        "description": "Formatuje wygenerowany kod przy użyciu Spotless."
+      },
+      "onPromptRun": {
+        "command": "python ./scripts/validate_license.py {{project_root}}",
+        "description": "Sprawdza obecność pliku licencji przed uruchomieniem promptu."
+      }
+    }
+  }
+}
