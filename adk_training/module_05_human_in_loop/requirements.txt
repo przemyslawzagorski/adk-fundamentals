@@ -1,0 +1,9 @@
+# Module 05: Human-in-the-Loop Agent Dependencies
+# ================================================
+
+# Google ADK - Agent Development Kit
+google-adk>=0.1.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+

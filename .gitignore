@@ -50,3 +50,15 @@ Thumbs.db
 # Logs
 *.log
 
+# ADK local sessions
+**/.adk/
+
+# Training: solutions & theory (released incrementally)
+**/agent_solution.py
+**/teoria.md
+
+# Module 05 solutions/spoilers
+adk_training/module_05_human_in_loop/FINAL_SOLUTION.md
+adk_training/module_05_human_in_loop/FIXES_APPLIED.md
+adk_training/module_05_human_in_loop/HOW_IT_WORKS.md
+
