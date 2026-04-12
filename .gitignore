@@ -28,7 +28,8 @@ wheels/
 venv/
 ENV/
 env/
-.venv
+.venv*
+.venv312/
 
 # IDE
 .idea/
