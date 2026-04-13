@@ -1,0 +1,12 @@
+# Module 8: Loop Agent with Critique - The Perfectionist's Loop
+# ADK Training - Iterative refinement pattern
+
+# Core ADK
+google-adk>=1.0.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Required for output_schema
+pydantic>=2.0.0
+
