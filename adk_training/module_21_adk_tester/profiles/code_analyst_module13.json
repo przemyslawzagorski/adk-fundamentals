@@ -1,0 +1,540 @@
+{
+  "app_name": "Code Analyst",
+  "app_url": "http://127.0.0.1:8088",
+  "description": "FastAPI + HTMX web UI do analizy kodu z RAG (LlamaIndex) i agentami Google ADK. Dashboard z repozytoriami, wyszukiwanie semantyczne, chat z agentem, 9 workflow'ów.",
+  "discovered_at": "2026-04-12T00:00:00",
+  "pages": [
+    {
+      "page_id": "dashboard",
+      "url_pattern": "/",
+      "title": "Dashboard",
+      "description": "Strona główna — grid z kartami repozytoriów, formularz dodawania nowego repo",
+      "nav_hint": "Otwórz http://127.0.0.1:8088/",
+      "elements": [
+        {
+          "selector_hint": "h1",
+          "element_type": "text",
+          "label": "Code Analyst",
+          "description": "Nagłówek strony",
+          "interactable": false
+        },
+        {
+          "selector_hint": ".repo-card",
+          "element_type": "card",
+          "label": "Karta repozytorium",
+          "description": "Karta z nazwą repo, statusem, liczbą plików/chunków. Kliknięcie przenosi na stronę repo.",
+          "interactable": true
+        },
+        {
+          "selector_hint": "form[hx-post='/repos']",
+          "element_type": "form",
+          "label": "Dodaj repozytorium",
+          "description": "Formularz z polami: nazwa, ścieżka, opis. Przycisk Dodaj.",
+          "interactable": true
+        },
+        {
+          "selector_hint": "input[name='name']",
+          "element_type": "input",
+          "label": "Nazwa repozytorium",
+          "description": "Pole tekstowe — nazwa nowego repo",
+          "interactable": true
+        },
+        {
+          "selector_hint": "input[name='path']",
+          "element_type": "input",
+          "label": "Ścieżka",
+          "description": "Pole tekstowe — ścieżka do katalogu z kodem",
+          "interactable": true
+        },
+        {
+          "selector_hint": "input[name='description']",
+          "element_type": "input",
+          "label": "Opis",
+          "description": "Pole tekstowe — opcjonalny opis",
+          "interactable": true
+        },
+        {
+          "selector_hint": "button[type='submit']",
+          "element_type": "button",
+          "label": "Dodaj",
+          "description": "Przycisk submit formularza dodawania repo",
+          "interactable": true
+        }
+      ],
+      "screenshot_ref": ""
+    },
+    {
+      "page_id": "repo_detail",
+      "url_pattern": "/repos/{id}",
+      "title": "Repo Detail",
+      "description": "Strona szczegółów repozytorium — statystyki, reindeksacja, wyszukiwanie semantyczne, chat, 9 workflow'ów",
+      "nav_hint": "Z dashboard kliknij kartę repozytorium",
+      "elements": [
+        {
+          "selector_hint": "#stats-panel",
+          "element_type": "text",
+          "label": "Statystyki",
+          "description": "Panel ze statystykami: pliki, chunki, status, data indeksacji",
+          "interactable": false
+        },
+        {
+          "selector_hint": "button.reindex-btn",
+          "element_type": "button",
+          "label": "Reindeksuj",
+          "description": "Przycisk uruchamiający reindeksację kodu repo",
+          "interactable": true
+        },
+        {
+          "selector_hint": "input[name='query']",
+          "element_type": "input",
+          "label": "Szukaj w kodzie...",
+          "description": "Pole wyszukiwania semantycznego RAG — wpisz zapytanie NLP",
+          "interactable": true
+        },
+        {
+          "selector_hint": "button#search-btn",
+          "element_type": "button",
+          "label": "Szukaj",
+          "description": "Przycisk wyszukiwania semantycznego",
+          "interactable": true
+        },
+        {
+          "selector_hint": "#search-results",
+          "element_type": "text",
+          "label": "Wyniki wyszukiwania",
+          "description": "Kontener HTMX — dynamicznie ładowane wyniki RAG z kodem i score",
+          "interactable": false
+        },
+        {
+          "selector_hint": "input#chat-input",
+          "element_type": "input",
+          "label": "Wiadomość do agenta...",
+          "description": "Pole chatu z agentem AI (SequentialAgent pipeline: code_analyst → solution_architect)",
+          "interactable": true
+        },
+        {
+          "selector_hint": "button#chat-send",
+          "element_type": "button",
+          "label": "Wyślij",
+          "description": "Wyślij wiadomość do chatu z agentem",
+          "interactable": true
+        },
+        {
+          "selector_hint": "#chat-messages",
+          "element_type": "text",
+          "label": "Historia chatu",
+          "description": "Kontener z wiadomościami user/assistant w formacie Markdown (rendered by marked.js)",
+          "interactable": false
+        },
+        {
+          "selector_hint": "button#chat-reset",
+          "element_type": "button",
+          "label": "Reset sesji",
+          "description": "Resetuje sesję chatu (nowa sesja agenta)",
+          "interactable": true
+        },
+        {
+          "selector_hint": ".workflow-card",
+          "element_type": "card",
+          "label": "Workflow card",
+          "description": "Karta workflow — 9 scenariuszy: code_review, refactoring, security_audit, architecture, optimization, documentation, bug_hunt, testing_strategy, tech_debt",
+          "interactable": true
+        },
+        {
+          "selector_hint": "#workflow-results",
+          "element_type": "text",
+          "label": "Wyniki workflow",
+          "description": "Kontener na wyniki uruchomionego workflow'u — dynamicznie ładowane przez HTMX",
+          "interactable": false
+        }
+      ],
+      "screenshot_ref": ""
+    }
+  ],
+  "test_flows": [
+    {
+      "flow_id": "flow_dashboard_loads",
+      "name": "Dashboard ładuje się poprawnie",
+      "description": "Sprawdzenie czy strona główna ładuje się bez błędów, wyświetla nagłówek i karty repozytoriów",
+      "page_id": "dashboard",
+      "steps": [
+        {
+          "step_id": "step_1",
+          "action": "navigate",
+          "target": "http://127.0.0.1:8088/",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Strona załadowana, widoczny nagłówek Code Analyst"
+        },
+        {
+          "step_id": "step_2",
+          "action": "verify_visible",
+          "target": "h1",
+          "value": "",
+          "wait_seconds": 0,
+          "expected": "Nagłówek Code Analyst widoczny"
+        },
+        {
+          "step_id": "step_3",
+          "action": "verify_visible",
+          "target": ".repo-card",
+          "value": "",
+          "wait_seconds": 0,
+          "expected": "Przynajmniej jedna karta repozytorium widoczna"
+        }
+      ],
+      "success_criteria": [
+        "Strona ładuje się bez błędu 500",
+        "Nagłówek Code Analyst widoczny",
+        "Karty repozytoriów wyświetlone"
+      ],
+      "priority": "critical",
+      "timeout_seconds": 15
+    },
+    {
+      "flow_id": "flow_navigate_to_repo",
+      "name": "Nawigacja: Dashboard → Repo",
+      "description": "Kliknięcie karty repo przenosi na stronę szczegółów",
+      "page_id": "dashboard",
+      "steps": [
+        {
+          "step_id": "step_1",
+          "action": "navigate",
+          "target": "http://127.0.0.1:8088/",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Dashboard załadowany"
+        },
+        {
+          "step_id": "step_2",
+          "action": "click",
+          "target": ".repo-card (pierwsza karta)",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Przekierowanie na stronę /repos/{id}"
+        },
+        {
+          "step_id": "step_3",
+          "action": "verify_visible",
+          "target": "input[name='query']",
+          "value": "",
+          "wait_seconds": 0,
+          "expected": "Pole wyszukiwania widoczne na stronie repo"
+        }
+      ],
+      "success_criteria": [
+        "Nawigacja działa płynnie",
+        "Strona repo ładuje się poprawnie",
+        "Sekcja wyszukiwania i chatu widoczna"
+      ],
+      "priority": "critical",
+      "timeout_seconds": 15
+    },
+    {
+      "flow_id": "flow_rag_search",
+      "name": "Wyszukiwanie RAG semantyczne",
+      "description": "Wpisanie zapytania w pole wyszukiwania i sprawdzenie wyników RAG",
+      "page_id": "repo_detail",
+      "steps": [
+        {
+          "step_id": "step_1",
+          "action": "navigate",
+          "target": "http://127.0.0.1:8088/",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Dashboard"
+        },
+        {
+          "step_id": "step_2",
+          "action": "click",
+          "target": ".repo-card (pierwsza karta)",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Strona repo"
+        },
+        {
+          "step_id": "step_3",
+          "action": "type",
+          "target": "input[name='query']",
+          "value": "autoryzacja JWT token",
+          "wait_seconds": 0,
+          "expected": "Tekst wpisany w pole wyszukiwania"
+        },
+        {
+          "step_id": "step_4",
+          "action": "click",
+          "target": "button#search-btn (lub Enter)",
+          "value": "",
+          "wait_seconds": 8,
+          "expected": "Wyniki wyszukiwania załadowane przez HTMX"
+        },
+        {
+          "step_id": "step_5",
+          "action": "verify_visible",
+          "target": "#search-results",
+          "value": "",
+          "wait_seconds": 0,
+          "expected": "Wyniki RAG z fragmentami kodu i score widoczne"
+        }
+      ],
+      "success_criteria": [
+        "Wyniki wyszukiwania pojawiają się po kliknięciu Szukaj",
+        "Wyniki zawierają fragmenty kodu z score",
+        "HTMX dynamicznie ładuje wyniki bez przeładowania strony"
+      ],
+      "priority": "critical",
+      "timeout_seconds": 30
+    },
+    {
+      "flow_id": "flow_chat_agent",
+      "name": "Chat z agentem AI",
+      "description": "Wysłanie wiadomości do chatu i sprawdzenie odpowiedzi agenta (SequentialAgent pipeline)",
+      "page_id": "repo_detail",
+      "steps": [
+        {
+          "step_id": "step_1",
+          "action": "navigate",
+          "target": "http://127.0.0.1:8088/",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Dashboard"
+        },
+        {
+          "step_id": "step_2",
+          "action": "click",
+          "target": ".repo-card (pierwsza karta)",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Strona repo"
+        },
+        {
+          "step_id": "step_3",
+          "action": "type",
+          "target": "input#chat-input",
+          "value": "Jak działa autoryzacja w tym projekcie?",
+          "wait_seconds": 0,
+          "expected": "Tekst wpisany w pole chatu"
+        },
+        {
+          "step_id": "step_4",
+          "action": "click",
+          "target": "button#chat-send",
+          "value": "",
+          "wait_seconds": 20,
+          "expected": "Odpowiedź agenta pojawia się w kontenerze chat-messages"
+        },
+        {
+          "step_id": "step_5",
+          "action": "verify_visible",
+          "target": "#chat-messages .assistant-message",
+          "value": "",
+          "wait_seconds": 0,
+          "expected": "Wiadomość asystenta widoczna, zawiera analizę kodu"
+        }
+      ],
+      "success_criteria": [
+        "Agent odpowiada merytorycznie",
+        "Odpowiedź renderowana jako Markdown",
+        "Brak błędów timeout",
+        "Pipeline code_analyst → solution_architect działa"
+      ],
+      "priority": "critical",
+      "timeout_seconds": 60
+    },
+    {
+      "flow_id": "flow_workflow_code_review",
+      "name": "Workflow: Code Review",
+      "description": "Uruchomienie workflow'u code_review i sprawdzenie wyników",
+      "page_id": "repo_detail",
+      "steps": [
+        {
+          "step_id": "step_1",
+          "action": "navigate",
+          "target": "http://127.0.0.1:8088/",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Dashboard"
+        },
+        {
+          "step_id": "step_2",
+          "action": "click",
+          "target": ".repo-card (pierwsza karta)",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Strona repo"
+        },
+        {
+          "step_id": "step_3",
+          "action": "scroll",
+          "target": ".workflow-card",
+          "value": "",
+          "wait_seconds": 1,
+          "expected": "Sekcja workflow'ów widoczna"
+        },
+        {
+          "step_id": "step_4",
+          "action": "click",
+          "target": "workflow-card code_review",
+          "value": "",
+          "wait_seconds": 30,
+          "expected": "Wynik workflow'u załadowany przez HTMX w #workflow-results"
+        },
+        {
+          "step_id": "step_5",
+          "action": "verify_visible",
+          "target": "#workflow-results",
+          "value": "",
+          "wait_seconds": 0,
+          "expected": "Wynik code review z analizą kodu"
+        }
+      ],
+      "success_criteria": [
+        "Workflow uruchamia się po kliknięciu karty",
+        "Wynik zawiera analizę code review",
+        "HTMX ładuje wynik dynamicznie"
+      ],
+      "priority": "normal",
+      "timeout_seconds": 60
+    },
+    {
+      "flow_id": "flow_chat_reset",
+      "name": "Reset sesji chatu",
+      "description": "Reset chatu i sprawdzenie czy sesja jest wyczyszczona",
+      "page_id": "repo_detail",
+      "steps": [
+        {
+          "step_id": "step_1",
+          "action": "navigate",
+          "target": "http://127.0.0.1:8088/",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Dashboard"
+        },
+        {
+          "step_id": "step_2",
+          "action": "click",
+          "target": ".repo-card (pierwsza karta)",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Strona repo"
+        },
+        {
+          "step_id": "step_3",
+          "action": "type",
+          "target": "input#chat-input",
+          "value": "test message",
+          "wait_seconds": 0,
+          "expected": "Tekst wpisany"
+        },
+        {
+          "step_id": "step_4",
+          "action": "click",
+          "target": "button#chat-send",
+          "value": "",
+          "wait_seconds": 15,
+          "expected": "Odpowiedź agenta widoczna"
+        },
+        {
+          "step_id": "step_5",
+          "action": "click",
+          "target": "button#chat-reset",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Chat wyczyszczony, historia usunięta"
+        },
+        {
+          "step_id": "step_6",
+          "action": "verify_text",
+          "target": "#chat-messages",
+          "value": "",
+          "wait_seconds": 0,
+          "expected": "Kontener wiadomości pusty lub z komunikatem nowej sesji"
+        }
+      ],
+      "success_criteria": [
+        "Reset czyści historię chatu",
+        "Nowa sesja gotowa do rozmowy"
+      ],
+      "priority": "normal",
+      "timeout_seconds": 30
+    },
+    {
+      "flow_id": "flow_add_repo_validation",
+      "name": "Formularz: walidacja dodawania repo",
+      "description": "Próba dodania repo z pustym formularzem lub istniejącą nazwą",
+      "page_id": "dashboard",
+      "steps": [
+        {
+          "step_id": "step_1",
+          "action": "navigate",
+          "target": "http://127.0.0.1:8088/",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Dashboard"
+        },
+        {
+          "step_id": "step_2",
+          "action": "type",
+          "target": "input[name='name']",
+          "value": "Sample Project",
+          "wait_seconds": 0,
+          "expected": "Nazwa wpisana (duplikat istniejącego repo)"
+        },
+        {
+          "step_id": "step_3",
+          "action": "type",
+          "target": "input[name='path']",
+          "value": "C:\\some\\path",
+          "wait_seconds": 0,
+          "expected": "Ścieżka wpisana"
+        },
+        {
+          "step_id": "step_4",
+          "action": "click",
+          "target": "button[type='submit'] Dodaj",
+          "value": "",
+          "wait_seconds": 5,
+          "expected": "Komunikat o duplikacie lub błąd walidacji"
+        }
+      ],
+      "success_criteria": [
+        "Aplikacja obsługuje duplikaty gracefully",
+        "Brak crash/500 error"
+      ],
+      "priority": "low",
+      "timeout_seconds": 15
+    },
+    {
+      "flow_id": "flow_css_styles",
+      "name": "Style CSS ładują się poprawnie",
+      "description": "Sprawdzenie czy static/style.css jest załadowany i strona wygląda poprawnie",
+      "page_id": "dashboard",
+      "steps": [
+        {
+          "step_id": "step_1",
+          "action": "navigate",
+          "target": "http://127.0.0.1:8088/",
+          "value": "",
+          "wait_seconds": 3,
+          "expected": "Dashboard z prawidłowym layoutem"
+        },
+        {
+          "step_id": "step_2",
+          "action": "verify_visible",
+          "target": "styled layout (karty mają tło, padding, cienie)",
+          "value": "",
+          "wait_seconds": 0,
+          "expected": "Layout ostylowany — nie surowy HTML"
+        }
+      ],
+      "success_criteria": [
+        "CSS załadowany (strona ostylowana)",
+        "Karty repo mają wizualny styl",
+        "Layout jest responsywny/czytelny"
+      ],
+      "priority": "low",
+      "timeout_seconds": 10
+    }
+  ],
+  "notes": "Aplikacja używa HTMX do dynamicznego ładowania wyników (search, chat, workflows) bez pełnych przeładowań. Odpowiedzi agenta AI mogą trwać 15-30 sekund. Indeksacja RAG wymaga Vertex AI API. Serwer uruchamiany przez: cd module_13_code_analyst/web && python app.py (port 8088)."
+}
