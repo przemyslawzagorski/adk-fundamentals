@@ -1,0 +1,28 @@
+{
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.advanced": {
+    "debug.overrideEngine": false,
+    "debug.testOverride": false,
+    "debug.logEngineResponses": false,
+    "inlineSuggest.enable": true,
+    
+  },
+  "github.copilot.completions.enabled": true,
+  "github.copilot.chat.enabled": true,
+  "github.copilot.editor.suggestions.enabled": true,
+  "github.copilot.locale": "pl",
+  "github.copilot.proxy": "",
+  "github.copilot.code.forceMoveToInlineChat": false,
+  "github.copilot.contentExclusions": {
+    "excludeSources": [
+      "**/node_modules/**",
+      "**/target/**",
+      "**/build/**",
+      "**/.git/**",
+      "**/.vscode/**",
+      "**/.idea/**",
+      "**/dist/**",
+      "**/*.log"
+    ]
+  }
+}

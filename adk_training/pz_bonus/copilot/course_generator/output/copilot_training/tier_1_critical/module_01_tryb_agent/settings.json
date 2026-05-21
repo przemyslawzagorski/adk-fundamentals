@@ -1,0 +1,25 @@
+{
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.debug.settings.forceBuildBeforeLaunch": true,
+  "github.copilot.advanced": {
+    "debug.overrideServers": {
+      "github.com": {
+        "chat": "https://copilot-proxy.githubusercontent.com/v1/chat"
+      }
+    }
+  },
+  "github.copilot.chat.locale": "pl-PL",
+  "github.copilot.chat.internal.debug": true,
+  "github.copilot.inlineSuggest.enable": true,
+  "github.copilot.suggestions.commands.enabled": true,
+  "github.copilot.editor.enableCodeActions": true,
+  "github.copilot.editor.preferLocalCode": true,
+  "telemetry.telemetryLevel": "off"
+}

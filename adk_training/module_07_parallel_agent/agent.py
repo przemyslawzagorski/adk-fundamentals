@@ -1,16 +1,16 @@
-"""
-Moduł 7: Agent Równoległy - "Rada Załogi"
+﻿"""
+Modu┼é 7: Agent R├│wnoleg┼éy - "Rada Za┼éogi"
 ==========================================
-Naucz się uruchamiać wielu agentów jednocześnie używając ParallelAgent.
+Naucz si─Ö uruchamia─ç wielu agent├│w jednocze┼Ťnie u┼╝ywaj─ůc ParallelAgent.
 
-Temat: Trzej zwiadowcy eksplorują różne kierunki równolegle,
+Temat: Trzej zwiadowcy eksploruj─ů r├│┼╝ne kierunki r├│wnolegle,
 potem Szpiegmistrz syntetyzuje ich raporty wywiadowcze.
 
 Kluczowe Koncepcje:
-- ParallelAgent uruchamia sub_agents współbieżnie (izolowane konteksty)
-- Każdy równoległy agent zapisuje do własnego output_key
-- SequentialAgent opakowuje równoległe wykonanie + syntezę
-- Wzorzec agregacji wyników
+- ParallelAgent uruchamia sub_agents wsp├│┼ébie┼╝nie (izolowane konteksty)
+- Ka┼╝dy r├│wnoleg┼éy agent zapisuje do w┼éasnego output_key
+- SequentialAgent opakowuje r├│wnoleg┼ée wykonanie + syntez─Ö
+- Wzorzec agregacji wynik├│w
 """
 
 import os
@@ -23,70 +23,70 @@ load_dotenv()
 MODEL = "gemini-2.5-flash"
 
 # =============================================================================
-# RÓWNOLEGŁY ZWIADOWCY - Trzej agenci eksplorujący jednocześnie
+# R├ôWNOLEG┼üY ZWIADOWCY - Trzej agenci eksploruj─ůcy jednocze┼Ťnie
 # =============================================================================
 
 north_scout = LlmAgent(
     model=MODEL,
     name="zwiadowca_polnocny",
-    instruction="""Jesteś PÓŁNOCNYM ZWIADOWCĄ załogi!
+    instruction="""Jeste┼Ť P├ô┼üNOCNYM ZWIADOWC─ä za┼éogi!
 
-    Twoja misja: Zwiaduj północne wody szukając:
-    - Ruchów wrogich statków
-    - Harmonogramów statków handlowych
-    - Wzorców pogodowych nadciągających z północy
-    - Fortyfikacji przybrzeżnych
+    Twoja misja: Zwiaduj p├│┼énocne wody szukaj─ůc:
+    - Ruch├│w wrogich statk├│w
+    - Harmonogram├│w statk├│w handlowych
+    - Wzorc├│w pogodowych nadci─ůgaj─ůcych z p├│┼énocy
+    - Fortyfikacji przybrze┼╝nych
 
-    Na podstawie zapytania Kapitana, dostarcz wywiad z sektora PÓŁNOCNEGO.
-    Bądź zwięzły ale dokładny. Zakończ "Zwiadowca Północny raportuje!"
+    Na podstawie zapytania Kapitana, dostarcz wywiad z sektora P├ô┼üNOCNEGO.
+    B─ůd┼║ zwi─Öz┼éy ale dok┼éadny. Zako┼äcz "Zwiadowca P├│┼énocny raportuje!"
     """,
-    description="Zwiaduje północne wody dla wywiadu",
+    description="Zwiaduje p├│┼énocne wody dla wywiadu",
     output_key="raport_polnocny"
 )
 
 south_scout = LlmAgent(
     model=MODEL,
     name="zwiadowca_poludniowy",
-    instruction="""Jesteś POŁUDNIOWYM ZWIADOWCĄ załogi!
+    instruction="""Jeste┼Ť PO┼üUDNIOWYM ZWIADOWC─ä za┼éogi!
 
-    Twoja misja: Zwiaduj południowe wody szukając:
-    - Ukrytych zatoczek i bezpiecznych portów
-    - Tras konwojów kupieckich
-    - Harmonogramów patroli marynarki
-    - Zasobów wyspiarskich
+    Twoja misja: Zwiaduj po┼éudniowe wody szukaj─ůc:
+    - Ukrytych zatoczek i bezpiecznych port├│w
+    - Tras konwoj├│w kupieckich
+    - Harmonogram├│w patroli marynarki
+    - Zasob├│w wyspiarskich
 
-    Na podstawie zapytania Kapitana, dostarcz wywiad z sektora POŁUDNIOWEGO.
-    Bądź zwięzły ale dokładny. Zakończ "Zwiadowca Południowy raportuje!"
+    Na podstawie zapytania Kapitana, dostarcz wywiad z sektora PO┼üUDNIOWEGO.
+    B─ůd┼║ zwi─Öz┼éy ale dok┼éadny. Zako┼äcz "Zwiadowca Po┼éudniowy raportuje!"
     """,
-    description="Zwiaduje południowe wody dla wywiadu",
+    description="Zwiaduje po┼éudniowe wody dla wywiadu",
     output_key="raport_poludniowy"
 )
 
 east_scout = LlmAgent(
     model=MODEL,
     name="zwiadowca_wschodni",
-    instruction="""Jesteś WSCHODNIM ZWIADOWCĄ załogi!
+    instruction="""Jeste┼Ť WSCHODNIM ZWIADOWC─ä za┼éogi!
 
-    Twoja misja: Zwiaduj wschodnie wody szukając:
-    - Okazji do ataku o wschodzie słońca
-    - Ruchów flot rybackich
-    - Aktywności miast portowych
-    - Systemów burzowych ze wschodu
+    Twoja misja: Zwiaduj wschodnie wody szukaj─ůc:
+    - Okazji do ataku o wschodzie s┼éo┼äca
+    - Ruch├│w flot rybackich
+    - Aktywno┼Ťci miast portowych
+    - System├│w burzowych ze wschodu
 
     Na podstawie zapytania Kapitana, dostarcz wywiad z sektora WSCHODNIEGO.
-    Bądź zwięzły ale dokładny. Zakończ "Zwiadowca Wschodni raportuje!"
+    B─ůd┼║ zwi─Öz┼éy ale dok┼éadny. Zako┼äcz "Zwiadowca Wschodni raportuje!"
     """,
     description="Zwiaduje wschodnie wody dla wywiadu",
     output_key="raport_wschodni"
 )
 
 # =============================================================================
-# RÓWNOLEGŁE WYKONANIE - Wszyscy zwiadowcy działają jednocześnie
+# R├ôWNOLEG┼üE WYKONANIE - Wszyscy zwiadowcy dzia┼éaj─ů jednocze┼Ťnie
 # =============================================================================
 
 parallel_scouts = ParallelAgent(
     name="grupa_zwiadowcza",
-    description="Wysyła wszystkich trzech zwiadowców jednocześnie dla maksymalnego pokrycia",
+    description="Wysy┼éa wszystkich trzech zwiadowc├│w jednocze┼Ťnie dla maksymalnego pokrycia",
     sub_agents=[north_scout, south_scout, east_scout]
 )
 
@@ -97,38 +97,38 @@ parallel_scouts = ParallelAgent(
 spymaster = LlmAgent(
     model=MODEL,
     name="szpiegmistrz",
-    instruction="""Jesteś SZPIEGMISTRZEM - mistrzem zbierania wywiadu!
+    instruction="""Jeste┼Ť SZPIEGMISTRZEM - mistrzem zbierania wywiadu!
 
-    Twoi zwiadowcy wrócili ze swoimi raportami:
+    Twoi zwiadowcy wr├│cili ze swoimi raportami:
 
-    📍 SEKTOR PÓŁNOCNY:
+    ­čôŹ SEKTOR P├ô┼üNOCNY:
     {raport_polnocny}
 
-    📍 SEKTOR POŁUDNIOWY:
+    ­čôŹ SEKTOR PO┼üUDNIOWY:
     {raport_poludniowy}
 
-    📍 SEKTOR WSCHODNI:
+    ­čôŹ SEKTOR WSCHODNI:
     {raport_wschodni}
 
-    Twój obowiązek:
-    1. Zsyntetyzuj cały wywiad w zunifikowany briefing
-    2. Zidentyfikuj najbardziej obiecującą okazję
-    3. Oznacz wszelkie niebezpieczeństwa lub konflikty między raportami
-    4. Zarekomenduj następny ruch Kapitana
+    Tw├│j obowi─ůzek:
+    1. Zsyntetyzuj ca┼éy wywiad w zunifikowany briefing
+    2. Zidentyfikuj najbardziej obiecuj─ůc─ů okazj─Ö
+    3. Oznacz wszelkie niebezpiecze┼ästwa lub konflikty mi─Ödzy raportami
+    4. Zarekomenduj nast─Öpny ruch Kapitana
 
     Sformatuj jako odpowiedni briefing wywiadowczy dla Kapitana.
     """,
-    description="Syntetyzuje wywiad od wszystkich zwiadowców w wykonalny briefing",
+    description="Syntetyzuje wywiad od wszystkich zwiadowc├│w w wykonalny briefing",
     output_key="briefing_wywiadowczy"
 )
 
 # =============================================================================
-# KOMPLETNA MISJA - Równoległy zwiad następnie synteza
+# KOMPLETNA MISJA - R├│wnoleg┼éy zwiad nast─Öpnie synteza
 # =============================================================================
 
 root_agent = SequentialAgent(
     name="misja_rozpoznawcza",
-    description="Kompletne rozpoznanie: równoległy zwiad + synteza wywiadu",
+    description="Kompletne rozpoznanie: r├│wnoleg┼éy zwiad + synteza wywiadu",
     sub_agents=[parallel_scouts, spymaster]
 )
 

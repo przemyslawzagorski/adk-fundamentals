@@ -195,8 +195,8 @@ python test_connection.py
 
 ```bash
 # Uruchom interfejs webowy
-adk web --memory_service_uri=agentengine://1234567890
-
+adk web --memory_service_uri=agentengine://2625535910594215936
+projects/28948426345/locations/us-central1/reasoningEngines/2625535910594215936
 # Otwórz w przeglądarce: http://localhost:8000
 ```
 

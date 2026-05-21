@@ -25,7 +25,8 @@ root_agent = LlmAgent(
     name=AGENT_APP_NAME,
     model=MODEL,
     description="""An agent that generates images and answer questions about the images.""",
-    instruction="""You are an agent whose job is to generate or edit an image based on the user's prompt.""",
+    instruction="""You are an agent whose job is to generate or edit an image based on the user's prompt.
+You can generate images natively - just describe what you want to create. Do NOT try to call any tool to generate images.""",
     tools=[load_artifacts],
 )
 

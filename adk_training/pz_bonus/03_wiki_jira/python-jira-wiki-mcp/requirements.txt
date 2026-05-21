@@ -1,0 +1,14 @@
+# Jira/Wiki MCP Server Requirements
+
+# FastMCP - MCP server framework
+fastmcp
+
+# HTTP requests
+requests
+
+# Environment variables
+python-dotenv
+
+# Google ADK (for agent)
+google-adk
+

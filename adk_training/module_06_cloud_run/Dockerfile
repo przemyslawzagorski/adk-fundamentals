@@ -62,5 +62,7 @@ EXPOSE 8080
 # --host=0.0.0.0 is required to accept connections from outside the container
 # --port=8080 matches Cloud Run's default PORT environment variable
 # Point to the /app/agents folder where agent.py is located
-CMD ["adk", "web", "--port=8080", "--host=0.0.0.0", "/app/agents"]
+# Przechodzimy do katalogu, gdzie skopiowano kod i uruchamiamy Uvicorn na porcie 8080
+WORKDIR /app/agents
+CMD ["uvicorn", "mcp_server:app", "--host", "0.0.0.0", "--port", "8080"]
 

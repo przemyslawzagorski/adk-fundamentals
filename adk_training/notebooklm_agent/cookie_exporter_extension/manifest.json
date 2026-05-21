@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "NotebookLM Cookie Exporter",
+  "version": "1.0",
+  "description": "Exports NotebookLM session cookies to local Python server",
+  "permissions": ["cookies", "tabs"],
+  "host_permissions": [
+    "https://*.google.com/*",
+    "http://localhost/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

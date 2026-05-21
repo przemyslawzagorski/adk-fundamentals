@@ -1,0 +1,87 @@
+{
+  "eval_set_id": "code_review_basic",
+  "name": "Code Review Agent — podstawowe scenariusze",
+  "description": "Ewaluacja code_review_agent: sprawdzamy trajectory (wywołanie count_code_lines) i strukturę odpowiedzi JSON. Próg ROUGE-1 niski (0.15) bo oceniamy czy odpowiedź zawiera kluczowe pola: quality_score, issues, recommendation.",
+  "eval_cases": [
+    {
+      "eval_id": "simple_function_no_issues",
+      "conversation": [
+        {
+          "invocation_id": "inv-001",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Przejrzyj ten kod Pythona:\n\ndef calculate_average(numbers: list[float]) -> float:\n    \"\"\"Calculate the arithmetic mean of a list of numbers.\"\"\"\n    if not numbers:\n        raise ValueError(\"Cannot calculate average of empty list\")\n    return sum(numbers) / len(numbers)\n"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "quality_score issues recommendation has_todos line_stats"
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "name": "count_code_lines",
+                "args": {
+                  "code_snippet": "def calculate_average(numbers: list[float]) -> float:\n    \"\"\"Calculate the arithmetic mean of a list of numbers.\"\"\"\n    if not numbers:\n        raise ValueError(\"Cannot calculate average of empty list\")\n    return sum(numbers) / len(numbers)\n"
+                }
+              }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "code_review_agent",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "code_with_todos",
+      "conversation": [
+        {
+          "invocation_id": "inv-002",
+          "user_content": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Przejrzyj ten kod:\n\ndef process_data(data):\n    # TODO: add input validation\n    # FIXME: handle None values\n    result = []\n    for item in data:\n        result.append(item * 2)\n    return result\n"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "quality_score issues has_todos recommendation documentation"
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              {
+                "name": "count_code_lines",
+                "args": {
+                  "code_snippet": "def process_data(data):\n    # TODO: add input validation\n    # FIXME: handle None values\n    result = []\n    for item in data:\n        result.append(item * 2)\n    return result\n"
+                }
+              }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "code_review_agent",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    }
+  ]
+}

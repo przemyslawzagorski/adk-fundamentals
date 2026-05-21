@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  code-analyst:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: code-analyst:latest
+    container_name: code-analyst
+    restart: unless-stopped
+    environment:
+      CODE_ANALYST_HOST: 0.0.0.0
+      CODE_ANALYST_PORT: 8088
+      CODE_ANALYST_LOG_JSON: "1"
+      CODE_ANALYST_LOG_LEVEL: INFO
+      # Uzupelnij w .env lub w env_file:
+      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT:-}
+      GOOGLE_CLOUD_LOCATION: ${GOOGLE_CLOUD_LOCATION:-us-central1}
+      GOOGLE_GENAI_USE_VERTEXAI: ${GOOGLE_GENAI_USE_VERTEXAI:-1}
+      CODE_ANALYST_API_KEY: ${CODE_ANALYST_API_KEY:-}
+      CODE_ANALYST_REQUIRE_AUTH: ${CODE_ANALYST_REQUIRE_AUTH:-true}
+      GOOGLE_APPLICATION_CREDENTIALS: /gcp/sa.json
+    volumes:
+      - code-analyst-data:/data
+      # Zamontuj service-account z hosta (read-only)
+      - ${GOOGLE_APPLICATION_CREDENTIALS:-./noop}:/gcp/sa.json:ro
+    ports:
+      - "8088:8088"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8088/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  code-analyst-data:

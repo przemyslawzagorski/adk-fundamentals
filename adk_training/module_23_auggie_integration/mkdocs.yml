@@ -1,0 +1,10 @@
+site_name: AI Code Concierge
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Business value: business-value.md
+  - Developer guide: developer-guide.md
+  - Cache · cost · resilience: cost-cache-resilience.md
+  - MCP server: mcp-server.md
+  - CI · GitHub Action: ci-review.md
+  - Security: security.md

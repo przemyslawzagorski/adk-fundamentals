@@ -1,0 +1,13 @@
+# Persistent RAG index storage
+index_store/
+
+# Web UI runtime data
+web_data/indices/
+web_data/repos.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env

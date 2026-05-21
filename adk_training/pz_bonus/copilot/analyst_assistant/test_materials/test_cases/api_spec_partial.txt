@@ -1,0 +1,97 @@
+API SPECIFICATION (PARTIAL DRAFT) — Document Upload Service
+=============================================================
+Version: 0.3-draft  |  Status: Work in Progress
+Last updated: 2026-03-05  |  Author: Piotr Zając (Backend Dev)
+
+NOTE: This is a PARTIAL spec. Several endpoints are still TBD.
+Frontend team should NOT start integration until v1.0 is published.
+
+## Base URL
+
+  Internal: https://clm-docs.internal.comarch.com/api/v1
+  External (via Kong): https://portal.comarch.com/api/docs/v1
+
+## Authentication
+
+  All endpoints require: Authorization: Bearer <keycloak_jwt_token>
+  Token scope required: customer:documents:write (for upload), customer:documents:read (for list/view)
+
+## Endpoints
+
+### POST /documents/upload
+
+Upload a new document.
+
+Request (multipart/form-data):
+  - file: binary (required)
+  - document_type: string (required) — one of: ID_CARD, PASSPORT, UTILITY_BILL, OTHER
+  - customer_id: string (required) — must match token subject OR be a support agent override
+
+Response 202 Accepted:
+  {
+    "document_id": "uuid",
+    "status": "SCANNING",         <- async: virus scan in progress
+    "estimated_completion_ms": 3000
+  }
+
+Response 400 Bad Request:
+  { "error": "INVALID_FORMAT", "message": "Accepted formats: PDF, JPG, JPEG, PNG" }
+  { "error": "FILE_TOO_LARGE", "message": "Maximum file size: 10 MB" }
+  { "error": "MISSING_DOCUMENT_TYPE" }
+
+Response 409 Conflict:
+  { "error": "DOCUMENT_EXISTS", "existing_document_id": "uuid", "requires_confirmation": true }
+
+### GET /documents/{document_id}/status
+
+Poll for async processing status.
+
+Response 200:
+  {
+    "document_id": "uuid",
+    "status": "SCANNING" | "ACCEPTED" | "REJECTED" | "ARCHIVED",
+    "rejection_reason": "VIRUS_DETECTED" | null,
+    "uploaded_at": "ISO8601",
+    "document_type": "ID_CARD"
+  }
+
+### GET /documents
+
+List all documents for the authenticated customer.
+
+Response 200:
+  {
+    "documents": [
+      {
+        "document_id": "uuid",
+        "document_type": "PASSPORT",
+        "status": "ACCEPTED",
+        "uploaded_at": "ISO8601",
+        "file_name": "passport_scan.pdf"
+      }
+    ],
+    "total": 3
+  }
+
+### DELETE /documents/{document_id}   [TBD — NOT IMPLEMENTED YET]
+### POST /documents/{document_id}/confirm-replace   [TBD]
+### GET /documents/{document_id}/download   [TBD — access control rules not defined]
+
+## Async Processing Flow
+
+  Upload → Virus Scan (async) → Store → Status: ACCEPTED
+                              ↓
+                          Threat found → Status: REJECTED → Alert security
+
+  Virus scan SLA: target < 5 seconds (not yet validated with chosen scanner)
+  Storage backend: TBD (Azure Blob or internal DMS)
+
+## Known Gaps in This Spec
+
+- Confirm-replace endpoint not designed yet
+- Download endpoint: access control for support agents unclear
+- Rate limiting per customer: value not agreed (discussed: 10 uploads/hour)
+- Error codes for storage failures not defined
+- Webhook/callback for status update not decided (polling vs push)
+- Maximum document count per customer: not in spec yet
+

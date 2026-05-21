@@ -57,7 +57,7 @@ try:
     # Create Agent Engine with Memory Bank configuration
     agent_engine = client.agent_engines.create(
         config={
-            "displayName": "ADK Agent Engine with Memory Bank PZ",
+            "displayName": "PZ Test ADK Agent Engine with Memory Bank PZ",
             "contextSpec": {
                 "memoryBankConfig": {
                     "generationConfig": {

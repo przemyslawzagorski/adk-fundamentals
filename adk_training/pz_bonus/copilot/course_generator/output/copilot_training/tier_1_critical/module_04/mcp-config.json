@@ -1,0 +1,33 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode-copilot-release/main/schemas/mcp-config-schema.json",
+  "agents": [
+    {
+      "id": "myJavaDevAgent",
+      "name": "Java Development Assistant",
+      "description": "Agent do wspomagania rozwoju aplikacji Java w projekcie spring-petclinic.",
+      "skills": [
+        "showProjectInfo",
+        "generateTestBoilerplate",
+        "runCheckstyle",
+        "generateJavadoc",
+        "findCodeUsage",
+        "runSingleTest",
+        "generateSqlQueries",
+        "clearLogs",
+        "generateRestController",
+        "findDeprecatedApi"
+      ],
+      "instructions": [
+        "Jesteś ekspertem w języku Java i frameworku Spring. Twoim zadaniem jest pomaganie użytkownikowi w projekcie spring-petclinic.",
+        "Używaj dostępnych umiejętności, aby efektywnie odpowiadać na zapytania użytkownika dotyczące generowania kodu, testowania, lintingu i innych zadań deweloperskich."
+      ]
+    }
+  ],
+  "copilot": {
+    "settings": {
+      "languageModels": {
+        "default": "gpt-4o"
+      }
+    }
+  }
+}

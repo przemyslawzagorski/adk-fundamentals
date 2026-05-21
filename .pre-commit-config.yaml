@@ -1,0 +1,43 @@
+repos:
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args:
+          - --baseline
+          - .secrets.baseline
+        exclude: |
+          (?x)^(
+            .*/\.venv.*/.*|
+            .*/node_modules/.*|
+            .*/site/.*|
+            .*\.lock|
+            .*\.baseline|
+            .*\.ipynb
+          )$
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=2000"]
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json
+      - id: detect-private-key
+
+  - repo: local
+    hooks:
+      - id: no-live-tokens-in-code
+        name: Zablokuj zywe tokeny bearer/ghp_/glpat-
+        entry: python tools/check_no_live_tokens.py
+        language: system
+        types: [text]
+        exclude: |
+          (?x)^(
+            \.secrets\.baseline|
+            tools/check_no_live_tokens\.py|
+            tools/export_chat\.py
+          )$

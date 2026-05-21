@@ -28,7 +28,8 @@ wheels/
 venv/
 ENV/
 env/
-.venv
+.venv*
+.venv312/
 
 # IDE
 .idea/
@@ -50,3 +51,36 @@ Thumbs.db
 # Logs
 *.log
 
+# ADK local sessions
+**/.adk/
+
+# Training: solutions & theory (released incrementally)
+**/agent_solution.py
+**/teoria.md
+
+# Module 05 solutions/spoilers
+adk_training/module_05_human_in_loop/FINAL_SOLUTION.md
+adk_training/module_05_human_in_loop/FIXES_APPLIED.md
+adk_training/module_05_human_in_loop/HOW_IT_WORKS.md
+
+# Test runner artifacts (M21 ADK Tester outputs + live-eval logs)
+/reports/
+/conversations/
+adk_training/reports/
+adk_training/conversations/
+**/eval_run.log
+
+# Runtime artifacts / generated outputs
+/artifacts/
+/videos/
+adk_training/videos/
+backend*.err
+*.err
+
+# Debug screenshots and scratch scripts
+adk_training/_adk_*.png
+adk_training/_debug_*.png
+adk_training/module_21_adk_tester/_debug_*.py
+adk_training/module_21_adk_tester/_inspect_ui*.py
+adk_training/module_21_adk_tester/_test_*.py
+adk_training/module_02_custom_tool/test_auggie.py

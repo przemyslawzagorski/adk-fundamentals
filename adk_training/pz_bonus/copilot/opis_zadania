@@ -1,0 +1,34 @@
+Czy w google adk mozna tworzyc agenty do generowania kodu ? Ew. Jak do tego podejsc. Mam plan szkolenia 2 dniowego z github copilot i teraz chcialbym stworzyc sobie system agentowy, ktory na podstawie opisu szkolenia, podzieli to ma frsgmenty i stworzy dla mnie workspace, ktory posluzy kursantom szkolenia. Jak do tego podejsc, bazuj na dokumentscji google adk (agentic ai)
+odpowiedz gemini:
+Zdecydowanie tak! Google ADK (Agent Development Kit) jest stworzony dokładnie do takich zadań. Rozbicie złożonego problemu (stworzenie całego środowiska szkoleniowego) na mniejsze, zarządzalne kroki to idealny scenariusz dla systemów wieloagentowych (Multi-Agent Systems - MAS), na których opiera się ten framework.
+
+Podejście "monolityczne" (próba stworzenia jednego agenta, który zrobi wszystko w jednym kroku) prawdopodobnie skończyłoby się chaosem. W ADK możesz i powinieneś podejść do tego architektonicznie, budując zespół wyspecjalizowanych agentów, którzy przekażą sobie pracę.
+
+Oto jak krok po kroku zaplanować taki system zgodnie z dokumentacją i dobrymi praktykami Google ADK:
+1. Zaprojektuj architekturę wieloagentową
+
+Zamiast jednego bytu, stwórz dwa współpracujące ze sobą agenty o jasnych celach:
+
+    Planner Agent (Architekt): Jego jedynym zadaniem jest analiza opisu Twojego 2-dniowego szkolenia. Na podstawie tej agendy generuje ustrukturyzowany plan (np. w formacie JSON). Dzieli szkolenie na moduły (np. dzien1_wprowadzenie, dzien2_refaktoryzacja, dzien2_testy) i określa, jakie pliki z jakim kodem będą w nich potrzebne.
+
+    Workspace Agent (Programista): Otrzymuje listę plików od Architekta. Jego celem jest wygenerowanie rzeczywistego kodu startowego (tzw. boilerplate). Jako że to szkolenie z Copilota, ten agent musi dostać specyficzny prompt: kod powinien zawierać precyzyjne komentarze docstring, luki logiczne lub celowe błędy, które kursanci będą musieli wypełnić/naprawić z pomocą AI.
+
+2. Wykorzystaj narzędzia (Tooling)
+
+Agenty w ADK to w gruncie rzeczy inteligentne modele LLM – same z siebie nie mają dostępu do Twojego dysku twardego. Musisz wyposażyć je w Narzędzia (Tools).
+
+    Aby system stworzył workspace, musisz napisać proste funkcje w Pythonie, np. create_directory(path) oraz write_file(path, content).
+
+    W ADK używasz dekoratorów, aby zamienić te funkcje w narzędzia i podpinasz je bezpośrednio pod Workspace Agenta. Możesz też sprawdzić integracje MCP (Model Context Protocol) dostępne w ADK, które oferują gotowe narzędzia do manipulacji systemem plików, ale własne, proste funkcje zazwyczaj dają największą kontrolę.
+
+3. Skonfiguruj przepływ pracy (Orchestration)
+
+ADK oferuje kilka wzorców orkiestracji (np. Sequential, Parallel, Loop, LlmAgent routing). W Twoim przypadku idealnie sprawdzi się połączenie:
+
+    Sequential Agents (Przepływ sekwencyjny): Ustalasz sztywny pipeline. Krok 1: Uruchom Plannera na tekście opisu szkolenia. Krok 2: Przekaż wynik do Workspace Agenta.
+
+    Loop Agent (Przepływ w pętli - Zalecane dla Workspace Agenta): Jeśli Planner wygeneruje listę 20 plików do stworzenia, lepiej nie prosić Workspace Agenta o napisanie ich wszystkich w jednej odpowiedzi (ryzyko halucynacji i ucięcia tekstu). Skonfiguruj system tak, aby iterował po liście z JSON-a i wywoływał Workspace Agenta dla każdego pliku osobno.
+
+4. Zarządzanie Stanem (State Management)
+
+ADK bardzo dobrze radzi sobie z przekazywaniem kontekstu. Pamiętaj, aby współdzielić "Pamięć" (State) pomiędzy agentami. Workspace Agent musi wiedzieć, w jakim języku programowania odbywa się szkolenie (czy to C#, Python, czy JS) i jaki jest ogólny cel danego ćwiczenia, aby wygenerować kod z odpowiednimi wskazówkami dla Copilota.

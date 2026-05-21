@@ -10,3 +10,6 @@ google-adk>=1.18.0
 # Environment variable management (optional, for local development)
 python-dotenv>=1.0.0
 
+fastmcp>=0.4.0
+fastapi>=0.111.0
+uvicorn>=0.30.0
