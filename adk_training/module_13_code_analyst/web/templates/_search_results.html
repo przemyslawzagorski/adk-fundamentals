@@ -1,0 +1,20 @@
+{% if results %}
+<div class="results-count">
+    Znaleziono {{ results|length }} wynikow dla &ldquo;{{ query }}&rdquo;
+</div>
+{% for r in results %}
+<div class="result-card">
+    <div class="result-header">
+        <span class="result-file">{{ r.file_path }}</span>
+        {% if r.score is defined and r.score %}
+        <span class="result-score">{{ "%.2f"|format(r.score) }}</span>
+        {% endif %}
+    </div>
+    <pre class="result-code"><code>{{ r.text }}</code></pre>
+</div>
+{% endfor %}
+{% elif results is defined %}
+<div class="empty-state">
+    Brak wynikow dla &ldquo;{{ query }}&rdquo;. Sprobuj inne zapytanie lub zaindeksuj repozytorium.
+</div>
+{% endif %}

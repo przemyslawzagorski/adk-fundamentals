@@ -1,0 +1,36 @@
+Program Szkolenia: GitHub Copilot Masterclass (Java/Spring Boot Edition)
+Zaawansowane techniki, workflow i automatyzacja
+
+📅 Dzień 1: Efektywna Praca z Copilot
+Moduł 1: Komunikacja z AI i eksploracja kodu
+● Anatomia skutecznego promptu. Konteksty: @workspace, #file, #terminal.
+● Task: Agent Mode tworzy od zera projekt API w Java (Spring Boot), dodaje zależności (Lombok, Web) i Dockerfile. Rozwiązuje problemy z portami.
+
+Moduł 2: Nawigacja i Konteksty (Zrozumieć Lewiatana)
+● Użycie @workspace do analizy rozbudowanej architektury w Javie.
+● Task: Zmiana nazwy kolumny w encji Hibernate/JPA. Obserwacja Next Edit Suggestions w warstwie repozytoriów i serwisów.
+
+Moduł 3: Chirurgiczny Refaktoring (Copilot Edits)
+● Panel Edits vs Chat. Working Set.
+● Task: Rozbicie wielkiego kontrolera `GodClassController.java` na mniejsze serwisy z wykorzystaniem Spring Dependency Injection (@Service, @Autowired). Ekstrakcja zagnieżdżonych pętli.
+
+Moduł 4: Pasy bezpieczeństwa, czyli Testowanie
+● Characterization Tests dla legacy code.
+● Task: Generowanie testów w JUnit 5. Zaawansowane mockowanie wywołań bazodanowych za pomocą Mockito na podstawie dostarczonego pliku JSON z danymi.
+
+📅 Dzień 2: Automatyzacja, Skala i Integracje zewnętrzne
+Moduł 5: Konfiguracja i Narzucanie Zasad
+● Custom Instructions na poziomie repozytorium.
+● Task: Wymuszenie standardów dla Javy w `.github/copilot-instructions.md` (np. nakaz używania Recordów z Javy 14+, wzorzec Builder, nakaz stosowania Lomboka).
+
+Moduł 6: Model Context Protocol (MCP) – Wyjście poza IDE
+● Integracja Copilot z zewnętrznymi systemami za pomocą MCP.
+● Task: Podpięcie bazy SQLite. AI analizuje schemat bazy i pisze poprawne migracje Flyway/Liquibase dla Spring Boota z poziomu czatu.
+
+Moduł 7: Wielkie Migracje, Limity AI i Custom Agents
+● Granice AI w migracjach kodu.
+● Task: Translacja i migracja specyficznej logiki biznesowej (np. algorytmu wyliczającego rabaty) z przestarzałej klasy Java do nowoczesnego skryptu w Pythonie. Tworzenie Agenta `@Reviewer`.
+
+Moduł 8: Grand Finale (React Frontend)
+● Wykorzystanie wiedzy poliglotycznej Copilota.
+● Task: Na podstawie stworzonego wcześniej API w Spring Boot (wykorzystując @workspace), użyj Agent Mode do wygenerowania nowoczesnego widoku w React (TypeScript + Vite). Agent musi stworzyć komponenty, podpiąć zapytania do API (axios) i wystartować serwer deweloperski.

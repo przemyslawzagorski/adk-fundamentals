@@ -1,0 +1,280 @@
+{
+  "run_id": "1777150531_e5e67ba8",
+  "target_url": "https://pypi.org/project/auggie-sdk/",
+  "started_at": 1777150531.6880414,
+  "finished_at": 1777150593.2212882,
+  "duration_s": 61.533246755599976,
+  "recon": {
+    "target_url": "https://pypi.org/project/auggie-sdk/",
+    "final_url": "https://pypi.org/project/auggie-sdk/",
+    "status_code": 200,
+    "response_time_ms": 638,
+    "server_header": "",
+    "technologies": [],
+    "title": "Client Challenge",
+    "forms": [],
+    "interesting_paths": [
+      {
+        "path": "/robots.txt",
+        "url": "https://pypi.org/robots.txt",
+        "status": 200,
+        "content_type": "text/plain; charset=UTF-8",
+        "size": 325
+      },
+      {
+        "path": "/sitemap.xml",
+        "url": "https://pypi.org/sitemap.xml",
+        "status": 200,
+        "content_type": "text/xml; charset=UTF-8",
+        "size": 31217
+      },
+      {
+        "path": "/.well-known/security.txt",
+        "url": "https://pypi.org/.well-known/security.txt",
+        "status": 200,
+        "content_type": "text/plain; charset=utf-8",
+        "size": 180
+      },
+      {
+        "path": "/admin",
+        "url": "https://pypi.org/admin",
+        "status": 301,
+        "content_type": "text/html; charset=UTF-8",
+        "size": 204
+      }
+    ],
+    "security_headers": {
+      "Content-Security-Policy": null,
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+      "X-Frame-Options": "deny",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": null,
+      "Permissions-Policy": "publickey-credentials-create=(self),publickey-credentials-get=(self),accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),display-capture=(),document-domain=(),encrypted-media=(),execution-while-not-rendered=(),execution-while-out-of-viewport=(),fullscreen=(),gamepad=(),geolocation=(),gyroscope=(),hid=(),identity-credentials-get=(),idle-detection=(),local-fonts=(),magnetometer=(),microphone=(),midi=(),otp-credentials=(),payment=(),picture-in-picture=(),screen-wake-lock=(),serial=(),speaker-selection=(),storage-access=(),usb=(),web-share=(),xr-spatial-tracking=()",
+      "Cross-Origin-Opener-Policy": null
+    },
+    "cookies": [
+      {
+        "name": "_fs_ch_st_FSBmUei20MqUiJb9",
+        "domain": "pypi.org",
+        "secure": false,
+        "httponly": false,
+        "samesite": null
+      }
+    ],
+    "notes": [
+      "No CSP \u2014 XSS impact will be higher.",
+      "Cookies without Secure flag: _fs_ch_st_FSBmUei20MqUiJb9"
+    ],
+    "error": null
+  },
+  "scenarios": [
+    {
+      "id": "smoke_navigation",
+      "name": "Smoke navigation",
+      "owasp": "(meta)",
+      "severity": "info",
+      "passed": true,
+      "error": null,
+      "duration_s": 16.558,
+      "video_url": "/artifacts/1777150531_e5e67ba8/smoke_navigation/video/79a7e1e62bbe47a6ed5feb52cd355758.webm",
+      "video_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\smoke_navigation\\video\\79a7e1e62bbe47a6ed5feb52cd355758.webm",
+      "har_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\smoke_navigation\\trace.har",
+      "screenshots": [
+        {
+          "path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\smoke_navigation\\screens\\01_home.png",
+          "url": "/artifacts/1777150531_e5e67ba8/smoke_navigation/screens/01_home.png"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "headers_baseline",
+      "name": "Security headers baseline",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "medium",
+      "passed": false,
+      "error": null,
+      "duration_s": 9.294,
+      "video_url": "/artifacts/1777150531_e5e67ba8/headers_baseline/video/29f32ac47dffbbdf0f412f9c11056d75.webm",
+      "video_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\headers_baseline\\video\\29f32ac47dffbbdf0f412f9c11056d75.webm",
+      "har_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\headers_baseline\\trace.har",
+      "screenshots": [
+        {
+          "path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\headers_baseline\\screens\\05_headers_baseline.png",
+          "url": "/artifacts/1777150531_e5e67ba8/headers_baseline/screens/05_headers_baseline.png"
+        }
+      ],
+      "findings": [
+        {
+          "title": "Missing Content-Security-Policy",
+          "severity": "medium",
+          "owasp": "A05:2021-Security Misconfiguration",
+          "scenario_id": "headers_baseline",
+          "evidence": {
+            "header": "Content-Security-Policy",
+            "present": false
+          }
+        },
+        {
+          "title": "Missing X-Frame-Options (clickjacking risk)",
+          "severity": "low",
+          "owasp": "A05:2021-Security Misconfiguration",
+          "scenario_id": "headers_baseline",
+          "evidence": {
+            "header": "X-Frame-Options",
+            "present": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "cookie_flags",
+      "name": "Cookie security flags",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "medium",
+      "passed": true,
+      "error": null,
+      "duration_s": 4.785,
+      "video_url": "/artifacts/1777150531_e5e67ba8/cookie_flags/video/1dad73a490cd386a539a383bb6760248.webm",
+      "video_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\cookie_flags\\video\\1dad73a490cd386a539a383bb6760248.webm",
+      "har_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\cookie_flags\\trace.har",
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "clickjacking",
+      "name": "Clickjacking via missing X-Frame-Options / frame-ancestors",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "low",
+      "passed": false,
+      "error": null,
+      "duration_s": 4.858,
+      "video_url": "/artifacts/1777150531_e5e67ba8/clickjacking/video/be82b172595c7b99f1d2ee997a88fbbc.webm",
+      "video_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\clickjacking\\video\\be82b172595c7b99f1d2ee997a88fbbc.webm",
+      "har_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\clickjacking\\trace.har",
+      "screenshots": [],
+      "findings": [
+        {
+          "title": "Page can be framed (clickjacking risk)",
+          "severity": "low",
+          "owasp": "A05:2021-Security Misconfiguration",
+          "scenario_id": "clickjacking",
+          "evidence": {
+            "x-frame-options": "",
+            "csp_has_fa": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "exposed_files",
+      "name": "Exposed sensitive files",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "high",
+      "passed": false,
+      "error": null,
+      "duration_s": 4.878,
+      "video_url": "/artifacts/1777150531_e5e67ba8/exposed_files/video/18f4a3d8ded25535c92d94fd41e20a79.webm",
+      "video_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\exposed_files\\video\\18f4a3d8ded25535c92d94fd41e20a79.webm",
+      "har_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\exposed_files\\trace.har",
+      "screenshots": [],
+      "findings": [
+        {
+          "title": "Sensitive path exposed: /.well-known/security.txt",
+          "severity": "high",
+          "owasp": "A05:2021-Security Misconfiguration",
+          "scenario_id": "exposed_files",
+          "evidence": {
+            "url": "https://pypi.org/.well-known/security.txt",
+            "status": 200
+          }
+        }
+      ]
+    },
+    {
+      "id": "open_redirect",
+      "name": "Open redirect probe",
+      "owasp": "A01:2021-Broken Access Control",
+      "severity": "medium",
+      "passed": true,
+      "error": null,
+      "duration_s": 8.026,
+      "video_url": "/artifacts/1777150531_e5e67ba8/open_redirect/video/0667e517d04ece0df1a8af759755132c.webm",
+      "video_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\open_redirect\\video\\0667e517d04ece0df1a8af759755132c.webm",
+      "har_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\open_redirect\\trace.har",
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "xss_reflected",
+      "name": "Reflected XSS probe (skipped \u2014 no forms)",
+      "owasp": "A03:2021-Injection",
+      "severity": "info",
+      "passed": true,
+      "error": null,
+      "duration_s": 5.184,
+      "video_url": "/artifacts/1777150531_e5e67ba8/xss_reflected/video/46e93afe0ebd627da6fd06b7c35b7240.webm",
+      "video_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\xss_reflected\\video\\46e93afe0ebd627da6fd06b7c35b7240.webm",
+      "har_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\xss_reflected\\trace.har",
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "cors_misconfig",
+      "name": "CORS misconfiguration probe",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "high",
+      "passed": true,
+      "error": null,
+      "duration_s": 6.017,
+      "video_url": "/artifacts/1777150531_e5e67ba8/cors_misconfig/video/bd5065cb685e1063c3902688516f5a47.webm",
+      "video_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\cors_misconfig\\video\\bd5065cb685e1063c3902688516f5a47.webm",
+      "har_path": "C:\\Users\\NBPZAGORSKI\\IdeaProjects\\adk-fundamentals\\adk_training\\module_24_audit_ops\\artifacts\\1777150531_e5e67ba8\\cors_misconfig\\trace.har",
+      "screenshots": [],
+      "findings": []
+    }
+  ],
+  "findings": [
+    {
+      "title": "Missing Content-Security-Policy",
+      "severity": "medium",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "scenario_id": "headers_baseline",
+      "evidence": {
+        "header": "Content-Security-Policy",
+        "present": false
+      }
+    },
+    {
+      "title": "Missing X-Frame-Options (clickjacking risk)",
+      "severity": "low",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "scenario_id": "headers_baseline",
+      "evidence": {
+        "header": "X-Frame-Options",
+        "present": false
+      }
+    },
+    {
+      "title": "Page can be framed (clickjacking risk)",
+      "severity": "low",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "scenario_id": "clickjacking",
+      "evidence": {
+        "x-frame-options": "",
+        "csp_has_fa": false
+      }
+    },
+    {
+      "title": "Sensitive path exposed: /.well-known/security.txt",
+      "severity": "high",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "scenario_id": "exposed_files",
+      "evidence": {
+        "url": "https://pypi.org/.well-known/security.txt",
+        "status": 200
+      }
+    }
+  ],
+  "error": null
+}

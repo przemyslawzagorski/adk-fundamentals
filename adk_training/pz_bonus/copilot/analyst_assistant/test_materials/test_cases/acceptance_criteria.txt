@@ -1,0 +1,84 @@
+USER STORY — Customer Document Upload & Verification
+=====================================================
+Epic: CLM6-8821 — Self-Service Customer Portal
+Story: CLM6-9034 — Document Upload for KYC Process
+Author: Anna Kowalska (Business Analyst)
+Status: Refined — ready for development
+Sprint: Q2 2026 Sprint 3
+
+## Business Context
+
+Customers must upload identity documents (ID card, passport, utility bill) as part of the
+KYC (Know Your Customer) onboarding process. Currently this is done manually via email —
+a customer sends documents to a support agent who uploads them to the system.
+
+The new feature allows customers to upload documents directly through the Customer Portal.
+
+## Acceptance Criteria
+
+### AC-1: File Upload — Supported Formats
+GIVEN a logged-in customer on the "Upload Documents" page
+WHEN they select a file to upload
+THEN the system should accept: PDF, JPG, JPEG, PNG
+AND reject all other formats with a clear error message
+
+### AC-2: File Size Limit
+GIVEN a logged-in customer
+WHEN they attempt to upload a file larger than 10 MB
+THEN the upload should be rejected before sending to the server
+AND the customer sees: "File too large. Maximum size is 10 MB."
+
+### AC-3: Upload Progress & Confirmation
+GIVEN a customer has selected a valid file
+WHEN they click "Upload"
+THEN a progress indicator is shown during upload
+AND upon success: a confirmation message is shown with the document name and upload timestamp
+AND the document appears in the "My Documents" list
+
+### AC-4: Document Type Assignment
+GIVEN a customer is uploading a document
+WHEN they initiate the upload
+THEN they must select the document type from: ID Card, Passport, Utility Bill, Other
+AND the selection is mandatory (cannot upload without selecting type)
+
+### AC-5: Re-upload / Replace
+GIVEN a customer has already uploaded a document of a given type
+WHEN they upload a new document of the same type
+THEN the system should ask for confirmation: "Replace existing [document type]?"
+AND upon confirmation, the old document is archived (not deleted) and new one becomes active
+
+### AC-6: Virus Scanning
+GIVEN any file is uploaded
+WHEN the file reaches the backend
+THEN it must be scanned for malware before being stored
+AND if a threat is detected: the file is rejected, customer sees an error, security team is alerted
+NOTE: Virus scanning tool TBD — security team has not confirmed vendor yet
+
+### AC-7: Backend Storage
+GIVEN a file passes validation and virus scan
+WHEN it is accepted
+THEN it should be stored in a secure location
+NOTE: Azure Blob Storage or internal document management system — NOT DECIDED YET
+AND access should be restricted to: the customer who uploaded it, support agents, compliance team
+
+### AC-8: Audit Trail
+GIVEN any document action (upload, replace, delete, view)
+WHEN the action occurs
+THEN it must be logged with: user ID, timestamp, action type, document ID, IP address
+
+## Out of Scope (for this story)
+
+- Document verification / OCR — separate story (CLM6-9045)
+- Admin UI for reviewing documents — separate story (CLM6-9046)
+- Bulk upload — future sprint
+- Mobile app upload — future sprint
+
+## Open Questions (NOT resolved)
+
+- Maximum number of documents per customer? (Support suggested 20 but not confirmed)
+- How long should archived (replaced) documents be retained? (Legal/compliance input needed)
+- Should documents be encrypted at rest? Who holds the keys?
+- What is the expected load? (How many uploads per hour during peak?)
+- Test environment: what storage backend will be used in SIT/UAT?
+- Virus scanner integration: ClamAV (open source) vs Defender (enterprise) — unresolved
+

@@ -1,0 +1,19 @@
+# Core ADK + RAG
+google-adk>=1.28.0,<2.0.0
+llama-index-core>=0.12.0,<0.13.0
+llama-index-embeddings-google-genai>=0.2.0
+
+# Config / logging
+python-dotenv>=1.0.0
+pydantic>=2.8.0
+pydantic-settings>=2.4.0
+
+# Web UI
+fastapi>=0.115.0,<0.120.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+jinja2>=3.1.4
+
+# Production niceties (opcjonalne, ale rekomendowane)
+slowapi>=0.1.9
+prometheus-client>=0.20.0

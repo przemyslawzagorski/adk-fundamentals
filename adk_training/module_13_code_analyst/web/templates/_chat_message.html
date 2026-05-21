@@ -1,0 +1,27 @@
+<div class="chat-msg user-msg">
+    <div class="msg-author">Ty</div>
+    <div class="msg-content">{{ user_message }}</div>
+</div>
+<div class="chat-msg agent-msg">
+    <div class="msg-author">Pipeline agentowy</div>
+    {% if steps %}
+    <div class="pipeline-steps">
+        {% for step in steps %}
+        <div class="step step-{{ step.action }}">
+            {% if step.action == 'start' %}
+            <span class="step-icon">&#9654;</span>
+            {% elif step.action == 'tool_call' %}
+            <span class="step-icon">&#128295;</span>
+            {% elif step.action == 'tool_result' %}
+            <span class="step-icon">&#9989;</span>
+            {% else %}
+            <span class="step-icon">&#8226;</span>
+            {% endif %}
+            <span class="step-agent">{{ step.agent }}</span>
+            <span class="step-detail">{{ step.detail }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="msg-content" data-markdown>{{ agent_response }}</div>
+</div>

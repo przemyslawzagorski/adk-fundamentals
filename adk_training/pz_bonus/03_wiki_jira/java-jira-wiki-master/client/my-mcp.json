@@ -1,0 +1,46 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "jira_token",
+      "description": "Enter your JIRA API token",
+      "password": true
+    },
+    {
+      "type": "promptString",
+      "id": "wiki_token",
+      "description": "Enter your Wiki API token",
+      "password": true
+    },
+    {
+      "type": "promptString",
+      "id": "gitlab_token",
+      "description": "Enter your Gitlab API token",
+      "password": true
+    }
+  ],
+  "servers": {
+    "jira-wiki-server": {
+      "type": "stdio",
+      "command": "/home/artur/Dokumenty/Dev-tools/java/jdk-21/bin/java",
+      "args": [
+        "-jar",
+        "/home/artur/Dokumenty/Workspace/mcp/mcp-jira-wiki-ready/target/jira-wiki-mcp-2.0.jar"
+      ],
+      "env": {
+        "JIRA_BASE_URL": "https://jira.services.comarch.com/rest/api/2",
+        "JIRA_BEARER_TOKEN": "${input:jira_token}",
+        "JIRA_DEFAULT_PROJECT_KEY": "CLM6",
+        "JIRA_DEFAULT_ISSUE_TYPE": "Story",
+        "JIRA_DEFAULT_LABEL": "CLM6_Polaris",
+        "ENABLE_WIKI_INTEGRATION": "true",
+        "WIKI_BASE_URL": "https://wiki.comarch/rest/api",
+        "WIKI_BEARER_TOKEN": "${input:wiki_token}",
+        "ENABLE_GITLAB_INTEGRATION": "true",
+        "GITLAB_BASE_URL": "https://gitlab.czk.comarch",
+        "GITLAB_PROJECT_ID": "bu130255/plc130254/clm-6/clm6-core",
+        "GITLAB_ACCESS_TOKEN": "${input:gitlab_token}"
+      }
+    }
+  }
+}

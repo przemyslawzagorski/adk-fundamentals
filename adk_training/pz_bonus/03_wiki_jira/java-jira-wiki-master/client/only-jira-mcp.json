@@ -1,0 +1,19 @@
+{
+  "servers": {
+    "jira-wiki-server": {
+      "type": "stdio",
+      "command": "YOUR_ABSOLUTE_PATH_TO_JAVA/java/jdk-21/bin/java",
+      "args": [
+        "-jar",
+        "YOUR_ABSOLUTE_PATH_TO_JAR/jira-wiki-mcp-2.0.jar"
+      ],
+      "env": {
+        "JIRA_BASE_URL": "https://jira.services.comarch.com/rest/api/2",
+        "JIRA_BEARER_TOKEN": "YOUR_TOKEN",
+        "JIRA_DEFAULT_PROJECT_KEY": "YOUR_PROJECT_KEY",
+        "JIRA_DEFAULT_ISSUE_TYPE": "YOUR_DEFAULT_ISSUE_TYPE",
+        "JIRA_DEFAULT_LABEL": "YOUR_DEFAULT_LABEL"
+      }
+    }
+  }
+}

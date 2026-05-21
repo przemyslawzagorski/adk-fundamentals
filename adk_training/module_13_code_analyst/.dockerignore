@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+web_data/
+index_store/
+.env
+.env.local
+.pytest_cache/
+.mypy_cache/
+conversations/
+reports/
+sample_project/*/__pycache__/

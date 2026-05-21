@@ -1,0 +1,18 @@
+site_name: AuditOps
+nav:
+  - Home: index.md
+  - Stakeholder Overview: stakeholder-overview.md
+  - Architecture: architecture.md
+  - Skills Pack (V1): skills-pack.md
+  - Audit Wiki (V2): wiki-pattern.md
+  - Audit-History Skill (V3): audit-history.md
+  - OWASP Coverage: owasp-coverage.md
+  - CI Mode (CLI): ci-mode.md
+  - REST API: api-reference.md
+  - Examples: examples.md
+  - Security & Safety: security.md
+  - 🇵🇱 Polski:
+      - Strona główna: pl/index.md
+      - Dla decydentów: pl/stakeholder-overview.md
+      - Architektura: pl/architecture.md
+      - Przykłady: pl/examples.md

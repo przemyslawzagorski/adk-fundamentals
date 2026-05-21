@@ -1,0 +1,653 @@
+{
+  "run_id": "1777469436_4d14920e",
+  "target_url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+  "started_at": 1777469436.7095976,
+  "finished_at": 1777469442.305815,
+  "duration_s": 5.596217393875122,
+  "recon": {
+    "target_url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+    "final_url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+    "status_code": 200,
+    "response_time_ms": 2041,
+    "server_header": "github.com",
+    "technologies": [],
+    "title": "llm-wiki \u00b7 GitHub",
+    "forms": [
+      {
+        "action": "https://gist.github.com/search",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "q",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/load_comments",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "partial",
+            "type": "hidden"
+          },
+          {
+            "name": "before_comment_id",
+            "type": "hidden"
+          },
+          {
+            "name": "mark_as_unread",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6116950",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6117477",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6117516",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6117561",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6118363",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6118407",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6118572",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6119264",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6119290",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6119304",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6119704",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6119808",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6119945",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6120099",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6120116",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6120148",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6120508",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6120533",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6120567",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6121172",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6121742",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6122505",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6122761",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6123132",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6123242",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6123952",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6124346",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6124421",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6124450",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      },
+      {
+        "action": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f/comments/6125361",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_method",
+            "type": "hidden"
+          },
+          {
+            "name": "authenticity_token",
+            "type": "hidden"
+          }
+        ]
+      }
+    ],
+    "interesting_paths": [
+      {
+        "path": "/robots.txt",
+        "url": "https://gist.github.com/robots.txt",
+        "status": 200,
+        "content_type": "text/plain",
+        "size": 2274
+      },
+      {
+        "path": "/graphql",
+        "url": "https://gist.github.com/graphql",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "size": 54644
+      },
+      {
+        "path": "/login",
+        "url": "https://gist.github.com/login",
+        "status": 301,
+        "content_type": "text/html; charset=utf-8",
+        "size": 0
+      },
+      {
+        "path": "/healthz",
+        "url": "https://gist.github.com/healthz",
+        "status": 200,
+        "content_type": "text/html",
+        "size": 58
+      },
+      {
+        "path": "/health",
+        "url": "https://gist.github.com/health",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "size": 57364
+      }
+    ],
+    "security_headers": {
+      "Content-Security-Policy": "default-src 'none'; base-uri 'self'; child-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/; connect-src 'self' uploads.github.com www.githubstatus.com collector.github.com raw.githubusercontent.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com *.rel.tunnels.api.visualstudio.com wss://*.rel.tunnels.api.visualstudio.com github.githubassets.com objects-origin.githubusercontent.com copilot-proxy.githubusercontent.com proxy.individual.githubcopilot.com proxy.business.githubcopilot.com proxy.enterprise.githubcopilot.com *.actions.githubusercontent.com wss://*.actions.githubusercontent.com productionresultssa0.blob.core.windows.net productionresultssa1.blob.core.windows.net productionresultssa2.blob.core.windows.net productionresultssa3.blob.core.windows.net productionresultssa4.blob.core.windows.net productionresultssa5.blob.core.windows.net productionresultssa6.blob.core.windows.net productionresultssa7.blob.core.windows.net productionresultssa8.blob.core.windows.net productionresultssa9.blob.core.windows.net productionresultssa10.blob.core.windows.net productionresultssa11.blob.core.windows.net productionresultssa12.blob.core.windows.net productionresultssa13.blob.core.windows.net productionresultssa14.blob.core.windows.net productionresultssa15.blob.core.windows.net productionresultssa16.blob.core.windows.net productionresultssa17.blob.core.windows.net productionresultssa18.blob.core.windows.net productionresultssa19.blob.core.windows.net github-production-repository-image-32fea6.s3.amazonaws.com github-production-release-asset-2e65be.s3.amazonaws.com insights.github.com wss://alive.github.com wss://alive-staging.github.com api.githubcopilot.com api.individual.githubcopilot.com api.business.githubcopilot.com api.enterprise.githubcopilot.com; font-src github.githubassets.com; form-action 'self' github.com gist.github.com copilot-workspace.githubnext.com objects-origin.githubusercontent.com; frame-ancestors 'none'; frame-src viewscreen.githubusercontent.com notebooks.githubusercontent.com; img-src 'self' data: blob: github.githubassets.com media.githubusercontent.com camo.githubusercontent.com identicons.github.com avatars.githubusercontent.com private-avatars.githubusercontent.com github-cloud.s3.amazonaws.com objects.githubusercontent.com release-assets.githubusercontent.com secured-user-images.githubusercontent.com user-images.githubusercontent.com private-user-images.githubusercontent.com opengraph.githubassets.com marketplace-screenshots.githubusercontent.com copilotprodattachments.blob.core.windows.net/github-production-copilot-attachments/ github-production-user-asset-6210df.s3.amazonaws.com customer-stories-feed.github.com spotlights-feed.github.com objects-origin.githubusercontent.com *.githubusercontent.com; manifest-src 'self'; media-src github.com user-images.githubusercontent.com secured-user-images.githubusercontent.com private-user-images.githubusercontent.com github-production-user-asset-6210df.s3.amazonaws.com gist.github.com github.githubassets.com; script-src github.githubassets.com; style-src 'unsafe-inline' github.githubassets.com; upgrade-insecure-requests; worker-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/",
+      "Strict-Transport-Security": "max-age=31536000; includeSubdomains; preload",
+      "X-Frame-Options": "deny",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "origin-when-cross-origin, strict-origin-when-cross-origin",
+      "Permissions-Policy": null,
+      "Cross-Origin-Opener-Policy": null
+    },
+    "cookies": [
+      {
+        "name": "_gh_sess",
+        "domain": "gist.github.com",
+        "secure": true,
+        "httponly": false,
+        "samesite": "Lax"
+      },
+      {
+        "name": "_octo",
+        "domain": ".github.com",
+        "secure": true,
+        "httponly": false,
+        "samesite": "Lax"
+      },
+      {
+        "name": "logged_in",
+        "domain": ".github.com",
+        "secure": true,
+        "httponly": false,
+        "samesite": "Lax"
+      }
+    ],
+    "notes": [],
+    "error": null
+  },
+  "scenarios": [
+    {
+      "id": "smoke_navigation",
+      "name": "Smoke navigation",
+      "owasp": "(meta)",
+      "severity": "info",
+      "passed": false,
+      "error": "runner failed: ",
+      "duration_s": 0.845,
+      "video_url": null,
+      "video_path": null,
+      "har_path": null,
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "headers_baseline",
+      "name": "Security headers baseline",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "medium",
+      "passed": false,
+      "error": "runner failed: ",
+      "duration_s": 0.014,
+      "video_url": null,
+      "video_path": null,
+      "har_path": null,
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "cookie_flags",
+      "name": "Cookie security flags",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "medium",
+      "passed": false,
+      "error": "runner failed: ",
+      "duration_s": 0.015,
+      "video_url": null,
+      "video_path": null,
+      "har_path": null,
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "clickjacking",
+      "name": "Clickjacking via missing X-Frame-Options / frame-ancestors",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "low",
+      "passed": false,
+      "error": "runner failed: ",
+      "duration_s": 0.021,
+      "video_url": null,
+      "video_path": null,
+      "har_path": null,
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "exposed_files",
+      "name": "Exposed sensitive files",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "high",
+      "passed": false,
+      "error": "runner failed: ",
+      "duration_s": 0.02,
+      "video_url": null,
+      "video_path": null,
+      "har_path": null,
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "open_redirect",
+      "name": "Open redirect probe",
+      "owasp": "A01:2021-Broken Access Control",
+      "severity": "medium",
+      "passed": false,
+      "error": "runner failed: ",
+      "duration_s": 0.047,
+      "video_url": null,
+      "video_path": null,
+      "har_path": null,
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "xss_reflected",
+      "name": "Reflected XSS canary in detected forms",
+      "owasp": "A03:2021-Injection",
+      "severity": "high",
+      "passed": false,
+      "error": "runner failed: ",
+      "duration_s": 0.057,
+      "video_url": null,
+      "video_path": null,
+      "har_path": null,
+      "screenshots": [],
+      "findings": []
+    },
+    {
+      "id": "cors_misconfig",
+      "name": "CORS misconfiguration probe",
+      "owasp": "A05:2021-Security Misconfiguration",
+      "severity": "high",
+      "passed": false,
+      "error": "runner failed: ",
+      "duration_s": 0.032,
+      "video_url": null,
+      "video_path": null,
+      "har_path": null,
+      "screenshots": [],
+      "findings": []
+    }
+  ],
+  "findings": [],
+  "error": null
+}
