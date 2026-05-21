@@ -1,16 +1,8 @@
 """
-Moduł 8: Loop Agent z Krytyką - "Pętla Perfekcjonisty"
-=======================================================
-Naucz się implementować iteracyjne udoskonalanie używając LoopAgent.
-
-Temat: Pisarz Dziennika Okrętowego tworzy wpisy, Pierwszy Oficer
-je krytykuje, a Kapitan decyduje czy są gotowe do dziennika.
-
-Kluczowe Koncepcje:
-- LoopAgent uruchamia sub_agents wielokrotnie aż do warunku wyjścia
-- Niestandardowy BaseAgent do sprawdzania statusu i wyzwalania escalate
-- output_schema dla ustrukturyzowanych decyzji
-- max_iterations jako limit bezpieczeństwa
+Moduł 8: Loop Critique - ROZWIĄZANIA ĆWICZEŃ (Zaktualizowane dla ADK v1.0+)
+==========================================================================
+Usunięto zmienne {input} i {user_query}. Model odczyta polecenie użytkownika
+bezpośrednio z historii konwersacji czatu.
 """
 
 import os
@@ -24,153 +16,189 @@ from google.adk.events import Event, EventActions
 from google.adk.agents.callback_context import CallbackContext
 
 load_dotenv()
-
-# Konfiguracja
-MODEL = "gemini-2.5-flash"
+MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
 
 # =============================================================================
-# INICJALIZACJA STANU - Konfiguracja początkowego stanu dla pętli
+# WSPÓLNE KOMPONENTY STERUJĄCE PĘTLĄ
 # =============================================================================
 
-async def init_loop_state(callback_context: CallbackContext):
-    """Inicjalizuj stan przed rozpoczęciem pętli."""
-    callback_context.state["log_entry"] = "Jeszcze nie napisany"
-    callback_context.state["critique"] = "Jeszcze brak krytyki"
-    callback_context.state["entry_status"] = {"decision": "invalid"}
+async def track_iteration(callback_context: CallbackContext):
+    """Callback: Zlicza iteracje i dba o poprawne zmienne w stanie początkowym."""
+    iteration = callback_context.state.get("iteration", 0) + 1
+    callback_context.state["iteration"] = iteration
+
+    # Zabezpieczenie przed błędem w pierwszej iteracji
+    if "critique" not in callback_context.state:
+        callback_context.state["critique"] = "To jest pierwsza iteracja. Brak uwag krytyka."
+
     return None
 
-# =============================================================================
-# SCHEMAT USTRUKTURYZOWANEGO WYJŚCIA - Dla decyzji Kapitana
-# =============================================================================
+class CritiqueResult(BaseModel):
+    """Ustrukturyzowany format oceny krytyka."""
+    score: float = Field(description="Średnia ocena od 1.0 do 10.0")
+    feedback: str = Field(description="Szczegółowa krytyka, co poprawić")
+    is_approved: bool = Field(description="Zwróć True, jeśli treść jest wystarczająco dobra (np. score >= 8.0) i można zakończyć, w przeciwnym razie False")
 
-class EntryDecision(BaseModel):
-    """Schemat struktury decyzji dotyczącej wpisu do dziennika."""
-    decision: str = Field(description="Albo 'valid' albo 'invalid'")
-    reason: str = Field(description="Krótkie wyjaśnienie decyzji")
+class LoopController(BaseAgent):
+    """Agent kontrolujący: odczytuje decyzję i ewentualnie przerywa pętlę."""
+    async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
+        critique = ctx.session.state.get("critique", {})
+        is_approved = critique.get("is_approved", False)
+        iteration = ctx.session.state.get("iteration", 1)
 
-# =============================================================================
-# AGENT 1: PISARZ DZIENNIKA - Tworzy wpis do dziennika okrętowego
-# =============================================================================
+        print(f"[Loop Controller] Iteracja: {iteration} | Zatwierdzone: {is_approved}")
 
-log_writer = LlmAgent(
-    model=MODEL,
-    name="pisarz_dziennika",
-    instruction="""Jesteś PISARZEM DZIENNIKA OKRĘTOWEGO!
-
-Twój obowiązek: napisz odpowiedni wpis do dziennika dla Kapitana.
-
-Poprzedni szkic (jeśli jest): {log_entry}
-Krytyka do uwzględnienia: {critique}
-
-Wymagania dla odpowiedniego wpisu dziennika:
-- Data i warunki pogodowe
-- Pozycja i kurs
-- Znaczące wydarzenia dnia
-- Status załogi i morale
-- Aktualizacja inwentarza zapasów
-
-Jeśli pojawia się krytyka, uwzględnij ją w nowej wersji wpisu.
-Zachowaj styl żeglarsko‑piracki w opisie zdarzeń.
-""",
-    description="Tworzy i udoskonala wpisy do dziennika okrętowego",
-    output_key="log_entry",
-    before_agent_callback=init_loop_state
-)
-
-# =============================================================================
-# AGENT 2: FIRST MATE CRITIC - Reviews the log entry
-# =============================================================================
-
-first_mate = LlmAgent(
-    model=MODEL,
-    name="first_mate",
-    instruction="""Jesteś PIERWSZYM OFICEREM – krytycznym okiem Kapitana!
-
-Oceń poniższy wpis do dziennika:
-{log_entry}
-
-Sprawdź w szczególności:
-1. Czy użyto odpowiedniej terminologii żeglarskiej
-2. Czy zawarte są wszystkie wymagane sekcje
-3. Czy ton jest profesjonalny i spójny z charakterem dziennika
-4. Czy opis jest dokładny i kompletny
-5. Czy styl jest konsekwentny
-
-Podaj konkretną, konstruktywną krytykę.
-Jeśli wpis nie wymaga żadnych poprawek, napisz wyraźnie:
-"No improvements needed".
-""",
-    description="Dostarcza konstruktywnej krytyki wpisów do dziennika",
-    output_key="critique"
-)
-
-# =============================================================================
-# AGENT 3: CAPTAIN DECISION - Approves or rejects
-# =============================================================================
-
-captain = LlmAgent(
-    model=MODEL,
-    name="captain",
-    instruction="""Jesteś KAPITANEM – ostatecznym arbitrem wpisów do dziennika!
-
-Wpis do dziennika:
-{log_entry}
-
-Krytyka Pierwszego Oficera:
-{critique}
-
-Podejmij decyzję:
-- Jeśli Pierwszy Oficer nie znalazł problemów → decision: "valid"
-- Jeśli są istotne zastrzeżenia → decision: "invalid"
-
-Bądź zdecydowany – załoga czeka na Twój werdykt.
-""",
-    description="Podejmuje ostateczną decyzję o jakości wpisu do dziennika",
-    output_key="entry_status",
-    output_schema=EntryDecision
-)
-
-# =============================================================================
-# CUSTOM AGENT: LOOP CONTROLLER - Checks status and escalates
-# =============================================================================
-
-class CheckStatusAndEscalate(BaseAgent):
-    """Niestandardowy agent, który sprawdza status i kończy pętlę, gdy wpis
-    zostanie zaakceptowany.
-    """
-
-    async def _run_async_impl(
-        self, ctx: InvocationContext
-    ) -> AsyncGenerator[Event, None]:
-        # Pobierz decyzję Kapitana ze stanu
-        status = ctx.session.state.get("entry_status", {})
-        decision = status.get("decision", "invalid")
-
-        # Czy powinniśmy zakończyć pętlę?
-        should_stop = (decision == "valid")
-
-        # Log dla celów debugowania
-        print(f"[Loop Controller] Decyzja: {decision}, Zatrzymanie: {should_stop}")
-
-        # Zwróć zdarzenie z akcją escalate, aby wyjść z pętli
         yield Event(
             author=self.name,
-            actions=EventActions(escalate=should_stop)
+            actions=EventActions(escalate=is_approved)
         )
 
+def create_loop_controller(suffix: str):
+    return LoopController(name=f"kontroler_petli_{suffix}")
+
 # =============================================================================
-# LOOP AGENT - Iterates until valid or max iterations
+# BAZOWY PISARZ (FABRYKA)
 # =============================================================================
 
-root_agent = LoopAgent(
-    name="log_refinement_loop",
-    description="Iteracyjnie udoskonala wpis do dziennika, aż Kapitan go zatwierdzi",
-    max_iterations=5,
-    sub_agents=[
-        log_writer,
-        first_mate,
-        captain,
-        CheckStatusAndEscalate(name="loop_controller")
-    ]
+WRITER_INSTRUCTION = """Jesteś kreatywnym copywriterem. Otrzymasz zadanie od użytkownika.
+
+**FEEDBACK Z POPRZEDNIEJ ITERACJI:**
+{critique}
+
+Zignoruj powyższy feedback, jeśli to pierwsza iteracja.
+Jeśli jest feedback - zastosuj się do niego rygorystycznie i popraw tekst.
+
+Twoja treść powinna być:
+- Angażująca i przekonująca
+- Zgodna z tonem marki
+- Wolna od błędów
+
+Podaj TYLKO gotową treść (bez meta-komentarzy)."""
+
+def create_writer(suffix: str):
+    return LlmAgent(
+        model=MODEL,
+        name=f"pisarz_{suffix}",
+        description="Tworzy i ulepsza treści marketingowe.",
+        instruction=WRITER_INSTRUCTION,
+        output_key="draft",
+        before_agent_callback=track_iteration
+    )
+
+# =============================================================================
+# ĆWICZENIE 1 & 2: max_iterations=5 oraz PRÓG JAKOŚCI (>8/10)
+# =============================================================================
+
+general_critic = LlmAgent(
+    model=MODEL,
+    name="krytyk_ogolny",
+    description="Ocenia ogólną treść, z progiem 8/10.",
+    instruction="""Oceń treść napisaną przez copywritera:
+{draft}
+
+KRYTERIA (każde od 1-10):
+1. Jasność przekazu
+2. Angażowanie czytelnika
+3. Poprawność gramatyczna
+4. Estetyka tekstu
+
+Wymagany próg akceptacji (is_approved) wynosi minimum 8.0/10 średniej oceny.
+""",
+    output_key="critique",
+    output_schema=CritiqueResult
 )
 
+loop_5_iterations_with_threshold = LoopAgent(
+    name="petla_5_iteracji_z_progiem",
+    sub_agents=[create_writer("ogolny"), general_critic, create_loop_controller("ogolny")],
+    max_iterations=5
+)
+
+# =============================================================================
+# ĆWICZENIE 3: RÓŻNE KRYTERIA DLA RÓŻNYCH TYPÓW TREŚCI
+# =============================================================================
+
+blog_critic = LlmAgent(
+    model=MODEL,
+    name="krytyk_bloga",
+    instruction="""Oceń artykuł blogowy:
+{draft}
+
+KRYTERIA DLA BLOGA (oceniasz od 1 do 10):
+1. Optymalizacja SEO (słowa kluczowe, nagłówki)
+2. Wartość edukacyjna dla czytelnika
+3. Poprawna struktura (wstęp, rozwinięcie, zakończenie)
+4. Call-to-action (Wezwanie do akcji) na końcu
+
+Aby ustawić `is_approved` na True, średnia musi wynosić minimum 8.0/10.
+Zwróć wynik w wymaganym formacie strukturalnym.
+""",
+    output_key="critique",
+    output_schema=CritiqueResult
+)
+
+social_media_critic = LlmAgent(
+    model=MODEL,
+    name="krytyk_social_media",
+    instruction="""Oceń post social media:
+{draft}
+
+KRYTERIA DLA SOCIAL MEDIA (oceniasz od 1 do 10):
+1. Zwięzłość (krótko i na temat)
+2. Hook (czy pierwsze słowa przyciągają uwagę?)
+3. Użycie Emoji i formatowanie tekstowe
+4. Odpowiednie Hashtagi (nie za dużo, precyzyjne)
+
+Aby ustawić `is_approved` na True, średnia musi wynosić minimum 8.0/10.
+Zwróć wynik w wymaganym formacie strukturalnym.
+""",
+    output_key="critique",
+    output_schema=CritiqueResult
+)
+
+email_critic = LlmAgent(
+    model=MODEL,
+    name="krytyk_emaili",
+    instruction="""Oceń email marketingowy:
+{draft}
+
+KRYTERIA DLA EMAILA (oceniasz od 1 do 10):
+1. Temat (czy zachęca do otwarcia?)
+2. Personalizacja
+3. Wartość dla odbiorcy
+4. Jasny i klikalny CTA
+
+Aby ustawić `is_approved` na True, średnia musi wynosić minimum 8.0/10.
+Zwróć wynik w wymaganym formacie strukturalnym.
+""",
+    output_key="critique",
+    output_schema=CritiqueResult
+)
+
+# Pętle przypisane do odpowiednich krytyków z unikalnymi instancjami pisarzy
+loop_blog = LoopAgent(
+    name="petla_blog",
+    sub_agents=[create_writer("blog"), blog_critic, create_loop_controller("blog")],
+    max_iterations=5
+)
+
+loop_social = LoopAgent(
+    name="petla_social_media",
+    sub_agents=[create_writer("social"), social_media_critic, create_loop_controller("social")],
+    max_iterations=5
+)
+
+loop_email = LoopAgent(
+    name="petla_email",
+    sub_agents=[create_writer("email"), email_critic, create_loop_controller("email")],
+    max_iterations=5
+)
+
+# =============================================================================
+# AGENT GŁÓWNY - Wybierz rozwiązanie
+# =============================================================================
+
+root_agent = loop_5_iterations_with_threshold # Ćwiczenie 1 i 2 połączone
+#root_agent = loop_blog                      # Ćwiczenie 3 - blog
+# root_agent = loop_social                    # Ćwiczenie 3 - social media
+# root_agent = loop_email                     # Ćwiczenie 3 - email

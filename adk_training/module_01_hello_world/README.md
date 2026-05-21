@@ -30,13 +30,16 @@ module_01_hello_world/
 ### Krok 1: Konfiguracja Środowiska
 
 ```bash
-# Przejdź do tego modułu
-cd adk_training/module_01_hello_world
 
 # Stwórz środowisko wirtualne (opcjonalne, ale zalecane)
 python -m venv .venv
-.venv312\Scripts\activate  # Windows
+
+#aktywuj je
+.venv\Scripts\activate  # Windows
 # source .venv/bin/activate  # macOS/Linux
+
+# Przejdź do tego modułu
+cd adk_training/module_01_hello_world
 
 # Zainstaluj zależności
 pip install -r requirements.txt

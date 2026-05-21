@@ -13,7 +13,14 @@ Cele edukacyjne:
 - Obserwacja jak agent decyduje kiedy użyć narzędzi
 """
 
+import os
+import pathlib
+
+from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
+
+load_dotenv(pathlib.Path(__file__).parent / ".env")
+load_dotenv(pathlib.Path(__file__).parent.parent / ".env")
 
 # =============================================================================
 # NIESTANDARDOWE NARZĘDZIA - Funkcje Python
@@ -134,33 +141,220 @@ def calculate_treasure_value(gold_rate: float = 100.0) -> str:
     return f"Całkowita wartość skarbów: {total:,.2f} złotych monet (przy współczynniku {gold_rate})"
 
 
+def _auggie_kwargs(extra_cli: list[str] | None = None) -> dict:
+    """Wsp\u00f3lna konfiguracja Auggie() \u2014 cli_path + api_key/url z .env."""
+    import shutil
+
+    kw: dict = {
+        "workspace_root": str(pathlib.Path(__file__).parent),
+        "model": os.getenv("AUGGIE_MODEL", "sonnet4.5"),
+        "timeout": 180,
+    }
+    if extra_cli:
+        kw["cli_args"] = extra_cli
+    for name in ("auggie.cmd", "auggie.exe", "auggie"):
+        if (cli := shutil.which(name)):
+            kw["cli_path"] = cli
+            break
+    # AUGMENT_SESSION_AUTH (je\u015bli ustawiony) jest dziedziczony przez subprocess
+    if not os.getenv("AUGMENT_SESSION_AUTH"):
+        if api_key := os.getenv("AUGMENT_API_KEY"):
+            kw["api_key"] = api_key
+        if api_url := os.getenv("AUGMENT_API_URL"):
+            kw["api_url"] = api_url
+    return kw
+
+
+def ask_auggie(question: str, max_turns: int = 5) -> str:
+    """
+    Zadaje pytanie zewn\u0119trznemu agentowi Auggie (Augment Code) i zwraca odpowied\u017a tekstow\u0105.
+
+    U\u017cywaj gdy potrzebujesz drugiej opinii, analizy kodu w workspace, lub
+    z\u0142o\u017conego rozumowania spoza dziedziny inwentarza skarb\u00f3w.
+
+    Args:
+        question: Pytanie lub zadanie do Auggie (po polsku lub angielsku).
+        max_turns: Maks. liczba tur agentowych (domy\u015blnie 5).
+
+    Returns:
+        Tekst odpowiedzi Auggie albo komunikat o b\u0142\u0119dzie.
+    """
+    try:
+        from auggie_sdk import Auggie
+    except ImportError:
+        return "B\u0142\u0105d: pakiet 'auggie-sdk' nie jest zainstalowany (pip install auggie-sdk)."
+
+    try:
+        auggie = Auggie(**_auggie_kwargs(["--quiet", "--max-turns", str(max_turns)]))
+        return auggie.run(question, return_type=str)
+    except Exception as e:  # noqa: BLE001
+        return f"B\u0142\u0105d wywo\u0142ania Auggie: {type(e).__name__}: {e}"
+
+
+def auggie_typed_query(question: str, return_kind: str = "auto") -> str:
+    """
+    Pyta Auggie i wymusza konkretny typ zwrotny (typed return).
+
+    U\u017cywaj kiedy potrzebujesz strukturalnej odpowiedzi zamiast wolnego tekstu.
+
+    Args:
+        question: Pytanie do Auggie.
+        return_kind: Jeden z: 'auto', 'int', 'float', 'bool', 'str', 'list', 'dict'.
+
+    Returns:
+        Sformatowany string z wynikiem i wykrytym/wymuszonym typem.
+    """
+    try:
+        from auggie_sdk import Auggie
+    except ImportError:
+        return "B\u0142\u0105d: pakiet 'auggie-sdk' nie jest zainstalowany."
+
+    type_map = {"int": int, "float": float, "bool": bool, "str": str, "list": list, "dict": dict}
+    rt = type_map.get(return_kind)
+    try:
+        auggie = Auggie(**_auggie_kwargs(["--quiet", "--max-turns", "3"]))
+        result = auggie.run(question, return_type=rt) if rt else auggie.run(question)
+        if isinstance(result, tuple):  # auto-inference
+            value, inferred = result
+            return f"value={value!r} (inferred type: {inferred.__name__})"
+        return f"value={result!r} (type: {type(result).__name__})"
+    except Exception as e:  # noqa: BLE001
+        return f"B\u0142\u0105d: {type(e).__name__}: {e}"
+
+
+def auggie_with_success_criteria(task: str, criteria_csv: str, max_rounds: int = 3) -> str:
+    """
+    Uruchamia Auggie z kryteriami sukcesu \u2014 agent iteruje a\u017c je spe\u0142ni.
+
+    U\u017cywaj dla zada\u0144 wymagaj\u0105cych jako\u015bciowej weryfikacji (np. generowanie kodu,
+    dokumentacji, raport\u00f3w gdzie wa\u017cna jest kompletno\u015b\u0107).
+
+    Args:
+        task: Zadanie do wykonania.
+        criteria_csv: Lista kryteri\u00f3w oddzielonych \u015brednikami (np.
+            "Funkcja ma docstring;Obs\u0142uguje przypadki brzegowe;Ma type hints").
+        max_rounds: Maksymalna liczba iteracji weryfikacji (domy\u015blnie 3).
+
+    Returns:
+        Wynik zadania albo informacja o niespe\u0142nionych kryteriach.
+    """
+    try:
+        from auggie_sdk import Auggie
+        from auggie_sdk.exceptions import AugmentVerificationError
+    except ImportError:
+        return "B\u0142\u0105d: pakiet 'auggie-sdk' nie jest zainstalowany."
+
+    criteria = [c.strip() for c in criteria_csv.split(";") if c.strip()]
+    try:
+        auggie = Auggie(**_auggie_kwargs(["--quiet", "--max-turns", "10"]))
+        result = auggie.run(
+            task,
+            return_type=str,
+            success_criteria=criteria,
+            max_verification_rounds=max_rounds,
+        )
+        return f"OK ({len(criteria)} kryteri\u00f3w spe\u0142nionych):\n{result}"
+    except AugmentVerificationError as e:
+        return f"Weryfikacja nieudana po {max_rounds} rundach: {e}"
+    except Exception as e:  # noqa: BLE001
+        return f"B\u0142\u0105d: {type(e).__name__}: {e}"
+
+
+def auggie_session_workflow(steps_csv: str) -> str:
+    """
+    Uruchamia wieloetapowy workflow w jednej sesji Auggie (zachowuje kontekst mi\u0119dzy krokami).
+
+    Ka\u017cdy krok widzi wyniki poprzednich. U\u017cywaj dla z\u0142o\u017conych zada\u0144 wymagaj\u0105cych
+    pami\u0119ci kontekstu (np. "stw\u00f3rz funkcj\u0119" \u2192 "dodaj testy" \u2192 "popraw b\u0142\u0119dy").
+
+    Args:
+        steps_csv: Kroki oddzielone znakiem '|' (np. "Stw\u00f3rz funkcj\u0119 X|Dodaj test|Popraw b\u0142\u0119dy").
+
+    Returns:
+        Po\u0142\u0105czone wyniki wszystkich krok\u00f3w.
+    """
+    try:
+        from auggie_sdk import Auggie
+    except ImportError:
+        return "B\u0142\u0105d: pakiet 'auggie-sdk' nie jest zainstalowany."
+
+    steps = [s.strip() for s in steps_csv.split("|") if s.strip()]
+    if not steps:
+        return "B\u0142\u0105d: brak krok\u00f3w."
+    try:
+        auggie = Auggie(**_auggie_kwargs(["--quiet", "--max-turns", "5"]))
+        outputs = []
+        with auggie.session() as sess:
+            for i, step in enumerate(steps, 1):
+                out = sess.run(step, return_type=str)
+                outputs.append(f"--- Krok {i}: {step} ---\n{out}")
+        return "\n\n".join(outputs)
+    except Exception as e:  # noqa: BLE001
+        return f"B\u0142\u0105d: {type(e).__name__}: {e}"
+
+
+def auggie_list_models() -> str:
+    """
+    Zwraca list\u0119 dost\u0119pnych modeli AI w Auggie dla aktualnego konta.
+
+    Returns:
+        Sformatowana lista modeli (id, nazwa, opis).
+    """
+    try:
+        from auggie_sdk import Auggie
+    except ImportError:
+        return "B\u0142\u0105d: pakiet 'auggie-sdk' nie jest zainstalowany."
+    try:
+        models = Auggie.get_available_models()
+        if not models:
+            return "Brak dost\u0119pnych modeli."
+        return "\n".join(f"\u2022 {m.id} \u2014 {m.name}: {m.description}" for m in models)
+    except Exception as e:  # noqa: BLE001
+        return f"B\u0142\u0105d: {type(e).__name__}: {e}"
+
+
 # =============================================================================
-# AGENT ZARZĄDZAJĄCY SKARBAMI
+# AGENT ZARZ\u0104DZAJ\u0104CY SKARBAMI
 # =============================================================================
 root_agent = LlmAgent(
     name="zarzadca_skarbow",
     model="gemini-2.5-flash",
-    instruction="""Jesteś Zarządcą Skarbów odpowiedzialnym za zarządzanie
-wszystkimi cennymi łupami.
+    instruction="""Jeste\u015b Zarz\u0105dc\u0105 Skarb\u00f3w odpowiedzialnym za zarz\u0105dzanie
+wszystkimi cennymi \u0142upami.
 
-Twoje obowiązki:
-1. Śledzenie i raportowanie inwentarza skarbów za pomocą narzędzi
-2. Pomaganie użytkownikom w sprawdzaniu konkretnych skarbów
-3. Dodawanie nowych łupów do inwentarza
-4. Obliczanie całkowitej wartości zasobów
+Twoje obowi\u0105zki:
+1. \u015aledzenie i raportowanie inwentarza skarb\u00f3w za pomoc\u0105 narz\u0119dzi
+2. Pomaganie u\u017cytkownikom w sprawdzaniu konkretnych skarb\u00f3w
+3. Dodawanie nowych \u0142up\u00f3w do inwentarza
+4. Obliczanie ca\u0142kowitej warto\u015bci zasob\u00f3w
 
-WAŻNE: Zawsze używaj swoich narzędzi aby uzyskać dokładne dane inwentarza. Nigdy nie zgaduj!
-Gdy pytają o skarby, UŻYJ odpowiedniego narzędzia najpierw, potem odpowiedz.
+WA\u017bNE: Zawsze u\u017cywaj swoich narz\u0119dzi aby uzyska\u0107 dok\u0142adne dane inwentarza. Nigdy nie zgaduj!
+Gdy pytaj\u0105 o skarby, U\u017bYJ odpowiedniego narz\u0119dzia najpierw, potem odpowiedz.
 
-Odpowiadaj profesjonalnie i dbaj o dokładność swoich zapisów!
+Masz r\u00f3wnie\u017c dost\u0119p do zewn\u0119trznego agenta Auggie przez 5 narz\u0119dzi:
+\u2022 ask_auggie(question)                            \u2014 prosty tekst
+\u2022 auggie_typed_query(question, return_kind)       \u2014 typed return (int/list/dict\u2026)
+\u2022 auggie_with_success_criteria(task, criteria)    \u2014 iteracyjna weryfikacja
+\u2022 auggie_session_workflow(steps)                  \u2014 wieloetapowy workflow z kontekstem
+\u2022 auggie_list_models()                            \u2014 lista modeli AI dost\u0119pnych w Auggie
+
+U\u017cywaj Auggie kiedy pytanie wykracza poza inwentarz skarb\u00f3w
+(np. analiza kodu, generowanie kodu, drug\u0105 opinia AI).
+
+Odpowiadaj profesjonalnie i dbaj o dok\u0142adno\u015b\u0107 swoich zapis\u00f3w!
 """,
-    description="Zarządca skarbów śledzący wszystkie łupy i kosztowności.",
-    # Narzędzia przekazywane jako lista - agent decyduje kiedy użyć każdego z nich
+    description="Zarz\u0105dca skarb\u00f3w \u015bledz\u0105cy wszystkie \u0142upy i kosztowno\u015bci.",
     tools=[
         get_treasure_count,
         list_all_treasures,
         add_treasure,
         calculate_treasure_value,
+        # Auggie SDK \u2014 5 r\u00f3\u017cnych tryb\u00f3w
+        ask_auggie,
+        auggie_typed_query,
+        auggie_with_success_criteria,
+        auggie_session_workflow,
+        auggie_list_models,
     ],
 )
 

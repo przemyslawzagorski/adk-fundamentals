@@ -59,7 +59,7 @@ async def chat_interface_fn(message, history):
 
     # Get the agent's response using the existing logic
     response = await get_response(runner, session.user_id, session.id, message)
-    return response
+    return response or "Sorry, I couldn't generate a response."
 
 # --- Main Application Setup ---
 async def main():
