@@ -1,0 +1,9 @@
+# Module 7: Parallel Agent - The Crew's Council
+# ADK Training - Parallel execution pattern
+
+# Core ADK
+google-adk>=1.0.0
+
+# Environment management
+python-dotenv>=1.0.0
+
