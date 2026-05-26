@@ -1,0 +1,38 @@
+{
+  "eval_set_id": "spec_gen_basic",
+  "name": "Epic Decomposer - basic JSON output",
+  "description": "Pojedynczy stage: epic_decomposer dostaje gotowy HLD w user message i zwraca JSON epikow. Prog ROUGE-1 niski (0.05), bo oceniamy tylko czy output zawiera oczekiwane slowa kluczowe struktury JSON epikow. Pelen SequentialAgent testowany offline (test_spec_generator_e2e) + live (test_spec_generator_live).",
+  "eval_cases": [
+    {
+      "evalId": "basic_report_endpoint",
+      "conversation": [
+        {
+          "invocationId": "inv-1",
+          "userContent": {
+            "role": "user",
+            "parts": [
+              {
+                "text": "Oto zaakceptowany HLD. Wygeneruj epiki Jira w formacie JSON zgodnie z instrukcja.\n\n---\n\n# HLD: Endpoint /api/v1/report (raport dzienny sprzedazy)\n\n## Cel biznesowy\nUmozliwic klientom pobranie dziennego raportu sprzedazy w formacie JSON przez API.\n\n## Zakres\n- Nowy endpoint GET /api/v1/report?date=YYYY-MM-DD.\n- Zwraca JSON z agregatami: total_revenue, orders_count, top_products (lista 10).\n- Autoryzacja: API key w header X-Api-Key.\n- Limit: 60 req/min na klucz.\n\n## Architektura\n- Warstwa API: FastAPI handler + walidacja pydantic.\n- Warstwa danych: istniejace SalesRepository (PostgreSQL).\n- Cache: Redis, TTL 5 min dla odpowiedzi per (api_key, date).\n- Monitoring: Prometheus counter, histogram latencji.\n\n## Zaleznosci\n- Istniejacy SalesService (reuse).\n- Nowy klient cache (Redis connector).\n- Aktualizacja API-gateway o nowy route.\n\n## Kryteria sukcesu\n- Latencja p95 < 200ms.\n- 100% kluczowych ticketow sprzedazy wliczonych w raport.\n- Dokumentacja OpenAPI zaktualizowana.\n\n---\n\nWygeneruj epiki."
+              }
+            ]
+          },
+          "finalResponse": {
+            "role": "model",
+            "parts": [
+              {
+                "text": "epics title summary acceptance_criteria priority labels estimated_story_points dependencies"
+              }
+            ]
+          },
+          "creationTimestamp": 0.0
+        }
+      ],
+      "sessionInput": {
+        "app_name": "spec_generator",
+        "user_id": "eval_user",
+        "state": {}
+      },
+      "creationTimestamp": 0.0
+    }
+  ]
+}
