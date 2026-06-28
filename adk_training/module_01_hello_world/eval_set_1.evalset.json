@@ -1,0 +1,38 @@
+{
+  "eval_set_id": "eval_set_1",
+  "name": "eval_set_1",
+  "eval_cases": [
+    {
+      "eval_id": "co_to_jest_python",
+      "conversation": [
+        {
+          "invocation_id": "e-fd4a195e-28cb-47e6-8f36-3cc73e86b7a3",
+          "user_content": {
+            "parts": [
+              {
+                "text": "co to jest python"
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "text": "Python to wysokopoziomowy, interpretowany, ogólnego przeznaczenia język programowania, stworzony przez Guido van Rossuma i wydany po raz pierwszy w 1991 roku. Jest ceniony za swoją prostotę, czytelność kodu i wszechstronność.\n\nOto kluczowe cechy i zastosowania Pythona:\n\n**Kluczowe Cechy:**\n\n1.  **Łatwość nauki i czytelność:** Python ma bardzo przejrzystą i intuicyjną składnię, która przypomina język angielski. Wykorzystuje wcięcia (indentację) zamiast nawiasów klamrowych do definiowania bloków kodu, co sprawia, że jest łatwy do czytania i pisania, nawet dla początkujących programistów.\n2.  **Interpretowany język:** Kod Pythona nie jest kompilowany do kodu maszynowego przed uruchomieniem. Zamiast tego jest interpretowany w czasie rzeczywistym przez interpreter, co przyspiesza proces programowania (cykl edycja-testowanie).\n3.  **Wieloplatformowość:** Programy napisane w Pythonie mogą działać na różnych systemach operacyjnych (Windows, macOS, Linux) bez konieczności modyfikowania kodu źródłowego.\n4.  **Wieloparadygmatowość:** Obsługuje różne paradygmaty programowania, takie jak programowanie obiektowe, programowanie proceduralne i elementy programowania funkcyjnego.\n5.  **Bogata biblioteka standardowa:** Python dostarcza ogromny zestaw modułów i bibliotek \"wbudowanych\" (standard library), które ułatwiają wykonywanie wielu zadań, takich jak obsługa plików, operacje sieciowe, praca z datami i czasem, czy tworzenie interfejsów graficznych.\n6.  **Ogromny ekosystem zewnętrznych bibliotek:** Poza biblioteką standardową istnieje tysiące zewnętrznych bibliotek (dostępnych w indeksie pakietów Pythona – PyPI), które rozszerzają jego funkcjonalność w niemal każdym obszarze.\n\n**Główne Zastosowania Pythona:**\n\n1.  **Tworzenie aplikacji webowych:** Dzięki frameworkom takim jak Django i Flask, Python jest powszechnie używany do budowania zarówno prostych, jak i złożonych aplikacji internetowych, API RESTful i systemów zarządzania treścią.\n2.  **Analiza danych i nauka o danych (Data Science):** Jest to jeden z najpopularniejszych języków w tej dziedzinie, dzięki bibliotekom takim jak NumPy (obliczenia numeryczne), Pandas (analiza i manipulacja danymi), Matplotlib i Seaborn (wizualizacja danych).\n3.  **Sztuczna inteligencja i uczenie maszynowe (AI/Machine Learning):** Biblioteki takie jak Scikit-learn, TensorFlow i PyTorch sprawiają, że Python jest standardem w rozwoju algorytmów uczenia maszynowego, głębokiego uczenia i sztucznej inteligencji.\n4.  **Automatyzacja i skrypty:** Python doskonale nadaje się do pisania skryptów do automatyzacji powtarzalnych zadań, takich jak zarządzanie systemami, przetwarzanie plików, ekstrakcja danych (web scraping) czy testowanie oprogramowania.\n5.  **Tworzenie aplikacji desktopowych:** Za pomocą bibliotek takich jak Tkinter, PyQt czy Kivy, można tworzyć graficzne interfejsy użytkownika dla aplikacji działających na komputerach.\n6.  **Obliczenia naukowe i inżynierskie:** Wykorzystywany w badaniach naukowych, symulacjach i modelowaniu matematycznym.\n7.  **Edukacja:** Ze względu na swoją prostotę i czytelność, Python jest często pierwszym językiem programowania nauczanym w szkołach i na uniwersytetach.\n8.  **Rozwój gier:** Choć nie jest najpopularniejszym językiem w tej dziedzinie, Pygame pozwala na tworzenie prostych gier 2D.\n\nPodsumowując, Python jest niezwykle wszechstronnym i potężnym językiem, który znalazł zastosowanie w niemal każdej branży technologicznej, co czyni go jednym z najczęściej używanych i najszybciej rozwijających się języków programowania na świecie."
+              }
+            ],
+            "role": "model"
+          },
+          "intermediate_data": {},
+          "creation_timestamp": 1779645959.8629117
+        }
+      ],
+      "session_input": {
+        "app_name": "module_01_hello_world",
+        "user_id": "user"
+      },
+      "creation_timestamp": 1779645989.5398633
+    }
+  ],
+  "creation_timestamp": 1779645921.160765
+}

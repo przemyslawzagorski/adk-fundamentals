@@ -1,0 +1,54 @@
+# =============================================================================
+# ADK Training — główny plik zależności (instaluj raz na początku kursu)
+# Zaktualizowano: 2026-05-25  (ADK 2.0, aiplatform 1.153+, toolbox-adk 1.0)
+# =============================================================================
+
+# --- Core ADK (2.0) ----------------------------------------------------------
+google-adk>=2.0.0
+google-adk[eval]>=2.0.0                     # eventy ewaluacyjne (mod 21)
+google-genai>=1.72,<2                        # Google GenAI SDK
+
+# --- Vertex AI / Memory Bank (mod 11) ----------------------------------------
+# agent-engines extra = memories.ingest_events + IngestionDirectContentsSourceEvent
+google-cloud-aiplatform[agent-engines]>=1.148.1,<2
+
+# --- Toolbox (mod 09) --------------------------------------------------------
+toolbox-adk>=1.0.0,<2                       # Python client dla MCP Toolbox
+toolbox-core>=1.1.0                          # core toolbox
+
+# --- Inne Google Cloud -------------------------------------------------------
+google-cloud-spanner>=3.56.0
+google-cloud-bigquery
+google-cloud-storage
+google-cloud-alloydb-connector[pg8000]
+
+# --- Auth / API --------------------------------------------------------------
+google-auth>=2.47
+google-auth-oauthlib>=1.0.0
+PyJWT[crypto]
+a2a-sdk
+python-a2a
+
+# --- Web / API framework (mod 06, 13, 22) ------------------------------------
+fastapi>=0.124.1,<1
+uvicorn>=0.34,<1
+python-multipart>=0.0.9
+fastmcp>=3.2.1
+httpx>=0.27,<1
+
+# --- LlamaIndex RAG (mod 10, 13) ---------------------------------------------
+llama-index-core
+llama-index-embeddings-google-genai
+
+# --- MCP (mod 16, 22) --------------------------------------------------------
+mcp>=1.24,<2
+
+# --- Inne narzędzia ----------------------------------------------------------
+langchain
+pydantic>=2.12,<3
+pyyaml>=6.0.2,<7
+sqlalchemy>=2,<3
+python-dotenv>=1.0.0
+aiohttp
+gradio
+locust
