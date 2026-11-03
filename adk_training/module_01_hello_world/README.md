@@ -104,6 +104,9 @@ root_agent = LlmAgent(
 | `instruction` | Prompt systemowy definiujący zachowanie | Tak |
 | `description` | Opis celu dla innych agentów | Nie |
 
+> **ADK 2:** `from google.adk import Agent` to ta sama klasa co `LlmAgent`
+> (`Agent is LlmAgent == True`). Nowe przykłady i dokumentacja używają krótszej nazwy `Agent`.
+
 ## 🏋️ Ćwiczenia
 
 ### Ćwiczenie 1.1: Modyfikacja Osobowości
@@ -140,4 +143,3 @@ W **Module 2** nauczysz się dawać agentowi niestandardowe narzędzia - specjal
 ---
 
 *"Podróż tysiąca linii kodu zaczyna się od jednego agenta."*
-

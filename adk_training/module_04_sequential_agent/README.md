@@ -1,5 +1,7 @@
 # Moduł 4: Sekwencyjny Pipeline Wieloagentowy
 
+> ⚠️ **ADK 2:** `SequentialAgent` jest *deprecated*. Ten sam scenariusz na `Workflow`: **Moduł 4W** (`module_04w_workflow_sequence`).
+
 ## 🎯 Cele Edukacyjne
 
 Po ukończeniu tego modułu będziesz rozumieć:

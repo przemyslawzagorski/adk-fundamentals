@@ -1,5 +1,7 @@
 # Moduł 7: Agent Równoległy - "Rada Załogi"
 
+> ⚠️ **ADK 2:** `ParallelAgent` jest *deprecated*. Ten sam scenariusz na `Workflow` (fan-out + `JoinNode`): **Moduł 7W** (`module_07w_workflow_parallel`).
+
 ## 📚 Briefing Misji
 
 Naucz się uruchamiać wielu agentów **jednocześnie** używając `ParallelAgent`. To jest kluczowe gdy potrzebujesz zbierać informacje z wielu źródeł naraz lub generować różnorodne perspektywy równolegle.

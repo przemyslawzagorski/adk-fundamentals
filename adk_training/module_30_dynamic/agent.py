@@ -246,11 +246,10 @@ async def dynamic_orchestrate(ctx: Context, node_input: ProjectProfile) -> str:
 
         # Po co najmniej 2 węzłach sprawdzaj kompletność
         if i >= 1:
-            grade = AnalysisGrade.model_validate_json(
-                await ctx.run_node(completeness_evaluator)
-            ) if hasattr(AnalysisGrade, "model_validate_json") else None
+            # Agent z output_schema zwraca z run_node dict, nie string JSON
+            grade = AnalysisGrade.model_validate(await ctx.run_node(completeness_evaluator))
 
-            if grade and grade.grade == "complete":
+            if grade.grade == "complete":
                 break  # ← Wyjście z pętli gdy analiza jest kompletna
 
     # Finalne wyjście z @node — staje się inputem do następnego węzła

@@ -27,7 +27,7 @@ venv\Scripts\activate
 source venv/bin/activate
 
 # Zainstaluj zależności
-pip install google-adk
+pip install -r module_01_hello_world/requirements.txt
 ```
 
 ### 3. Konfiguracja GCP
@@ -51,7 +51,48 @@ cp .env.example .env
 # - GOOGLE_CLOUD_LOCATION=global
 ```
 
+## �️ Program szkolenia (ADK 2.13, model `gemini-3.5-flash`)
+
+Rdzeń ADK (agent, narzędzia, callbacki, sesje, pamięć, RAG, MCP) jest wspólny
+dla ADK 1 i 2. W ADK 2 zmieniła się **orkiestracja**: `SequentialAgent`,
+`ParallelAgent` i `LoopAgent` są *deprecated* na rzecz `Workflow` (graf).
+Moduły 04/07/08 pokazują starą wersję, a moduły **04W/07W/08W** ten sam scenariusz w ADK 2.
+
+**Dzień 1 – Agent i orkiestracja**
+
+| Blok | Moduły | Temat |
+|---|---|---|
+| 1 | 01, 02 | Pierwszy agent, własne narzędzia |
+| 2 | 03 | RAG (Vertex AI Search) |
+| 3 | 04 → **04W** | Sekwencja: `SequentialAgent` (ADK 1) → `Workflow` (ADK 2) |
+| 4 | 07 → **07W** | Równoległość: `ParallelAgent` → fan-out + `JoinNode` |
+| 5 | 08 → **08W** | Pętla: `LoopAgent` → routing wstecz + `RequestInput` (HITL) |
+| 6 | 05, 28 | Human-in-the-loop: callback (ADK 1) vs `RequestInput` (ADK 2) |
+| 7 | 12 → **33** | Delegowanie: router z `sub_agents` → Task API (`mode="task"/"single_turn"`) |
+
+**Dzień 2 – Integracje i produkcja**
+
+| Blok | Moduły | Temat |
+|---|---|---|
+| 1 | 11 | Memory Bank (Agent Engine) |
+| 2 | 09 | Baza danych |
+| 3 | 16 | MCP |
+| 4 | 14 | Agent Skills |
+| 5 | 06 | Deploy na Cloud Run |
+| 6 | 25–30, 31, 32 | Zaawansowane ADK 2 (routing, dane, dynamiczne grafy), ewaluacja, A2A |
+
+> `Workflow` nie może jeszcze być sub-agentem `LlmAgent` (ograniczenie ADK 2.13),
+> dlatego router z Modułu 12 i ewaluacja z Modułu 31 nadal bazują na `Agent`/`LlmAgent`.
+
 ## 📚 Moduły
+
+### 🆕 ADK 2 (Workflow, Task API)
+
+- **Module 04W**: Workflow – sekwencja jako graf, funkcje jako węzły
+- **Module 07W**: Workflow – fan-out / fan-in (`JoinNode`)
+- **Module 08W**: Workflow – pętla krytyki przez routing + HITL (`RequestInput`)
+- **Module 33**: Task API – sub-agenci w trybach `task` i `single_turn`
+- **Module 25–30**: zaawansowane wzorce Workflow (PR review, routing, dane, HITL, równoległość, dynamiczne grafy)
 
 ### ✅ Gotowe do uruchomienia (bez dodatkowej konfiguracji)
 

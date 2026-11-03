@@ -1,5 +1,7 @@
 # Moduł 8: Agent Pętli z Krytyką - Iteracyjne Doskonalenie
 
+> ⚠️ **ADK 2:** `LoopAgent` jest *deprecated*. Ten sam scenariusz na `Workflow` (pętla przez routing + HITL): **Moduł 8W** (`module_08w_workflow_loop`).
+
 ## 📋 Przegląd
 
 Naucz się implementować **iteracyjne doskonalenie** używając `LoopAgent`. Ten wzorzec jest niezbędny dla przepływów pracy skupionych na jakości, gdzie wynik musi spełniać określone kryteria przed uznaniem go za gotowy. Pętla powtarza się, dopóki krytyk nie zatwierdzi wyniku lub nie zostanie osiągnięty maksymalny limit iteracji.
