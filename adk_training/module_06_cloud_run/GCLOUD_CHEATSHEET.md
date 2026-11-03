@@ -211,7 +211,7 @@ docker run -p 8080:8000 \
 --set-env-vars="\
 GOOGLE_GENAI_USE_VERTEXAI=1,\
 GOOGLE_CLOUD_PROJECT=your-project-id,\
-GOOGLE_CLOUD_LOCATION=us-central1"
+GOOGLE_CLOUD_LOCATION=global"
 ```
 
 ## 🎯 Szybki deployment (one-liner)

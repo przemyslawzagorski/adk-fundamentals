@@ -236,7 +236,7 @@ Wymaga zmiennych:
 ```
 GOOGLE_CLOUD_PROJECT=<gcp-project>
 GOOGLE_GENAI_USE_VERTEXAI=1
-GOOGLE_CLOUD_LOCATION=europe-west1   # lub global; vide /memories/repo
+GOOGLE_CLOUD_LOCATION=global
 SPEC_GEN_USE_REAL_PIPELINE=1
 SPEC_GEN_MAX_CRITIQUE_ITER=2
 ```

@@ -35,7 +35,7 @@ load_dotenv()
 # CONFIGURATION
 # =============================================================================
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash"
 AGENT_APP_NAME = 'hotel_expert_mcp'
 
 # MCP Toolbox URL

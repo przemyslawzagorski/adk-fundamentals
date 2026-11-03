@@ -41,10 +41,9 @@ load_dotenv()
 # =============================================================================
 
 # Try different models if you hit rate limits:
-# - gemini-2.5-flash-exp (experimental, may have lower quota)
-# - gemini-2.5-flash (stable, higher quota)
-# - gemini-1.5-flash (older, usually higher quota)
-MODEL = "gemini-2.5-flash"  # Changed from gemini-2.5-flash-exp
+# - gemini-3.5-flash (stable, default)
+# - gemini-3.5-flash-lite (cheaper, usually higher quota)
+MODEL = "gemini-3.5-flash"
 AGENT_APP_NAME = 'hotel_expert_simple'
 
 instruction_prompt = """

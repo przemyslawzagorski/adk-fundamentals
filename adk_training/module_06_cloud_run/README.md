@@ -24,7 +24,7 @@ By the end of this module, you will:
    - Artifact Registry API
    - Vertex AI API
 3. **gcloud CLI** installed and configured
-4. **ADK CLI** installed (`pip install google-adk>=1.18.0`)
+4. **ADK CLI** installed (`pip install google-adk>=2.13.0`)
 
 ---
 

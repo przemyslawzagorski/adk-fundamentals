@@ -77,7 +77,7 @@ from tools import (  # noqa: E402  (po load_dotenv i sys.path)
     security_audit,
 )
 
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 
 # =============================================================================

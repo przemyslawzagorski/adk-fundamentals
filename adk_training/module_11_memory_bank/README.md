@@ -127,7 +127,7 @@ async def auto_save(callback_context):
 
 # Agent z pamięcią
 agent = LlmAgent(
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     tools=[PreloadMemoryTool()],  # Auto-load memories
     after_agent_callback=auto_save  # Auto-save memories
 )
@@ -168,7 +168,8 @@ cp .env.template .env
 
 # Edytuj .env i wpisz:
 # GOOGLE_CLOUD_PROJECT=twoj-projekt-id
-# GOOGLE_CLOUD_LOCATION=us-central1
+# GOOGLE_CLOUD_LOCATION=global
+# AGENT_ENGINE_LOCATION=us-central1
 ```
 
 ### Krok 3: Utwórz Agent Engine

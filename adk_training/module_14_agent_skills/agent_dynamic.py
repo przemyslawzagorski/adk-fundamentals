@@ -32,7 +32,7 @@ from google.adk.skills import models
 from google.adk.tools.skill_toolset import SkillToolset
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 SKILLS_DIR = pathlib.Path(__file__).parent / "skills"
 
 logger = logging.getLogger(__name__)

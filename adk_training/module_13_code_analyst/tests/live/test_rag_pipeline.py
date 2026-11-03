@@ -41,7 +41,7 @@ pytestmark = [
 
 APP_NAME = "rag_live"
 USER_ID = "tester"
-MODEL = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-2.0-flash")
+MODEL = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-3.5-flash")
 
 
 @pytest.fixture()

@@ -313,7 +313,7 @@ AGENT_APP_NAME = "code_analyst_agent"
 
 root_agent = LlmAgent(
     name=AGENT_APP_NAME,
-    model="gemini-2.0-flash",
+    model="gemini-3.5-flash",
     instruction=INSTRUCTION,
     tools=_all_tools,
     description="Analizuje, naprawia i rozwija kod — RAG + Git + Build + opcjonalnie GitHub/Jira/GitLab",

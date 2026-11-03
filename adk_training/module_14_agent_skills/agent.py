@@ -30,7 +30,7 @@ from google.adk.skills import models
 from google.adk.tools.skill_toolset import SkillToolset
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 # =============================================================================
 # WZORZEC 1: INLINE SKILL — Kodeks Pirata

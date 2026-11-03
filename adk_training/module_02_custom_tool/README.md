@@ -64,7 +64,7 @@ def moje_narzedzie(param1: str, param2: int) -> str:
 ```python
 root_agent = LlmAgent(
     name="nazwa_agenta",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="...",
     tools=[funkcja_narzedzie_1, funkcja_narzedzie_2],  # Lista funkcji
 )

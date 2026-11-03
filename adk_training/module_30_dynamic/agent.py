@@ -64,7 +64,7 @@ from google.adk.workflow import node
 from pydantic import BaseModel, Field
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 MAX_ITERATIONS = 3  # Maksymalna liczba iteracji dynamicznej pętli
 

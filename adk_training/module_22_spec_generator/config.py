@@ -10,8 +10,8 @@ from functools import lru_cache
 @dataclass(frozen=True)
 class SpecGenSettings:
     # --- Gemini / Vertex ---
-    llm_model: str = os.environ.get("SPEC_GEN_LLM_MODEL", "gemini-2.5-pro")
-    judge_model: str = os.environ.get("SPEC_GEN_JUDGE_MODEL", "gemini-2.0-flash")
+    llm_model: str = os.environ.get("SPEC_GEN_LLM_MODEL", "gemini-3.5-flash")
+    judge_model: str = os.environ.get("SPEC_GEN_JUDGE_MODEL", "gemini-3.5-flash")
 
     # --- Critique loop ---
     max_critique_iterations: int = int(

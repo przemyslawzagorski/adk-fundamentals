@@ -46,7 +46,7 @@ from google.adk.events import RequestInput
 from pydantic import BaseModel, Field
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 
 # =============================================================================

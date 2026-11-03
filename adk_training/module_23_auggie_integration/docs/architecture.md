@@ -17,7 +17,7 @@ flowchart TB
 
 | Warstwa | Modele | Co robi | Czego NIE robi |
 |---|---|---|---|
-| Tier 1 ADK | `gemini-2.5-flash` | klasyfikacja, prosty Q&A, decyzja o eskalacji | nie dotyka workspace |
+| Tier 1 ADK | `gemini-3.5-flash` | klasyfikacja, prosty Q&A, decyzja o eskalacji | nie dotyka workspace |
 | Tier 2 Auggie | `claude-sonnet-4.5` | edycja kodu, semantic search, tools | nie decyduje o eskalacji |
 | Guardrails | — | cache, koszt, retry, breaker | nie zna business logic |
 

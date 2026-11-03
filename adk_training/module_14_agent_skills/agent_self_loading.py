@@ -35,7 +35,7 @@ from google.adk.tools.function_tool import FunctionTool
 from google.adk.tools.tool_context import ToolContext
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 SKILLS_DIR = pathlib.Path(__file__).parent / "skills"
 
 logger = logging.getLogger(__name__)

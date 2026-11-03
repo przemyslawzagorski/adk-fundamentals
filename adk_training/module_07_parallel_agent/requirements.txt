@@ -2,7 +2,7 @@
 # ADK Training - Parallel execution pattern
 
 # Core ADK
-google-adk>=1.0.0
+google-adk>=2.13.0
 
 # Environment management
 python-dotenv>=1.0.0

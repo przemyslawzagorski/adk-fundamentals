@@ -84,3 +84,6 @@ adk_training/module_21_adk_tester/_debug_*.py
 adk_training/module_21_adk_tester/_inspect_ui*.py
 adk_training/module_21_adk_tester/_test_*.py
 adk_training/module_02_custom_tool/test_auggie.py
+
+# Trainer-only notes (participant messages)
+WIADOMOSC_DLA_UCZESTNIKOW.md

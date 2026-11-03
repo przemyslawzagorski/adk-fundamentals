@@ -210,7 +210,7 @@ async def get_config() -> Dict[str, Any]:
             "enabled": notebooklm_tool.is_enabled(),
             "notebook_url": os.getenv("NOTEBOOKLM_NOTEBOOK_URL"),
         },
-        "model": os.getenv("ADK_MODEL", "gemini-2.5-flash"),
+        "model": os.getenv("ADK_MODEL", "gemini-3.5-flash"),
         "defaults": {
             "max_critique_iterations": int(os.getenv("ANALYST_MAX_CRITIQUE_ITERATIONS", "3")),
         },
@@ -228,7 +228,7 @@ async def generate(req: GenerateRequest):
         "id": session_id,
         "created": time.time(),
         "issue_key": issue_key,
-        "model": req.model or os.getenv("ADK_MODEL", "gemini-2.5-flash"),
+        "model": req.model or os.getenv("ADK_MODEL", "gemini-3.5-flash"),
         "max_critique_iterations": req.max_critique_iterations,
         "ticket": "",
         "wiki_context": "",

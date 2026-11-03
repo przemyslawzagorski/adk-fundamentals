@@ -55,7 +55,7 @@ pipeline = SequentialAgent(
 2. **Edytuj `.env` ze swoim projektem GCP:**
    ```
    GOOGLE_CLOUD_PROJECT=twoj-project-id
-   GOOGLE_CLOUD_LOCATION=us-central1
+   GOOGLE_CLOUD_LOCATION=global
    ```
 
 3. **Uwierzytelnij się:**

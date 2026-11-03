@@ -48,7 +48,7 @@ pip install -r requirements.txt
 copy .env.template .env  # Windows
 # cp .env.template .env  # macOS/Linux
 
-# Edytuj .env i wpisz swój GCP project ID
+# Edytuj .env i wpisz swój GCP project ID (GOOGLE_CLOUD_LOCATION=global)
 ```
 
 ### Krok 2: Konfiguracja Uwierzytelniania GCP
@@ -59,6 +59,9 @@ gcloud auth application-default login
 
 # Ustaw swój projekt
 gcloud config set project TWOJ_PROJECT_ID
+
+# Ustaw projekt rozliczeniowy dla ADC (usuwa ostrzeżenie "without a quota project")
+gcloud auth application-default set-quota-project TWOJ_PROJECT_ID
 ```
 
 ### Krok 3: Uruchomienie Agenta
@@ -86,7 +89,7 @@ from google.adk.agents import LlmAgent
 
 root_agent = LlmAgent(
     name="nazwa_agenta",         # Unikalny identyfikator
-    model="gemini-2.5-flash",    # Model LLM do użycia
+    model="gemini-3.5-flash",    # Model LLM do użycia
     instruction="...",           # Prompt systemowy
     description="...",           # Dla systemów wieloagentowych
 )
@@ -97,7 +100,7 @@ root_agent = LlmAgent(
 | Parametr | Opis | Wymagany |
 |----------|------|----------|
 | `name` | Unikalny identyfikator agenta | Tak |
-| `model` | Model LLM (gemini-2.5-flash, itp.) | Tak |
+| `model` | Model LLM (gemini-3.5-flash, itp.) | Tak |
 | `instruction` | Prompt systemowy definiujący zachowanie | Tak |
 | `description` | Opis celu dla innych agentów | Nie |
 
@@ -107,7 +110,7 @@ root_agent = LlmAgent(
 Zmień instrukcję, aby agent był bardziej formalny lub bardziej swobodny.
 
 ### Ćwiczenie 1.2: Wypróbuj Różne Modele
-Zmień `gemini-2.5-flash` na `gemini-2.0-flash-001` i zaobserwuj różnice.
+Zmień `gemini-3.5-flash` na `gemini-3.5-flash-lite` i zaobserwuj różnice.
 
 ### Ćwiczenie 1.3: Dodaj Kontekst
 Dodaj specyficzną wiedzę do instrukcji (np. historię firmy, nazwy produktów).

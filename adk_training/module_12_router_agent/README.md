@@ -36,14 +36,14 @@ from google.adk.agents import LlmAgent
 
 # Create specialist agents
 navigator = LlmAgent(
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     name="navigator",
     description="Expert in navigation and routes",
     instruction="Handle navigation questions..."
 )
 
 quartermaster = LlmAgent(
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     name="quartermaster",
     description="Expert in inventory and supplies",
     instruction="Handle supply questions..."
@@ -51,7 +51,7 @@ quartermaster = LlmAgent(
 
 # Root agent with sub_agents
 captain = LlmAgent(
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     name="captain",
     instruction="Route questions to specialists...",
     sub_agents=[navigator, quartermaster]  # Key!

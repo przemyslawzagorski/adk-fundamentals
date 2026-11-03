@@ -25,11 +25,11 @@ Edytuj `.env`:
 # Wymagane — Vertex AI
 GOOGLE_GENAI_USE_VERTEXAI=1
 GOOGLE_CLOUD_PROJECT=twoj-projekt-gcp
-GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_CLOUD_LOCATION=global
 
 # Opcjonalne — modele
-ADK_MODEL=gemini-2.5-flash          # Domyślny model
-ADK_MODEL_STRONG=gemini-2.5-pro     # Dla złożonych zadań
+ADK_MODEL=gemini-3.5-flash          # Domyślny model
+ADK_MODEL_STRONG=gemini-3.5-flash   # Dla złożonych zadań
 
 # Opcjonalne — katalogi
 OUTPUT_DIR=./output                   # Katalog wyjściowy

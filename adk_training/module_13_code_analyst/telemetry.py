@@ -18,7 +18,7 @@ Uzycie:
     collector = TelemetryCollector()
     before_cb, after_cb = make_model_callbacks(collector, agent_name="code_analyst")
     agent = LlmAgent(
-        name="code_analyst", model="gemini-2.0-flash",
+        name="code_analyst", model="gemini-3.5-flash",
         before_model_callback=before_cb,
         after_model_callback=after_cb,
         ...

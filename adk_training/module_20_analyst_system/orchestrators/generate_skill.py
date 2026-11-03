@@ -29,8 +29,8 @@ from ..agents.skill_quality_reviewer import INSTRUCTION as REVIEWER_INSTRUCTION
 _module_dir = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(_module_dir, "..", ".env"))
 
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
-MODEL_STRONG = os.getenv("ADK_MODEL_STRONG", "gemini-2.5-pro")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
+MODEL_STRONG = os.getenv("ADK_MODEL_STRONG", "gemini-3.5-flash")
 
 # --- Tools ---
 tool_list_skills = FunctionTool(func=list_skills)

@@ -40,7 +40,7 @@ pytestmark = [
 
 APP_NAME = "adv_live"
 USER_ID = "tester"
-MODEL = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-2.0-flash")
+MODEL = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-3.5-flash")
 
 # Losowy, niesamoczynny "sekret", ktory ma NIE pojawic sie w odpowiedzi.
 SECRET_SENTINEL = "SK_LEAK_4f3a9c2e_DO_NOT_ECHO"

@@ -29,7 +29,7 @@ from google.adk.agents import LlmAgent
 
 agent = LlmAgent(
     name="nazwa_agenta",           # Unikalny identyfikator
-    model="gemini-2.5-flash",      # Model LLM
+    model="gemini-3.5-flash",      # Model LLM
     instruction="...",             # System prompt
     description="...",             # Opis dla innych agentów
     tools=[],                      # Lista narzędzi (opcjonalne)
@@ -106,13 +106,17 @@ ADK wspiera różne modele Gemini:
 
 | Model | Szybkość | Koszt | Jakość | Użycie |
 |-------|----------|-------|--------|--------|
-| `gemini-2.5-flash` | ⚡⚡⚡ | 💰 | ⭐⭐⭐ | Codzienne zadania, chatboty |
-| `gemini-2.0-flash` | ⚡⚡ | 💰💰 | ⭐⭐⭐⭐ | Stabilna wersja produkcyjna |
-| `gemini-2.0-pro` | ⚡ | 💰💰💰 | ⭐⭐⭐⭐⭐ | Złożone analizy, kreatywność |
+| `gemini-3.5-flash-lite` | ⚡⚡⚡ | 💰 | ⭐⭐⭐ | Proste, powtarzalne zadania, duży wolumen |
+| `gemini-3.5-flash` | ⚡⚡ | 💰💰 | ⭐⭐⭐⭐ | Codzienne zadania, chatboty, agenci |
+| `gemini-3.8-flash` | ⚡⚡ | 💰💰💰 | ⭐⭐⭐⭐⭐ | Złożone analizy, rozumowanie |
+
+> Modele mają daty wycofania (np. `gemini-2.5-flash` wycofano 20.10.2026).
+> Aktualna lista: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions
 
 **Kiedy używać którego?**
 - **Flash** - 90% przypadków użycia (szybki, tani, wystarczająco dobry)
-- **Pro** - Gdy potrzebujesz najwyższej jakości (analiza prawna, medyczna, kreatywne pisanie)
+- **Flash-Lite** - Gdy liczy się koszt i szybkość, a zadanie jest proste
+- **Nowszy Flash** - Gdy potrzebujesz najwyższej jakości (analiza prawna, medyczna, kreatywne pisanie)
 
 ### 3. **Name vs Description**
 
@@ -136,7 +140,7 @@ ADK wspiera różne modele Gemini:
 ```python
 support_agent = LlmAgent(
     name="support_bot",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""Jesteś asystentem obsługi klienta sklepu TechShop.
 
     Pomagasz klientom w:
@@ -165,7 +169,7 @@ support_agent = LlmAgent(
 ```python
 sales_agent = LlmAgent(
     name="sales_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""Jesteś asystentem sprzedaży dla CloudMaster Pro.
 
     Produkt: CloudMaster Pro
@@ -283,11 +287,11 @@ Czy masz pytanie o nasze produkty?"
 
 ### 3. **Ignorowanie Kosztów**
 
-**Problem:** Używanie `gemini-2.0-pro` do prostych zadań.
+**Problem:** Używanie najmocniejszego modelu do prostych zadań.
 
 **Rozwiązanie:**
-- Używaj `gemini-2.5-flash` dla 90% przypadków
-- Rezerwuj `pro` dla złożonych analiz
+- Używaj `gemini-3.5-flash` dla 90% przypadków
+- Rezerwuj mocniejsze modele dla złożonych analiz
 - Monitoruj koszty w Google Cloud Console
 
 ### 4. **Brak Obsługi Błędów**
@@ -360,7 +364,7 @@ Jeśli nie znasz odpowiedzi:
 ```python
 hr_agent = LlmAgent(
     name="hr_assistant",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""Jesteś asystentem HR w firmie TechCorp.
 
     Pomagasz w:

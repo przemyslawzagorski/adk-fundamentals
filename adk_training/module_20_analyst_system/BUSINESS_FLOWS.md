@@ -23,7 +23,7 @@
 | Agenty ogółem | 35 (unikalne nazwy) |
 | Narzędzia | 10 (file_tools: 3, template_tools: 2, skill_tools: 5) + MCP |
 | Quality gates | Każdy pipeline ma review_quality agent |
-| Modele LLM | gemini-2.5-flash (standard) + gemini-2.5-pro (complex tasks) |
+| Modele LLM | gemini-3.5-flash (standard i złożone zadania, konfigurowalne przez ADK_MODEL_STRONG) |
 | Testy quality | 10 e2e (routing, security, pipeline structure, contracts, skills) |
 
 ---
@@ -75,7 +75,7 @@
   │                      └──────────────┘                                           │
   └─────────────────────────────────────────────────────────────────────────────────┘
           ↕ MCP (optional)              ↕ Gemini API
-     Jira / Confluence / GitLab     gemini-2.5-flash / pro
+     Jira / Confluence / GitLab     gemini-3.5-flash
 ```
 
 ---
@@ -157,7 +157,7 @@ User Request
                   ▼
 ┌─ epic_writer ──────────────────────────────┐
 │  output_key: epic_draft                     │
-│  MODEL: gemini-2.5-flash                    │
+│  MODEL: gemini-3.5-flash                    │
 │  Ładuje: epic_template + requirement-analysis│
 │  Generuje:                                  │
 │  • Tytuł i opis epiku                       │
@@ -221,7 +221,7 @@ User Request
                   ▼
 ┌─ content_writer ───────────────────────────┐
 │  output_key: doc_draft                      │
-│  MODEL: gemini-2.5-pro (STRONG)             │  ◄── Mocniejszy model
+│  MODEL: ADK_MODEL_STRONG                    │  ◄── Mocniejszy model
 │  Skills loading (DYNAMIC):                  │
 │  • ALWAYS: style-guide                      │
 │  • IF Diátaxis: diataxis-writing            │
@@ -333,7 +333,7 @@ User Request
                   ▼
 ┌─ knowledge_extractor ──────────────────────┐
 │  output_key: extracted_knowledge            │
-│  MODEL: gemini-2.5-pro (STRONG)             │
+│  MODEL: ADK_MODEL_STRONG                    │
 │  Klasyfikuje typ:                           │
 │  • domain-concept                           │
 │  • process-workflow                         │
@@ -351,7 +351,7 @@ User Request
                   ▼
 ┌─ skill_architect ──────────────────────────┐
 │  output_key: skill_draft                    │
-│  MODEL: gemini-2.5-pro (STRONG)             │
+│  MODEL: ADK_MODEL_STRONG                    │
 │  Tworzy SKILL.md per agentskills.io spec:  │
 │  • YAML frontmatter                         │
 │  • Body ≤500 lines (target 100-300)         │
@@ -361,7 +361,7 @@ User Request
                   ▼
 ┌─ quality_reviewer ─────────────────────────┐
 │  output_key: skill_reviewed                 │ ◄── QUALITY GATE
-│  MODEL: gemini-2.5-pro (STRONG)             │
+│  MODEL: ADK_MODEL_STRONG                    │
 │  Anthropic principle:                       │
 │  "Czy agent POTRZEBUJE tej informacji?"     │
 │  Waliduje: spec compliance, conciseness,    │
@@ -476,8 +476,8 @@ contract/sample_contract.json
 export GOOGLE_API_KEY=...
 
 # Opcjonalne
-export ADK_MODEL=gemini-2.5-flash          # default
-export ADK_MODEL_STRONG=gemini-2.5-pro      # for complex tasks
+export ADK_MODEL=gemini-3.5-flash          # default
+export ADK_MODEL_STRONG=gemini-3.5-flash    # for complex tasks
 export OUTPUT_DIR=./output
 export SKILLS_DIR=./skills
 

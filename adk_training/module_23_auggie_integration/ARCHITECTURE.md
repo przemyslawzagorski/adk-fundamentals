@@ -12,7 +12,7 @@
 └───────────────────────────────┬─────────────────────────────────────────┘
                                 │
                 ┌───────────────▼────────────────┐
-                │   ai_code_concierge (LlmAgent) │  ◄── gemini-2.5-flash
+                │   ai_code_concierge (LlmAgent) │  ◄── gemini-3.5-flash
                 │   ROUTER / DISPATCHER          │      (tani orchestrator)
                 └───────────────┬────────────────┘
                                 │ tool calls

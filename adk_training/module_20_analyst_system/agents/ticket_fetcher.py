@@ -12,7 +12,7 @@ from google.adk.agents import LlmAgent
 from ..prompts.prompt_loader import load_prompt
 from ..tools.jira_tools import build_jira_tools
 
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 
 def build_ticket_fetcher(model: str | None = None) -> LlmAgent:

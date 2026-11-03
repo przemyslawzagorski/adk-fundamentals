@@ -20,7 +20,7 @@ from google.adk.agents import LlmAgent, ParallelAgent, SequentialAgent
 load_dotenv()
 
 # Konfiguracja
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash"
 
 # =============================================================================
 # R├ôWNOLEG┼üY ZWIADOWCY - Trzej agenci eksploruj─ůcy jednocze┼Ťnie

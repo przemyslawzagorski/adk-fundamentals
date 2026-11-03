@@ -172,7 +172,7 @@ def search_hotels_by_name(name: str) -> List[Dict[str, Any]]:
 
 ```python
 root_agent = Agent(
-    model="gemini-2.5-flash-exp",
+    model="gemini-3.5-flash",
     tools=[
         search_hotels_by_name,
         search_hotels_by_location,

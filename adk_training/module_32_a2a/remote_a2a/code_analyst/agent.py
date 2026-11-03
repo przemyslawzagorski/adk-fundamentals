@@ -29,7 +29,7 @@ from google.adk.tools import FunctionTool
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 
 # =============================================================================

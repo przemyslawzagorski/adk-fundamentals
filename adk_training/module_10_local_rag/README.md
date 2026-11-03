@@ -15,7 +15,7 @@ SimpleDirectoryReader (LlamaIndex)
         ↓
 Chunking na fragmenty tekstu
         ↓
-gemini-embedding-2-preview (Google)  → Embeddingi wektorowe
+gemini-embedding-001 (Google)        → Embeddingi wektorowe
         ↓
 VectorStoreIndex (w pamięci RAM)
         ↓
@@ -74,7 +74,7 @@ Porównaj odpowiedzi na te same pytania. Zwróć uwagę na halucynacje.
 | Pojęcie | Opis |
 |---------|------|
 | **FilesRetrieval** | Narzędzie ADK do RAG na plikach lokalnych, oparte na LlamaIndex |
-| **Embedding** | Reprezentacja wektorowa tekstu (gemini-embedding-2-preview) |
+| **Embedding** | Reprezentacja wektorowa tekstu (gemini-embedding-001) |
 | **VectorStoreIndex** | Indeks wektorowy w pamięci RAM do wyszukiwania semantycznego |
 | **SimpleDirectoryReader** | Ładuje pliki z katalogu (MD, TXT, PDF, DOCX, CSV, JSON...) |
 | **Chunking** | Podział dokumentu na fragmenty odpowiednie dla embeddingów |
@@ -121,7 +121,7 @@ retriever = VectorStoreIndex.from_documents(
 
 1. **`SimpleDirectoryReader`** skanuje katalog i parsuje pliki (MD, TXT, PDF, DOCX, CSV...)
 2. **LlamaIndex** dzieli je na chunki (fragmenty ~1024 tokenów)
-3. **`gemini-embedding-2-preview`** generuje wektor 768-wymiarowy dla każdego chunka
+3. **`gemini-embedding-001`** generuje wektor dla każdego chunka
    (wymaga połączenia z API — Vertex AI lub Google AI Studio)
 4. **`VectorStoreIndex`** buduje indeks w pamięci RAM
 

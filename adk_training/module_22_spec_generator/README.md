@@ -41,9 +41,9 @@ SpecGeneratorAgent (SequentialAgent)
 ```
 # Gemini
 GOOGLE_CLOUD_PROJECT=adk-training-pz
-GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_CLOUD_LOCATION=global
 GOOGLE_GENAI_USE_VERTEXAI=1
-SPEC_GEN_LLM_MODEL=gemini-2.5-pro        # mocniejszy model do projektowania
+SPEC_GEN_LLM_MODEL=gemini-3.5-flash        # mocniejszy model do projektowania
 
 # Comarch MCP (UWAGA: patrz SECURITY.md — tokeny w Secret Manager!)
 COMARCH_MCP_JIRA_URL=https://tapir.krakow.comarch/jira

@@ -24,14 +24,14 @@ load_dotenv()
 
 # Configuration
 PROJECT_ID = os.getenv('GOOGLE_CLOUD_PROJECT')
-REGION = os.getenv('GOOGLE_CLOUD_LOCATION', 'us-central1')
+REGION = os.getenv('AGENT_ENGINE_LOCATION', 'us-central1')
 AGENT_ENGINE_ID = os.getenv('AGENT_ENGINE_ID')
 
 if not all([PROJECT_ID, REGION, AGENT_ENGINE_ID]):
     print("❌ Error: Missing required environment variables")
     print("   Please check your .env file for:")
     print("   - GOOGLE_CLOUD_PROJECT")
-    print("   - GOOGLE_CLOUD_LOCATION")
+    print("   - AGENT_ENGINE_LOCATION")
     print("   - AGENT_ENGINE_ID")
     exit(1)
 

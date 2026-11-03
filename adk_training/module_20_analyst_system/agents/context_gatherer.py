@@ -21,7 +21,7 @@ from ..tools.notebooklm_tool import build_notebooklm_tool, is_enabled as _nblm_e
 
 logger = logging.getLogger(__name__)
 
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 
 def _split_sub_instructions(full: str) -> dict[str, str]:

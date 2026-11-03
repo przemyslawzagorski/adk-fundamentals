@@ -86,7 +86,7 @@ AUGGIE_USE_CLI=1
 # Opcjonalnie — Google Cloud dla Gemini routera (jeśli używasz `agent.py`)
 GOOGLE_GENAI_USE_VERTEXAI=true
 GOOGLE_CLOUD_PROJECT=your-project
-GOOGLE_CLOUD_LOCATION=europe-central2
+GOOGLE_CLOUD_LOCATION=global
 ```
 
 ---

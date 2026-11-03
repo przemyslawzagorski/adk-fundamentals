@@ -40,7 +40,7 @@ from google.adk.tools import FunctionTool
 from google.adk.agents.remote_a2a_agent import RemoteA2aAgent, AGENT_CARD_WELL_KNOWN_PATH
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 # URL do auto-generowanego agent-card przez to_a2a()
 # Format: http://<host>:<port>/.well-known/agent-card.json

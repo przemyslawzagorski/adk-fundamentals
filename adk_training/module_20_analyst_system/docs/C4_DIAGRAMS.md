@@ -10,7 +10,7 @@ C4Context
 
     System(analyst, "Analyst System", "Inteligentny system agentowy do automatyzacji zadań analitycznych, generowania dokumentacji i zarządzania wiedzą projektową")
 
-    System_Ext(gemini, "Google Gemini API", "LLM backend: gemini-2.5-flash / gemini-2.5-pro")
+    System_Ext(gemini, "Google Gemini API", "LLM backend: gemini-3.5-flash")
     System_Ext(jira, "Jira", "Zarządzanie zadaniami i backlogiem")
     System_Ext(wiki, "Confluence Wiki", "Baza dokumentacji projektowej")
     System_Ext(gitlab, "GitLab", "Repozytorium kodu źródłowego")

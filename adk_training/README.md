@@ -48,7 +48,7 @@ cp .env.example .env
 
 # Edytuj .env i wypełnij swoimi wartościami:
 # - GOOGLE_CLOUD_PROJECT=twoj-projekt-id
-# - GOOGLE_CLOUD_LOCATION=us-central1
+# - GOOGLE_CLOUD_LOCATION=global
 ```
 
 ## 📚 Moduły

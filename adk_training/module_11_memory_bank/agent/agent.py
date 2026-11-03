@@ -27,7 +27,7 @@ load_dotenv()
 # CONFIGURATION
 # =============================================================================
 
-MODEL = os.getenv("MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("MODEL", "gemini-3.5-flash")
 AGENT_NAME = "chronicler_agent"
 
 # =============================================================================

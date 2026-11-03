@@ -16,7 +16,7 @@ from google.adk.plugins.save_files_as_artifacts_plugin import SaveFilesAsArtifac
 
 load_dotenv()
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash"
 AGENT_APP_NAME = 'artistagent'
 
 

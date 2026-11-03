@@ -36,7 +36,7 @@ from google.adk.agents import LlmAgent
 
 agent = LlmAgent(
     name="kapitan",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="Jesteś kapitanem piratów...",
     description="Kapitan statku"
 )
@@ -168,9 +168,9 @@ agent = LlmAgent(
 ```bash
 # Podstawowe
 GOOGLE_CLOUD_PROJECT=your-project-id
-GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_CLOUD_LOCATION=global
 GOOGLE_GENAI_USE_VERTEXAI=true
-ADK_MODEL=gemini-2.5-flash
+ADK_MODEL=gemini-3.5-flash
 
 # OAuth (Module 15, 16)
 GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com

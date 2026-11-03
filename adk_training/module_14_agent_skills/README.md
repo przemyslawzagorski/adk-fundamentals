@@ -177,7 +177,7 @@ root_agent = Agent(
 | `skills/crew-training/SKILL.md` | External skill: szkolenie załogi (L2) |
 | `skills/crew-training/references/training-procedures.md` | Procedury szkoleniowe (L3) |
 | `.env.template` | Szablon konfiguracji |
-| `requirements.txt` | Zależności (google-adk>=1.25.0) |
+| `requirements.txt` | Zależności (google-adk>=2.13.0) |
 
 ---
 

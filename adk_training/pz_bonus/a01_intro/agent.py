@@ -14,7 +14,7 @@ from google.adk.tools import FunctionTool
 
 load_dotenv()
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash"
 AGENT_APP_NAME = 'artistagent'
 
 

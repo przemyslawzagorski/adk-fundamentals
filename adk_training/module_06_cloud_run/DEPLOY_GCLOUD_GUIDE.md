@@ -27,7 +27,7 @@ Ten przewodnik opisuje jak wdrożyć aplikację Pirate Navigator do Google Cloud
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=1
 GOOGLE_CLOUD_PROJECT=your-project-id
-GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_CLOUD_LOCATION=global
 ```
 
 ### 2. Zaloguj się do GCP

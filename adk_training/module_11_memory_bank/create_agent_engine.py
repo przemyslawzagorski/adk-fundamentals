@@ -25,11 +25,12 @@ except ImportError:
 
 # Get configuration from environment
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
-LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+LOCATION = os.getenv("AGENT_ENGINE_LOCATION", "us-central1")
+# Gemini 3.5 is served only from the global endpoint
+MODEL_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "global")
 
 # Memory Bank models
-# Using gemini-1.5-flash for better stability and higher rate limits
-MEMORY_GENERATION_MODEL = "gemini-2.5-flash"
+MEMORY_GENERATION_MODEL = "gemini-3.5-flash"
 EMBEDDING_MODEL = "text-embedding-005"
 
 if not PROJECT_ID:
@@ -61,7 +62,7 @@ try:
             "contextSpec": {
                 "memoryBankConfig": {
                     "generationConfig": {
-                        "model": f"projects/{PROJECT_ID}/locations/{LOCATION}/publishers/google/models/{MEMORY_GENERATION_MODEL}"
+                        "model": f"projects/{PROJECT_ID}/locations/{MODEL_LOCATION}/publishers/google/models/{MEMORY_GENERATION_MODEL}"
                     },
                     "similaritySearchConfig": {
                         "embeddingModel": f"projects/{PROJECT_ID}/locations/{LOCATION}/publishers/google/models/{EMBEDDING_MODEL}"

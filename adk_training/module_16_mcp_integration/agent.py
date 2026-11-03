@@ -30,7 +30,7 @@ from mcp import StdioServerParameters
 # KONFIGURACJA
 # =============================================================================
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash"
 AGENT_NAME = "mcp_multi_agent"
 
 # Ścieżka do katalogu z serwerami MCP

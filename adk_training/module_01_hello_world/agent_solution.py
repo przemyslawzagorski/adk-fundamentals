@@ -19,7 +19,7 @@ from google.adk.agents import LlmAgent
 # Rozwiązanie A: Agent FORMALNY
 agent_formalny = LlmAgent(
     name="asystent_formalny",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""Jestem profesjonalnym asystentem AI działającym zgodnie z najwyższymi 
 standardami obsługi klienta.
 
@@ -43,7 +43,7 @@ Każda interakcja jest traktowana z najwyższą powagą i profesjonalizmem.
 # Rozwiązanie B: Agent SWOBODNY
 agent_swobodny = LlmAgent(
     name="asystent_swobodny",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""Hej! Jestem Twoim ziomkiem AI, gotowym pomóc w każdej sprawie! 😊
 
 Co mogę dla Ciebie zrobić:
@@ -66,14 +66,14 @@ Pytaj śmiało o co chcesz - jestem tu dla Ciebie!
 # =============================================================================
 # ĆWICZENIE 1.2: WYPRÓBUJ RÓŻNE MODELE
 # =============================================================================
-# Zadanie: Zmień gemini-2.5-flash na gemini-2.0-flash i zaobserwuj różnice.
+# Zadanie: Zmień gemini-3.5-flash na gemini-3.5-flash-lite i zaobserwuj różnice.
 
 # Rozwiązanie: Agenci z różnymi modelami do porównania
 
-agent_gemini_2_5_flash = LlmAgent(
-    name="asystent_gemini_2_5",
-    model="gemini-2.5-flash",  # Najnowszy model - szybki i wydajny
-    instruction="""Jestem asystentem AI opartym na modelu Gemini 2.5 Flash.
+agent_gemini_3_5_flash = LlmAgent(
+    name="asystent_gemini_3_5",
+    model="gemini-3.5-flash",  # Stabilny model - szybki i wydajny
+    instruction="""Jestem asystentem AI opartym na modelu Gemini 3.5 Flash.
 
 Ten model charakteryzuje się:
 - Bardzo szybkim czasem odpowiedzi
@@ -83,23 +83,23 @@ Ten model charakteryzuje się:
 
 Używaj mnie do codziennych zadań wymagających szybkich odpowiedzi!
 """,
-    description="Asystent używający modelu Gemini 2.5 Flash"
+    description="Asystent używający modelu Gemini 3.5 Flash"
 )
 
-agent_gemini_2_0_flash = LlmAgent(
-    name="asystent_gemini_2_0",
-    model="gemini-2.0-flash",  # Poprzednia wersja modelu
-    instruction="""Jestem asystentem AI opartym na modelu Gemini 2.0 Flash.
+agent_gemini_3_5_flash_lite = LlmAgent(
+    name="asystent_gemini_3_5_lite",
+    model="gemini-3.5-flash-lite",  # Lżejsza, tańsza wersja
+    instruction="""Jestem asystentem AI opartym na modelu Gemini 3.5 Flash-Lite.
 
 Ten model to:
-- Stabilna, sprawdzona wersja
-- Dobra równowaga między jakością a szybkością
-- Szeroko przetestowany w produkcji
-- Niezawodny wybór dla większości aplikacji
+- Najtańsza i najszybsza wersja
+- Dobra do prostych, powtarzalnych zadań
+- Słabsza w złożonym rozumowaniu
+- Dobry wybór przy dużym wolumenie zapytań
 
-Porównaj moje odpowiedzi z nowszymi modelami!
+Porównaj moje odpowiedzi z pełnym modelem Flash!
 """,
-    description="Asystent używający modelu Gemini 2.0 Flash"
+    description="Asystent używający modelu Gemini 3.5 Flash-Lite"
 )
 
 # WSKAZÓWKA: Aby przetestować różnice:
@@ -120,7 +120,7 @@ Porównaj moje odpowiedzi z nowszymi modelami!
 
 agent_z_kontekstem = LlmAgent(
     name="asystent_techcorp",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""Jestem asystentem AI firmy TechCorp Solutions - wiodącego dostawcy 
 rozwiązań chmurowych w Polsce.
 
@@ -162,8 +162,8 @@ Zawsze odnoszę się do naszych produktów i wartości w odpowiedziach!
 
 # root_agent = agent_formalny          # Ćwiczenie 1.1 - Formalny
 # root_agent = agent_swobodny          # Ćwiczenie 1.1 - Swobodny
-# root_agent = agent_gemini_2_5_flash  # Ćwiczenie 1.2 - Gemini 2.5
-# root_agent = agent_gemini_2_0_flash  # Ćwiczenie 1.2 - Gemini 2.0
+# root_agent = agent_gemini_3_5_flash       # Ćwiczenie 1.2 - Gemini 3.5 Flash
+# root_agent = agent_gemini_3_5_flash_lite  # Ćwiczenie 1.2 - Gemini 3.5 Flash-Lite
 root_agent = agent_z_kontekstem      # Ćwiczenie 1.3 - Z kontekstem (domyślny)
 
 # =============================================================================

@@ -11,7 +11,7 @@ from agent import root_agent
 
 load_dotenv()
 
-MODEL = "gemini-2.5-flash-001"
+MODEL = "gemini-3.5-flash"
 AGENT_APP_NAME = 'basic_agent'
 
 async def get_response(runner, user_id, session_id,  message):

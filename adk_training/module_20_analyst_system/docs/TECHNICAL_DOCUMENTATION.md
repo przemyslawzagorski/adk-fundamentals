@@ -118,8 +118,8 @@ module_20_analyst_system/
 | Zmienna | Wymagana | Opis |
 |---------|----------|------|
 | `GOOGLE_API_KEY` | Tak | Klucz API Google AI Studio |
-| `ADK_MODEL` | Nie | Model LLM (domyślnie: `gemini-2.5-flash`) |
-| `ADK_STRONG_MODEL` | Nie | Model dla złożonych zadań (domyślnie: `gemini-2.5-pro`) |
+| `ADK_MODEL` | Nie | Model LLM (domyślnie: `gemini-3.5-flash`) |
+| `ADK_STRONG_MODEL` | Nie | Model dla złożonych zadań (domyślnie: `gemini-3.5-flash`) |
 | `OUTPUT_DIR` | Nie | Katalog wyjściowy (domyślnie: `./output`) |
 | `SKILLS_DIR` | Nie | Katalog skill-i (domyślnie: `./skills`) |
 | `NODE_EXTRA_CA_CERTS` | Nie | Ścieżka do certyfikatu CA (dla MCP w sieciach korporacyjnych) |
@@ -387,7 +387,7 @@ python e2e_tests/run_all_tests.py
 ### 7.2. Zależności Python
 
 ```
-google-adk>=1.28.0     # Framework agentowy
+google-adk>=2.13.0     # Framework agentowy
 python-dotenv           # Zmienne środowiskowe
 pydantic>=2.0           # Walidacja danych
 pyyaml                  # Parsowanie frontmatter YAML

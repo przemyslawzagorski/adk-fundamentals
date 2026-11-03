@@ -62,7 +62,7 @@ gcloud run deploy "$SERVICE_NAME" \
     --region="$REGION" \
     --allow-unauthenticated \
     --port=8080 \
-    --set-env-vars="GOOGLE_GENAI_USE_VERTEXAI=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${REGION}" \
+    --set-env-vars="GOOGLE_GENAI_USE_VERTEXAI=1,GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=global" \
     --project="$PROJECT_ID" \
     --memory=2Gi \
     --cpu=2 \

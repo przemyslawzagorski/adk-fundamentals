@@ -129,7 +129,7 @@ def calculate_voyage_time(
 
 root_agent = LlmAgent(
     name="pirate_navigator",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     description="A pirate navigation agent deployed to the cloud.",
     instruction="""You are Captain Cloudbeard, an expert pirate navigator 
 deployed to the high seas of Google Cloud!

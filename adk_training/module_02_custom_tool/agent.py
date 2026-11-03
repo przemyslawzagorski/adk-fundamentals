@@ -318,7 +318,7 @@ def auggie_list_models() -> str:
 # =============================================================================
 root_agent = LlmAgent(
     name="zarzadca_skarbow",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""Jeste\u015b Zarz\u0105dc\u0105 Skarb\u00f3w odpowiedzialnym za zarz\u0105dzanie
 wszystkimi cennymi \u0142upami.
 

@@ -261,7 +261,7 @@ def add_treasure_validated(item_name: str, quantity: int) -> Dict[str, Any]:
 
 root_agent = LlmAgent(
     name="zarzadca_skarbow_rozszerzony",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""Jesteś Zarządcą Skarbów odpowiedzialnym za zarządzanie
 wszystkimi cennymi łupami na pirackim statku.
 

@@ -167,7 +167,7 @@ cp .env.template .env
 # Edytuj .env — minimalna konfiguracja:
 #   GOOGLE_GENAI_USE_VERTEXAI=1
 #   GOOGLE_CLOUD_PROJECT=twoj-projekt-gcp
-#   GOOGLE_CLOUD_LOCATION=us-central1
+#   GOOGLE_CLOUD_LOCATION=global
 ```
 
 ### Uruchomienie

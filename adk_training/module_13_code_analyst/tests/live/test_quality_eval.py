@@ -43,7 +43,7 @@ pytestmark = [
 
 APP_NAME = "quality_live"
 USER_ID = "tester"
-MODEL_ANALYST = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-2.0-flash")
+MODEL_ANALYST = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-3.5-flash")
 # Judge moze byc innym modelem dla niezaleznosci oceny
 MODEL_JUDGE = os.environ.get("CODE_ANALYST_JUDGE_MODEL", MODEL_ANALYST)
 THRESHOLD = float(os.environ.get("CODE_ANALYST_QUALITY_THRESHOLD", "7.0"))

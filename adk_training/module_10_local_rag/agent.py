@@ -5,7 +5,7 @@ LlmAgent z FilesRetrieval do przeszukiwania lokalnych dokumentów firmy.
 
 FilesRetrieval używa LlamaIndex do:
 1. Wczytania dokumentów z katalogu (SimpleDirectoryReader)
-2. Wygenerowania embeddingów (gemini-embedding-2-preview)
+2. Wygenerowania embeddingów (gemini-embedding-001)
 3. Zbudowania indeksu wektorowego w pamięci (VectorStoreIndex)
 4. Wyszukiwania semantycznego przy zapytaniach agenta
 
@@ -47,7 +47,7 @@ if not os.path.isdir(DOCS_DIR):
 _use_vertexai = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "0") == "1"
 if _use_vertexai:
     _embedding_model = GoogleGenAIEmbedding(
-        model_name="gemini-embedding-2-preview",
+        model_name="gemini-embedding-001",
         vertexai_config=VertexAIConfig(
             project=os.environ.get("GOOGLE_CLOUD_PROJECT"),
             location=os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1"),
@@ -95,7 +95,7 @@ AGENT_APP_NAME = "local_rag_agent"
 
 root_agent = LlmAgent(
     name=AGENT_APP_NAME,
-    model="gemini-2.0-flash",
+    model="gemini-3.5-flash",
     instruction=instruction_prompt,
     tools=[narzedzie_rag],
 )

@@ -45,7 +45,7 @@ pytestmark = [
 
 APP_NAME = "live_smoke"
 USER_ID = "tester"
-MODEL = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-2.0-flash")
+MODEL = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-3.5-flash")
 
 
 def _make_tools(repo_path: str) -> list[FunctionTool]:

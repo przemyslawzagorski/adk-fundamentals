@@ -16,7 +16,7 @@ from ..tools.skill_tools import list_skills, read_skill
 _module_dir = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(_module_dir, "..", ".env"))
 
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 tool_read_file = FunctionTool(func=read_file)
 tool_list_files = FunctionTool(func=list_files)

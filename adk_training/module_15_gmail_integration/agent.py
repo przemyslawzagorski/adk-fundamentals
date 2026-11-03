@@ -22,7 +22,7 @@ load_dotenv()
 # Configuration
 # =============================================================================
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash"
 AGENT_APP_NAME = "gmail_assistant"
 
 # OAuth Credentials (from Google Cloud Console)

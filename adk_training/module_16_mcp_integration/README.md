@@ -160,7 +160,7 @@ my_tools = MCPToolset(
 )
 
 root_agent = LlmAgent(
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     name="moj_agent",
     tools=[my_tools],
     ...

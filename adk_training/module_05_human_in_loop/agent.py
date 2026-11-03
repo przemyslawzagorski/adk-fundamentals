@@ -43,7 +43,7 @@ from google.genai import types
 load_dotenv()
 
 # Konfiguracja modelu
-MODEL = "gemini-2.5-flash" # Zmieniono na stabilną wersję 2.0
+MODEL = "gemini-3.5-flash"
 
 # Skarbiec (symulowana baza danych)
 SHIP_TREASURY = {

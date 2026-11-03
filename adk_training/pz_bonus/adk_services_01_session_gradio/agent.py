@@ -10,7 +10,7 @@ import gradio as gr
 
 load_dotenv()
 
-MODEL = "gemini-2.5-flash-001"
+MODEL = "gemini-3.5-flash"
 AGENT_APP_NAME = 'basic_agent'
 
 async def get_response(runner, user_id, session_id,  message):
@@ -25,7 +25,7 @@ async def get_response(runner, user_id, session_id,  message):
 
 
 root_agent = Agent(
-        model="gemini-2.5-flash",
+        model=MODEL,
         name='user_assistant',
         instruction="""
         You are helpful assistant. Your role is to answer user questions.

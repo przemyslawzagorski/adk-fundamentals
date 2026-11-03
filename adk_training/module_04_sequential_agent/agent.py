@@ -22,7 +22,7 @@ from google.adk.agents import LlmAgent, SequentialAgent
 load_dotenv()
 
 # Konfiguracja
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 AGENT_APP_NAME = "flota_planowania_rajdu"
 
 # =============================================================================

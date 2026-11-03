@@ -61,7 +61,7 @@ from google.adk.tools import FunctionTool
 from google.adk.workflow import node
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 
 # =============================================================================

@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from google.adk.agents import LlmAgent, SequentialAgent
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 # =============================================================================
 # ĆWICZENIE 1: DODAJ CZWARTEGO AGENTA - KWATERMISTRZ

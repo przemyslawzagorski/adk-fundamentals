@@ -16,7 +16,7 @@ from google.adk.events import Event, EventActions
 from google.adk.agents.callback_context import CallbackContext
 
 load_dotenv()
-MODEL = os.getenv("ADK_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 # =============================================================================
 # WSPÓLNE KOMPONENTY STERUJĄCE PĘTLĄ

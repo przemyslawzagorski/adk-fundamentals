@@ -37,7 +37,7 @@ Endpoint: `GET /api/cost`. Frontend pokazuje *Cost panel* na żywo.
 
 | Model | USD / sek (przykład) |
 |---|---|
-| `gemini-2.5-flash` | ~0.000007 |
+| `gemini-3.5-flash` | ~0.000007 |
 | `claude-sonnet-4.5` | ~0.000150 |
 
 Aktualizuj wartości w `cost_tracker.py` per pricing change.

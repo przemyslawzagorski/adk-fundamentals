@@ -85,7 +85,7 @@ Odpowiadaj profesjonalnie i precyzyjnie, wykorzystując dostępną wiedzę organ
 # =============================================================================
 root_agent = LlmAgent(
     name="asystent_rag",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction=instruction_prompt,
     description="Asystent AI z dostępem do bazy wiedzy organizacji przez RAG.",
     tools=[narzedzie_wyszukiwania]

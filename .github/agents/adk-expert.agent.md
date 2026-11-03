@@ -133,14 +133,14 @@ module_XX_nazwa/
 [adk]
 
 [agents.root_agent]
-model = "gemini-2.0-flash"
+model = "gemini-3.5-flash"
 ```
 
 ### Wzorzec .env
 ```bash
 GOOGLE_GENAI_USE_VERTEXAI=1
 GOOGLE_CLOUD_PROJECT=adk-training-pz
-GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_CLOUD_LOCATION=global
 ```
 
 ## Zasady implementacji

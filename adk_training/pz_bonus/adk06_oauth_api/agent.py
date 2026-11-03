@@ -18,7 +18,7 @@ load_dotenv()
 
 
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash"
 AGENT_APP_NAME = 'hrmanager'
 
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')

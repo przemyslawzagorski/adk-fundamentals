@@ -163,9 +163,9 @@ gcloud services enable people.googleapis.com
 ### 2. Zmienne środowiskowe (.env)
 ```bash
 GOOGLE_CLOUD_PROJECT=your-project-id
-GOOGLE_CLOUD_LOCATION=us-central1
+GOOGLE_CLOUD_LOCATION=global
 GOOGLE_GENAI_USE_VERTEXAI=true
-ADK_MODEL=gemini-2.5-flash
+ADK_MODEL=gemini-3.5-flash
 
 # OAuth Credentials
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com

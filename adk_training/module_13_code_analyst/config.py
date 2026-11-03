@@ -69,7 +69,7 @@ class Settings(BaseSettings):
     )
 
     # --- LLM ---
-    llm_model: str = Field(default="gemini-2.0-flash", alias="CODE_ANALYST_LLM_MODEL")
+    llm_model: str = Field(default="gemini-3.5-flash", alias="CODE_ANALYST_LLM_MODEL")
 
     # --- MCP ---
     mcp_enabled: str = Field(default="auto", alias="MCP_ENABLED")

@@ -44,7 +44,7 @@ def test_config_defaults():
     from config import get_settings
     get_settings.cache_clear()
     s = get_settings()
-    assert s.llm_model == "gemini-2.5-pro"
+    assert s.llm_model == "gemini-3.5-flash"
     assert s.max_critique_iterations == 3
     assert s.has_mcp_jira is False
     assert s.notebooklm_enabled is False
