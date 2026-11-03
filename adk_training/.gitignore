@@ -1,0 +1,87 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+myenv/
+env/
+ENV/
+.venv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment variables - WAŻNE!
+.env
+.env.local
+.env.*.local
+*.env
+
+# Google Cloud credentials - NIGDY NIE COMMITUJ!
+*-key.json
+*-credentials.json
+service-account*.json
+gcp-*.json
+
+# ADK specific
+*.db
+*.sqlite
+*.sqlite3
+*.log
+*.logs
+
+# Secrets - WAŻNE dla Gmail!
+secrets/
+.secrets/
+oauth_credentials.json
+token.json
+credentials.json
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+
