@@ -87,3 +87,4 @@ adk_training/module_02_custom_tool/test_auggie.py
 
 # Trainer-only notes (participant messages)
 WIADOMOSC_DLA_UCZESTNIKOW.md
+scripts/participants.txt
