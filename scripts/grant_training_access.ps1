@@ -61,7 +61,8 @@ Write-Host ""
 
 $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $backup = Join-Path $env:TEMP "iam_policy_${Project}_$stamp.json"
-gcloud projects get-iam-policy $Project --format=json | Out-File -Encoding utf8 $backup
+gcloud projects get-iam-policy $Project --format=json 2>$null | Out-File -Encoding utf8 $backup
+if ($LASTEXITCODE -ne 0) { throw "Cannot read IAM policy of $Project (check gcloud auth login)." }
 $policy = Get-Content $backup -Raw | ConvertFrom-Json
 if (-not $policy.bindings) { $policy | Add-Member -NotePropertyName bindings -NotePropertyValue @() -Force }
 
@@ -96,10 +97,11 @@ if (-not $Apply) { Write-Host "Dry run - re-run with -Apply to write the policy.
 $newPolicyFile = Join-Path $env:TEMP "iam_policy_${Project}_${stamp}_new.json"
 # UTF-8 without BOM - gcloud rejects a BOM-prefixed JSON file
 [IO.File]::WriteAllText($newPolicyFile, ($policy | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
-gcloud projects set-iam-policy $Project $newPolicyFile --format=none
+# gcloud prints status to stderr; PS 5.1 would turn it into a terminating error
+gcloud projects set-iam-policy $Project $newPolicyFile --format=none 2>$null
 if ($LASTEXITCODE -ne 0) { throw "set-iam-policy failed (policy unchanged). Backup: $backup" }
 
-$after = gcloud projects get-iam-policy $Project --format=json | ConvertFrom-Json
+$after = gcloud projects get-iam-policy $Project --format=json 2>$null | ConvertFrom-Json
 $missing = foreach ($role in $Roles) {
     $m = @(($after.bindings | Where-Object role -eq $role).members)
     foreach ($email in $emails) {
