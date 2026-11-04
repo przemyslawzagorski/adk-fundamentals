@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import os
 import threading
-from typing import Optional
 
 from google.adk.tools import FunctionTool
 
@@ -56,7 +55,7 @@ def make_retrieval_tools(indexer: CodeIndexer) -> list[FunctionTool]:
 # ---------------------------------------------------------------------------
 
 _singleton_lock = threading.Lock()
-_singleton_indexer: Optional[CodeIndexer] = None
+_singleton_indexer: CodeIndexer | None = None
 
 
 def _cli_indexer() -> CodeIndexer:

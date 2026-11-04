@@ -20,6 +20,7 @@ Konfiguracja w .env — patrz .env.template.
 
 import os
 import sys
+
 from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
 from google.adk.tools import FunctionTool
@@ -31,10 +32,10 @@ if _module_dir not in sys.path:
 
 load_dotenv(os.path.join(_module_dir, ".env"))
 
-from code_retrieval_tool import search_code, index_project, get_index_stats  # noqa: E402
-from git_tools import git_status, git_create_branch, git_commit, git_diff, git_log, git_checkout_back  # noqa: E402
-from file_tools import read_project_file, write_project_file, list_project_files  # noqa: E402
 from build_tools import run_build, run_tests  # noqa: E402
+from code_retrieval_tool import get_index_stats, index_project, search_code  # noqa: E402
+from file_tools import list_project_files, read_project_file, write_project_file  # noqa: E402
+from git_tools import git_checkout_back, git_commit, git_create_branch, git_diff, git_log, git_status  # noqa: E402
 
 # =============================================================================
 # NARZĘDZIA
@@ -122,8 +123,9 @@ def _try_comarch_mcp():
 
     # Szybki test sieci (2s timeout) — nie blokuje startu jeśli VPN wyłączony
     import socket
+    from concurrent.futures import ThreadPoolExecutor
+    from concurrent.futures import TimeoutError as FuturesTimeout
     from urllib.parse import urlparse
-    from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 
     jira_url = os.environ.get("JIRA_BASE_URL", "")
     if not jira_url:

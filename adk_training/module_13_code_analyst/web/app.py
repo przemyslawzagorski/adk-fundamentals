@@ -29,7 +29,7 @@ import sys
 import time
 import uuid
 from contextlib import asynccontextmanager
-from typing import Any, Optional
+from typing import Any
 
 # --- Path setup: enable imports from parent module ---
 _WEB_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -39,16 +39,24 @@ if _MODULE_DIR not in sys.path:
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-# --- App imports ---
-from config import get_settings
-from logging_config import configure_logging, get_logger
-from security import sanitize_user_input
+# --- ADK ---
+from google.adk.agents import LlmAgent, SequentialAgent
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.adk.tools import FunctionTool
+from google.genai import types
+from repo_manager import RepoInfo, RepoManager
+
+from build_tools import run_build, run_tests
 from code_indexer import CodeIndexer
 from code_retrieval_tool import make_retrieval_tools
+
+# --- App imports ---
+from config import get_settings
 from file_tools import list_project_files, read_project_file, write_project_file
 from git_tools import (
     git_checkout_back,
@@ -58,17 +66,9 @@ from git_tools import (
     git_log,
     git_status,
 )
-from build_tools import run_build, run_tests
+from logging_config import configure_logging, get_logger
+from security import sanitize_user_input
 from telemetry import TelemetryCollector, make_model_callbacks
-
-from repo_manager import RepoInfo, RepoManager
-
-# --- ADK ---
-from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
-from google.adk.tools import FunctionTool
-from google.genai import types
 
 # --- Prometheus (opcjonalne) ---
 try:
@@ -466,7 +466,7 @@ async def _run_agent_pipeline(
     runner: Runner,
     session_id: str,
     user_message: str,
-    system_hint: Optional[str] = None,
+    system_hint: str | None = None,
 ) -> dict:
     """Uruchom SequentialAgent i zbierz kroki + odpowiedz.
 
@@ -632,7 +632,7 @@ async def _require_api_key(request: Request) -> None:
 templates = Jinja2Templates(directory=os.path.join(_WEB_DIR, "templates"))
 
 
-def _format_time(ts: Optional[float]) -> str:
+def _format_time(ts: float | None) -> str:
     if not ts:
         return "nigdy"
     delta = time.time() - ts
@@ -692,6 +692,7 @@ async def telemetry_summary(hours: int = 24) -> dict:
 async def dashboard(request: Request):
     repos = repo_manager.list_all()
     return templates.TemplateResponse(
+        request,
         "dashboard.html",
         {
             "request": request,
@@ -746,6 +747,7 @@ async def repo_detail(request: Request, repo_id: str):
     if not repo:
         raise HTTPException(status_code=404, detail="Repo not found")
     return templates.TemplateResponse(
+        request,
         "repo.html",
         {
             "request": request,
@@ -825,6 +827,7 @@ async def index_repo(
 
     repo = repo_manager.get(repo_id)  # refresh stats
     return templates.TemplateResponse(
+        request,
         "_stats.html",
         {
             "request": request,
@@ -901,6 +904,7 @@ async def search_repo(
     # Odfiltruj wiadomosci bledu z query
     filtered = [r for r in results if "error" not in r]
     return templates.TemplateResponse(
+        request,
         "_search_results.html",
         {"request": request, "query": q, "results": filtered},
     )
@@ -944,6 +948,7 @@ async def chat_repo(
         ).observe(time.perf_counter() - start)
 
     return templates.TemplateResponse(
+        request,
         "_chat_message.html",
         {
             "request": request,
@@ -1018,6 +1023,7 @@ async def run_workflow(
         ).observe(time.perf_counter() - start)
 
     return templates.TemplateResponse(
+        request,
         "_workflow_result.html",
         {
             "request": request,
@@ -1056,7 +1062,7 @@ async def _http_exc_handler(request: Request, exc: HTTPException):
 if __name__ == "__main__":
     import uvicorn
 
-    print(f"\n  Code Analyst Web UI")
+    print("\n  Code Analyst Web UI")
     print(f"  http://{settings.host}:{settings.port}")
     print(f"  health: /health  ready: /ready"
           f"{'  metrics: /metrics' if _PROMETHEUS else ''}")

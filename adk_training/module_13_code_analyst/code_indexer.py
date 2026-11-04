@@ -13,11 +13,10 @@ import hashlib
 import json
 import os
 import time
-from typing import Optional
 
 from llama_index.core import (
-    SimpleDirectoryReader,
     Settings,
+    SimpleDirectoryReader,
     StorageContext,
     VectorStoreIndex,
     load_index_from_storage,
@@ -55,7 +54,7 @@ class CodeIndexer:
         project_dir: str,
         persist_dir: str = "./index_store",
         collection_name: str = "code_index",
-        embedding_model: Optional[str] = None,
+        embedding_model: str | None = None,
     ):
         settings = get_settings()
         self.project_dir = os.path.abspath(project_dir)
@@ -71,7 +70,7 @@ class CodeIndexer:
         self._chunk_size = settings.chunk_size
         self._chunk_overlap = settings.chunk_overlap
         self._similarity_cutoff = settings.similarity_cutoff
-        self._index: Optional[VectorStoreIndex] = None
+        self._index: VectorStoreIndex | None = None
 
     # --- helpers ---
 
@@ -79,7 +78,7 @@ class CodeIndexer:
         return os.path.exists(os.path.join(self.persist_dir, "docstore.json"))
 
     @property
-    def index(self) -> Optional[VectorStoreIndex]:
+    def index(self) -> VectorStoreIndex | None:
         if self._index is None and self._has_persisted_index():
             storage_context = StorageContext.from_defaults(persist_dir=self.persist_dir)
             self._index = load_index_from_storage(
@@ -99,7 +98,7 @@ class CodeIndexer:
     def _load_metadata(self) -> dict:
         if os.path.exists(self.metadata_path):
             try:
-                with open(self.metadata_path, "r", encoding="utf-8") as f:
+                with open(self.metadata_path, encoding="utf-8") as f:
                     return json.load(f)
             except (json.JSONDecodeError, OSError):
                 return {}
@@ -252,7 +251,7 @@ class CodeIndexer:
         if self._has_persisted_index():
             try:
                 docstore_path = os.path.join(self.persist_dir, "docstore.json")
-                with open(docstore_path, "r", encoding="utf-8") as f:
+                with open(docstore_path, encoding="utf-8") as f:
                     data = json.load(f)
                 return len(data.get("docstore/data", {}))
             except OSError:

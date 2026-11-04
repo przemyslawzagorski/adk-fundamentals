@@ -7,7 +7,6 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from typing import Optional
 
 
 class _JsonFormatter(logging.Formatter):
@@ -72,5 +71,5 @@ def configure_logging(level: str = "INFO", json_format: bool = False) -> None:
     _CONFIGURED = True
 
 
-def get_logger(name: Optional[str] = None) -> logging.Logger:
+def get_logger(name: str | None = None) -> logging.Logger:
     return logging.getLogger(name)

@@ -56,7 +56,7 @@ def read_project_file(repo_path: str, file_path: str) -> dict:
         return _err(f"Plik nie istnieje: {file_path}")
 
     try:
-        with open(full_path, "r", encoding="utf-8", errors="replace") as f:
+        with open(full_path, encoding="utf-8", errors="replace") as f:
             content = f.read()
     except OSError as e:
         return _err(f"Nie można odczytać pliku: {e}")

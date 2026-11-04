@@ -31,11 +31,11 @@ import os
 import sqlite3
 import threading
 import time
+from collections.abc import Callable
 from contextlib import contextmanager
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Optional
-
+from typing import Any
 
 # -----------------------------------------------------------------------------
 # Cennik modeli (USD per 1M tokenow) - snapshot. Aktualizowac okresowo.
@@ -156,7 +156,7 @@ class LlmEvent:
 class TelemetryCollector:
     """Thread-safe zbieracz zdarzen LLM."""
 
-    def __init__(self, db_path: Optional[str | os.PathLike] = None):
+    def __init__(self, db_path: str | os.PathLike | None = None):
         self._db_path = Path(db_path or os.environ.get(
             "ADK_TELEMETRY_DB", "data/telemetry.db"
         ))
@@ -275,8 +275,6 @@ def make_model_callbacks(
 
         model = getattr(callback_context, "model_name", "") or \
                 getattr(llm_response, "model_version", "") or ""
-        session = getattr(callback_context, "session_id", "") or \
-                  getattr(callback_context, "_invocation_context", None)
         session_id = ""
         try:
             session_id = callback_context._invocation_context.session.id  # type: ignore[attr-defined]
@@ -319,7 +317,7 @@ def make_model_callbacks(
 # Singleton wygodny
 # -----------------------------------------------------------------------------
 
-_DEFAULT: Optional[TelemetryCollector] = None
+_DEFAULT: TelemetryCollector | None = None
 
 
 def default_collector() -> TelemetryCollector:

@@ -22,14 +22,14 @@ Dzialanie:
 
 from __future__ import annotations
 
-from typing import Any, AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
+from typing import Any
 from uuid import uuid4
 
 from google.adk.models.base_llm import BaseLlm
 from google.adk.models.llm_request import LlmRequest
 from google.adk.models.llm_response import LlmResponse
 from google.genai import types
-
 
 # --- DSL ------------------------------------------------------------------
 

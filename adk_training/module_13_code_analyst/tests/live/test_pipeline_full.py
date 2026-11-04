@@ -16,7 +16,6 @@ import sys
 from pathlib import Path
 
 import pytest
-
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 

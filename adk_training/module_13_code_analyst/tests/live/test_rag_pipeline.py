@@ -12,11 +12,9 @@ UWAGA: koszty API Vertex AI (embeddingi + inferencja) + czas ~60s.
 from __future__ import annotations
 
 import os
-import shutil
 from pathlib import Path
 
 import pytest
-
 from google.adk.agents import LlmAgent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -24,7 +22,6 @@ from google.genai import types
 
 from code_indexer import CodeIndexer
 from code_retrieval_tool import make_retrieval_tools
-
 
 pytestmark = [
     pytest.mark.live,

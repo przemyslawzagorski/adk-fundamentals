@@ -57,9 +57,9 @@ def git_status(repo_path: str) -> dict:
     except (RuntimeError, subprocess.TimeoutExpired) as e:
         return _err(f"git status failed: {e}", is_git=True)
 
-    lines = [l for l in status_raw.splitlines() if l.strip()]
-    changed = [l[3:] for l in lines if l[:2].strip() and l[0] != "?"]
-    untracked = [l[3:] for l in lines if l.startswith("??")]
+    lines = [line for line in status_raw.splitlines() if line.strip()]
+    changed = [line[3:] for line in lines if line[:2].strip() and line[0] != "?"]
+    untracked = [line[3:] for line in lines if line.startswith("??")]
     return _ok(
         is_git=True,
         branch=branch,

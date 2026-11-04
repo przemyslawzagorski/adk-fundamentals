@@ -24,7 +24,6 @@ from google.genai import types
 from file_tools import list_project_files, read_project_file, write_project_file
 from tests.agent.fake_llm import FakeLlm, call, say
 
-
 APP_NAME = "demo"
 USER_ID = "demo_user"
 

@@ -29,7 +29,6 @@ from google.genai import types
 
 from file_tools import list_project_files, read_project_file
 
-
 APP_NAME = "live_demo"
 USER_ID = "demo"
 MODEL = os.environ.get("CODE_ANALYST_LLM_MODEL", "gemini-2.0-flash")

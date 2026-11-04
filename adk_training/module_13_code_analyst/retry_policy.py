@@ -25,8 +25,8 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
-from typing import Any, Awaitable, Callable, Iterable, Optional
-
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 log = logging.getLogger("code_analyst.retry")
 
@@ -61,7 +61,7 @@ async def retry_call(
     base_delay: float = 1.0,
     max_delay: float = 30.0,
     jitter: float = 0.25,
-    retry_on: Optional[Callable[[BaseException], bool]] = None,
+    retry_on: Callable[[BaseException], bool] | None = None,
     name: str = "llm_call",
 ) -> Any:
     """Wywoluje `coro_fn()` z exponential backoff.
@@ -71,7 +71,7 @@ async def retry_call(
     """
     pred = retry_on or is_retryable_error
     attempt = 0
-    last_exc: Optional[BaseException] = None
+    last_exc: BaseException | None = None
     while attempt < max_attempts:
         attempt += 1
         try:

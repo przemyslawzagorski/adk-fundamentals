@@ -3,12 +3,11 @@ Rejestr repozytoriow - zarzadza lista repo i ich metadanymi.
 Dane persystowane w pliku JSON (repos.json).
 """
 
-import os
 import json
-import uuid
+import os
 import time
-from dataclasses import dataclass, asdict
-from typing import Optional
+import uuid
+from dataclasses import asdict, dataclass
 
 MAX_PATH_LENGTH = 500
 MAX_NAME_LENGTH = 100
@@ -22,7 +21,7 @@ class RepoInfo:
     name: str
     path: str
     created_at: float
-    last_indexed: Optional[float] = None
+    last_indexed: float | None = None
     total_chunks: int = 0
     indexed_files: int = 0
     status: str = "new"  # new | indexing | ready | error
@@ -42,7 +41,7 @@ class RepoManager:
     def _load(self) -> dict[str, dict]:
         if os.path.exists(self._registry_path):
             try:
-                with open(self._registry_path, "r", encoding="utf-8") as f:
+                with open(self._registry_path, encoding="utf-8") as f:
                     return json.load(f)
             except (json.JSONDecodeError, OSError):
                 return {}
@@ -102,7 +101,7 @@ class RepoManager:
 
     # --- CRUD ---
 
-    def add(self, path: str, name: str = "") -> tuple[Optional[RepoInfo], str]:
+    def add(self, path: str, name: str = "") -> tuple[RepoInfo | None, str]:
         """Dodaj repo. Zwraca (RepoInfo | None, error_msg)."""
         valid, result = self.validate_path(path)
         if not valid:
@@ -139,7 +138,7 @@ class RepoManager:
         self._save(registry)
         return True
 
-    def get(self, repo_id: str) -> Optional[RepoInfo]:
+    def get(self, repo_id: str) -> RepoInfo | None:
         """Pobierz info o repo."""
         registry = self._load()
         data = registry.get(repo_id)

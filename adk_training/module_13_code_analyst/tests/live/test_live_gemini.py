@@ -20,7 +20,6 @@ import os
 from pathlib import Path
 
 import pytest
-
 from google.adk.agents import LlmAgent, SequentialAgent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -28,7 +27,6 @@ from google.adk.tools import FunctionTool
 from google.genai import types
 
 from file_tools import list_project_files, read_project_file
-
 
 pytestmark = [
     pytest.mark.live,

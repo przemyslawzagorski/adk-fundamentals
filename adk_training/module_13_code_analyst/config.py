@@ -4,14 +4,11 @@ Konfiguracja centralna — pydantic-settings, walidacja przy starcie.
 
 from __future__ import annotations
 
-import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 _MODULE_DIR = Path(__file__).resolve().parent
 
@@ -41,7 +38,7 @@ class Settings(BaseSettings):
     reload: bool = Field(default=False, alias="CODE_ANALYST_RELOAD")
 
     # --- Auth / bezpieczeństwo ---
-    api_key: Optional[str] = Field(default=None, alias="CODE_ANALYST_API_KEY")
+    api_key: str | None = Field(default=None, alias="CODE_ANALYST_API_KEY")
     require_auth: bool = Field(default=False, alias="CODE_ANALYST_REQUIRE_AUTH")
     allowed_origins: str = Field(default="", alias="CODE_ANALYST_ALLOWED_ORIGINS")
 
@@ -73,14 +70,14 @@ class Settings(BaseSettings):
 
     # --- MCP ---
     mcp_enabled: str = Field(default="auto", alias="MCP_ENABLED")
-    github_personal_access_token: Optional[str] = Field(
+    github_personal_access_token: str | None = Field(
         default=None, alias="GITHUB_PERSONAL_ACCESS_TOKEN"
     )
-    jira_base_url: Optional[str] = Field(default=None, alias="JIRA_BASE_URL")
-    jira_bearer_token: Optional[str] = Field(default=None, alias="JIRA_BEARER_TOKEN")
+    jira_base_url: str | None = Field(default=None, alias="JIRA_BASE_URL")
+    jira_bearer_token: str | None = Field(default=None, alias="JIRA_BEARER_TOKEN")
 
     # --- Sesje ---
-    session_db_url: Optional[str] = Field(
+    session_db_url: str | None = Field(
         default=None, alias="CODE_ANALYST_SESSION_DB_URL",
         description="np. sqlite:///./web_data/sessions.db — jeśli puste używa InMemorySessionService",
     )

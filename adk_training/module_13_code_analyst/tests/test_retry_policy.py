@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
-
 import pytest
 
 from retry_policy import is_retryable_error, retry_call
@@ -34,7 +32,7 @@ def test_is_not_retryable_400_401_403_404():
 
 
 def test_is_retryable_timeout():
-    assert is_retryable_error(asyncio.TimeoutError())
+    assert is_retryable_error(TimeoutError())
 
 
 def test_is_retryable_by_message():

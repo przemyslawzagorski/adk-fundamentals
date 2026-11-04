@@ -5,7 +5,7 @@ Służy do testowania Code RAG w module_13
 
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class AuthService:
