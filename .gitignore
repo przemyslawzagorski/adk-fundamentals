@@ -88,3 +88,6 @@ adk_training/module_02_custom_tool/test_auggie.py
 # Trainer-only notes (participant messages)
 WIADOMOSC_DLA_UCZESTNIKOW.md
 scripts/participants.txt
+
+# Pentest run artifacts (HAR traces with third-party headers)
+adk_training/module_24_audit_ops/artifacts/
