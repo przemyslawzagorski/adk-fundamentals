@@ -98,8 +98,11 @@ $newPolicyFile = Join-Path $env:TEMP "iam_policy_${Project}_${stamp}_new.json"
 # UTF-8 without BOM - gcloud rejects a BOM-prefixed JSON file
 [IO.File]::WriteAllText($newPolicyFile, ($policy | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
 # gcloud prints status to stderr; PS 5.1 would turn it into a terminating error
+$ErrorActionPreference = "Continue"
 gcloud projects set-iam-policy $Project $newPolicyFile --format=none 2>$null
-if ($LASTEXITCODE -ne 0) { throw "set-iam-policy failed (policy unchanged). Backup: $backup" }
+$setExit = $LASTEXITCODE
+$ErrorActionPreference = "Stop"
+if ($setExit -ne 0) { throw "set-iam-policy failed (policy unchanged). Backup: $backup" }
 
 $after = gcloud projects get-iam-policy $Project --format=json 2>$null | ConvertFrom-Json
 $missing = foreach ($role in $Roles) {
