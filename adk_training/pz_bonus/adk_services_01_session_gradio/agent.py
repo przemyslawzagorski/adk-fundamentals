@@ -25,7 +25,7 @@ from google.adk.tools import ToolContext
 
 load_dotenv()
 
-MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash-lite")
 
 GUEST_PROFILE = {"name": "Guest", "role": "unknown", "language": "en"}
 

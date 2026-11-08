@@ -23,7 +23,7 @@ from google.adk.tools import AgentTool
 
 load_dotenv()
 
-MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash-lite")
 
 marketing_expert = Agent(
     model=MODEL,

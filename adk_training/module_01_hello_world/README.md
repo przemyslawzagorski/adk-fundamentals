@@ -1,66 +1,66 @@
-# Moduł 1: Hello World Agent - Podstawowy Agent
+﻿# ModuĹ‚ 1: Hello World Agent - Podstawowy Agent
 
-## 📚 Przegląd
+## đź“š PrzeglÄ…d
 
-Witaj! To Twoja pierwsza podróż w świat agentów ADK. W tym module stworzysz prostego, ale funkcjonalnego agenta AI - podstawowego asystenta.
+Witaj! To Twoja pierwsza podrĂłĹĽ w Ĺ›wiat agentĂłw ADK. W tym module stworzysz prostego, ale funkcjonalnego agenta AI - podstawowego asystenta.
 
 **Czas trwania:** 45 minut
-**Poziom trudności:** Początkujący (nie wymaga wcześniejszego doświadczenia z ADK)
+**Poziom trudnoĹ›ci:** PoczÄ…tkujÄ…cy (nie wymaga wczeĹ›niejszego doĹ›wiadczenia z ADK)
 
-## 🎯 Cele Edukacyjne
+## đźŽŻ Cele Edukacyjne
 
-Po ukończeniu tego modułu będziesz potrafił:
-- Zrozumieć podstawową strukturę `LlmAgent`
-- Skonfigurować parametry: nazwę agenta, model i instrukcje
-- Uruchomić agenta za pomocą komendy `adk web`
-- Wchodzić w interakcję z agentem przez interfejs webowy
+Po ukoĹ„czeniu tego moduĹ‚u bÄ™dziesz potrafiĹ‚:
+- ZrozumieÄ‡ podstawowÄ… strukturÄ™ `LlmAgent`
+- SkonfigurowaÄ‡ parametry: nazwÄ™ agenta, model i instrukcje
+- UruchomiÄ‡ agenta za pomocÄ… komendy `adk web`
+- WchodziÄ‡ w interakcjÄ™ z agentem przez interfejs webowy
 
-## 📁 Zawartość Modułu
+## đź“ ZawartoĹ›Ä‡ ModuĹ‚u
 
 ```
 module_01_hello_world/
-├── agent.py          # Główny kod agenta
-├── .env.template     # Szablon konfiguracji środowiska
-├── requirements.txt  # Zależności Python
-└── README.md         # Ten plik
+â”śâ”€â”€ agent.py          # GĹ‚Ăłwny kod agenta
+â”śâ”€â”€ .env.template     # Szablon konfiguracji Ĺ›rodowiska
+â”śâ”€â”€ requirements.txt  # ZaleĹĽnoĹ›ci Python
+â””â”€â”€ README.md         # Ten plik
 ```
 
-## 🚀 Szybki Start
+## đźš€ Szybki Start
 
-### Krok 1: Konfiguracja Środowiska
+### Krok 1: Konfiguracja Ĺšrodowiska
 
 ```bash
 
-# Stwórz środowisko wirtualne (opcjonalne, ale zalecane)
+# StwĂłrz Ĺ›rodowisko wirtualne (opcjonalne, ale zalecane)
 python -m venv .venv
 
 #aktywuj je
 .venv\Scripts\activate  # Windows
 # source .venv/bin/activate  # macOS/Linux
 
-# Przejdź do tego modułu
+# PrzejdĹş do tego moduĹ‚u
 cd adk_training/module_01_hello_world
 
-# Zainstaluj zależności
+# Zainstaluj zaleĹĽnoĹ›ci
 pip install -r requirements.txt
 
-# Skopiuj szablon środowiska
+# Skopiuj szablon Ĺ›rodowiska
 copy .env.template .env  # Windows
 # cp .env.template .env  # macOS/Linux
 
-# Edytuj .env i wpisz swój GCP project ID (GOOGLE_CLOUD_LOCATION=global)
+# Edytuj .env i wpisz swĂłj GCP project ID (GOOGLE_CLOUD_LOCATION=global)
 ```
 
 ### Krok 2: Konfiguracja Uwierzytelniania GCP
 
 ```bash
-# Zaloguj się do Google Cloud
+# Zaloguj siÄ™ do Google Cloud
 gcloud auth application-default login
 
-# Ustaw swój projekt
+# Ustaw swĂłj projekt
 gcloud config set project TWOJ_PROJECT_ID
 
-# Ustaw projekt rozliczeniowy dla ADC (usuwa ostrzeżenie "without a quota project")
+# Ustaw projekt rozliczeniowy dla ADC (usuwa ostrzeĹĽenie "without a quota project")
 gcloud auth application-default set-quota-project TWOJ_PROJECT_ID
 ```
 
@@ -73,14 +73,14 @@ adk web
 
 ### Krok 4: Testowanie Agenta
 
-1. Otwórz URL pokazany w terminalu (zazwyczaj http://localhost:8000)
-2. Wybierz "asystent_podstawowy" z listy rozwijanej agentów
-3. Wypróbuj te przykładowe pytania:
-   - "Cześć! Kim jesteś?"
+1. OtwĂłrz URL pokazany w terminalu (zazwyczaj http://localhost:8000)
+2. Wybierz "asystent_podstawowy" z listy rozwijanej agentĂłw
+3. WyprĂłbuj te przykĹ‚adowe pytania:
+   - "CzeĹ›Ä‡! Kim jesteĹ›?"
    - "Opowiedz mi o Pythonie"
-   - "Co sprawia, że agent AI jest dobry?"
+   - "Co sprawia, ĹĽe agent AI jest dobry?"
 
-## 🔑 Kluczowe Koncepcje
+## đź”‘ Kluczowe Koncepcje
 
 ### Klasa LlmAgent
 
@@ -89,57 +89,60 @@ from google.adk.agents import LlmAgent
 
 root_agent = LlmAgent(
     name="nazwa_agenta",         # Unikalny identyfikator
-    model="gemini-3.5-flash",    # Model LLM do użycia
+    model="gemini-3.5-flash",    # Model LLM do uĹĽycia
     instruction="...",           # Prompt systemowy
-    description="...",           # Dla systemów wieloagentowych
+    description="...",           # Dla systemĂłw wieloagentowych
 )
 ```
 
-### Ważne Parametry
+### WaĹĽne Parametry
 
 | Parametr | Opis | Wymagany |
 |----------|------|----------|
 | `name` | Unikalny identyfikator agenta | Tak |
 | `model` | Model LLM (gemini-3.5-flash, itp.) | Tak |
-| `instruction` | Prompt systemowy definiujący zachowanie | Tak |
-| `description` | Opis celu dla innych agentów | Nie |
+| `instruction` | Prompt systemowy definiujÄ…cy zachowanie | Tak |
+| `description` | Opis celu dla innych agentĂłw | Nie |
 
 > **ADK 2:** `from google.adk import Agent` to ta sama klasa co `LlmAgent`
-> (`Agent is LlmAgent == True`). Nowe przykłady i dokumentacja używają krótszej nazwy `Agent`.
+> (`Agent is LlmAgent == True`). Nowe przykĹ‚ady i dokumentacja uĹĽywajÄ… krĂłtszej nazwy `Agent`.
 
-## 🏋️ Ćwiczenia
+## đźŹ‹ď¸Ź Ä†wiczenia
 
-### Ćwiczenie 1.1: Modyfikacja Osobowości
-Zmień instrukcję, aby agent był bardziej formalny lub bardziej swobodny.
+### Ä†wiczenie 1.1: Modyfikacja OsobowoĹ›ci
+ZmieĹ„ instrukcjÄ™, aby agent byĹ‚ bardziej formalny lub bardziej swobodny.
 
-### Ćwiczenie 1.2: Wypróbuj Różne Modele
-Zmień `gemini-3.5-flash` na `gemini-3.5-flash-lite` i zaobserwuj różnice.
+### Ä†wiczenie 1.2: WyprĂłbuj RĂłĹĽne Modele
+DomyĹ›lnie moduĹ‚y uĹĽywajÄ… `gemini-3.5-flash-lite` (najtaĹ„szy). Ustaw w `.env`
+`ADK_MODEL=gemini-3.5-flash` (lub `gemini-3.8-flash`) i porĂłwnaj czas, styl i
+liczbÄ™ tokenĂłw (Events â†’ `usage_metadata`). Wpisz teĹĽ nieistniejÄ…cy model
+(np. `gemini-9-flash`) i przeczytaj bĹ‚Ä…d `404 NOT_FOUND`.
 
-### Ćwiczenie 1.3: Dodaj Kontekst
-Dodaj specyficzną wiedzę do instrukcji (np. historię firmy, nazwy produktów).
+### Ä†wiczenie 1.3: Dodaj Kontekst
+Dodaj specyficznÄ… wiedzÄ™ do instrukcji (np. historiÄ™ firmy, nazwy produktĂłw).
 
-## ❓ Częste Problemy
+## âť“ CzÄ™ste Problemy
 
-### Błąd "Could not authenticate"
+### BĹ‚Ä…d "Could not authenticate"
 ```bash
-# Ponownie uwierzytelnij się z GCP
+# Ponownie uwierzytelnij siÄ™ z GCP
 gcloud auth application-default login
 ```
 
 ### "Vertex AI API not enabled"
 ```bash
-# Włącz API
+# WĹ‚Ä…cz API
 gcloud services enable aiplatform.googleapis.com
 ```
 
-### Agent Nie Pojawia Się w Interfejsie Web
-- Upewnij się, że zmienna nazywa się `root_agent` (ADK szuka tej nazwy)
-- Sprawdź, czy jesteś we właściwym katalogu
+### Agent Nie Pojawia SiÄ™ w Interfejsie Web
+- Upewnij siÄ™, ĹĽe zmienna nazywa siÄ™ `root_agent` (ADK szuka tej nazwy)
+- SprawdĹş, czy jesteĹ› we wĹ‚aĹ›ciwym katalogu
 
-## 🎓 Co Dalej?
+## đźŽ“ Co Dalej?
 
-W **Module 2** nauczysz się dawać agentowi niestandardowe narzędzia - specjalne zdolności do interakcji ze światem poza zwykłą konwersacją!
+W **Module 2** nauczysz siÄ™ dawaÄ‡ agentowi niestandardowe narzÄ™dzia - specjalne zdolnoĹ›ci do interakcji ze Ĺ›wiatem poza zwykĹ‚Ä… konwersacjÄ…!
 
 ---
 
-*"Podróż tysiąca linii kodu zaczyna się od jednego agenta."*
+*"PodrĂłĹĽ tysiÄ…ca linii kodu zaczyna siÄ™ od jednego agenta."*

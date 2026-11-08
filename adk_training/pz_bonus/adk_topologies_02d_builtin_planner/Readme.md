@@ -65,6 +65,10 @@ Wybierz `adk_topologies_02d_builtin_planner` i zadaj to samo pytanie co w 02c:
 3. Usuń planner i ustaw ten sam `thinking_config` w
    `generate_content_config=types.GenerateContentConfig(thinking_config=...)`.
    Jaki jest efekt? (Odpowiedź: identyczny – planner to wygodny skrót.)
+4. Domyślny model to `gemini-3.5-flash-lite`. Na `LOW` lite **w ogóle nie myśli**
+   (0 thoughts), na `HIGH` myśli. Porównaj z `ADK_MODEL=gemini-3.5-flash`, który
+   myśli już na `LOW`. Wniosek: tańszy model + wyższy `thinking_level` vs droższy
+   model + niższy – policz tokeny (`thoughts_token_count` w Events).
 
 ## Odnośniki
 

@@ -26,9 +26,9 @@ root_agent = LlmAgent(
     # Identyfikator agenta - używany do logowania i referencji w systemach wieloagentowych
     name="asystent_podstawowy",
 
-    # Model LLM do użycia - gemini-3.5-flash jest szybki i ekonomiczny
-    # Inne opcje: gemini-3.5-flash-lite, gemini-3.8-flash
-    model=os.getenv("ADK_MODEL", "gemini-3.5-flash"),
+    # Model LLM - gemini-3.5-flash-lite: najtańszy (~5x taniej niż 3.5-flash)
+    # Inne opcje (ADK_MODEL w .env): gemini-3.5-flash, gemini-3.8-flash
+    model=os.getenv("ADK_MODEL", "gemini-3.5-flash-lite"),
     # Instrukcja systemowa - definiuje osobowość i zachowanie agenta
     # To najważniejsza konfiguracja kształtująca odpowiedzi
     instruction="""Jesteś pomocnym asystentem AI. Twoje zadania to:

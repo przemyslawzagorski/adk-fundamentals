@@ -31,7 +31,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash-lite")
 # Imagen 3/4 are not available on the `global` endpoint used in this training;
 # Gemini image models are, and they can also edit an existing image.
 IMAGE_MODEL = os.getenv("IMAGE_MODEL", "gemini-2.5-flash-image")

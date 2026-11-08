@@ -90,3 +90,6 @@ WIADOMOSC_DLA_UCZESTNIKOW.md
 
 # Pentest run artifacts (HAR traces with third-party headers)
 adk_training/module_24_audit_ops/artifacts/
+
+# Generated training deck (rebuild with adk_training/prezentacja_v2/build_deck.py)
+adk_training/prezentacja_v2/*.pptx

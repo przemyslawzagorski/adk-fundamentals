@@ -28,7 +28,8 @@ from google.genai import types
 
 load_dotenv()
 
-MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
+# flash-lite skips thinking on LOW/MINIMAL; it thinks on HIGH (set below).
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash-lite")
 
 marketing_expert = Agent(
     model=MODEL,
