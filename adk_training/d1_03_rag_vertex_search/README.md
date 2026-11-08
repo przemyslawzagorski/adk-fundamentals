@@ -1,4 +1,4 @@
-# D1.3: Agent RAG - Wyszukiwanie Wspomagane Generowaniem
+# D1.3 + D1.4: Agent RAG - Wyszukiwanie Wspomagane Generowaniem
 
 ## 📚 Przegląd
 Ten moduł wprowadza **Retrieval-Augmented Generation (RAG)** używając Vertex AI Search. Agent może przeszukiwać korporacyjne bazy wiedzy aby dostarczać dokładne, udokumentowane odpowiedzi.
@@ -94,6 +94,28 @@ rag_tool = VertexAiSearchTool(
 ### Ćwiczenie 3.3: Testowanie Limitów Pobierania
 1. Wypróbuj różne wartości `max_results` (1, 5, 10, 20)
 2. Zobacz jak wpływa to na jakość odpowiedzi i czas reakcji
+
+### D1.4: Własny indeks (bucket → datastore → app)
+
+To samo ćwiczenie co D1.3, ale na **Twoich** dokumentach. Kod się nie zmienia, zmieniasz tylko ID w `.env`.
+
+**Część 1** (przed Blokiem 4, ok. 15 min):
+
+1. **Cloud Storage** → utwórz bucket i wgraj kilka własnych plików PDF/MD. Gdy pojawi się „Unable to create your bucket”, spróbuj ponownie.
+2. **AI Applications** → *Data Stores* → *Create* → źródło: Cloud Storage → wskaż bucket. Lokalizacja: **global**.
+3. **AI Applications** → *Apps* → *Create* → typ *Search* → podłącz datastore z kroku 2.
+4. **Start importu.** Indeksowanie trwa kilka–kilkanaście minut, w tym czasie robimy D1.5.
+
+**Część 2** (po D1.5, ok. 15 min):
+
+1. W `.env` zakomentuj `SEARCH_ENGINE_ID` prowadzącego i wpisz ID swojego engine
+   (`projects/<PROJEKT>/locations/global/collections/default_collection/engines/<ENGINE_ID>`).
+2. Zrestartuj `adk web` i zapytaj o treść **swoich** dokumentów.
+3. Przełącz ID z powrotem i zadaj to samo pytanie, a potem porównaj źródła w zakładce Events.
+
+Brak wyników zwykle oznacza, że indeks jeszcze się buduje (sprawdź status importu w konsoli).
+
+**Wniosek:** pipeline wiedzy (źródło → indeks → agent) aktualizujesz bez zmiany kodu.
 
 ## Rozwiązywanie Problemów
 

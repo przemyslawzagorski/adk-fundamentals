@@ -152,13 +152,14 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
   - `UnicodeEncodeError` naprawia `PYTHONUTF8=1`.
 - **Wniosek:** jakość RAG zależy od indeksu, nie od promptu.
 
-### D1.4 Własny indeks – konsola GCP + `d1_04_own_index` · 15 + 15 min · slajd 30
+### D1.4 Własny indeks – konsola GCP + `d1_03_rag_vertex_search` · 15 + 15 min · slajd 30
 - **Część 1** (przed Blokiem 4):
   1. Bucket i własne PDF/MD.
   2. AI Applications: datastore z bucketa, potem app.
   3. **Start importu.**
-- **Część 2** (12:15, po D1.5): ID *swojego* engine w `d1_04_own_index/.env`, potem to samo pytanie do `d1_03` i `d1_04` (oba agenty w jednym `adk web`).
-- Instrukcja krok po kroku: `d1_04_own_index/README.md`.
+- **Część 2** (12:15, po D1.5): ID *swojego* engine w `d1_03_rag_vertex_search/.env` (ID prowadzącego zakomentowane), restart, pytania o *swoje* dokumenty.
+- Instrukcja krok po kroku: sekcja „D1.4” w `d1_03_rag_vertex_search/README.md`.
+- D1.4 nie ma osobnego katalogu, bo to ten sam agent; zmienia się tylko indeks. Stąd luka `d1_04` w numeracji.
 - **Pułapki:**
   - „Unable to create your bucket” – ponów (u części osób działało za drugim razem);
   - brak wyników – indeks jeszcze się buduje.
@@ -268,8 +269,8 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
 - **Pułapka:** Toolbox na Windows działa najpewniej pod WSL2.
 - **Wniosek:** dane udostępniamy przez wąskie narzędzia (read-only, limity), nie przez surowy SQL.
 
-### D2.4 MCP + OAuth – `d2_04a_mcp_servers`, `d1_12_deploy_cloud_run/mcp_server.py`, `d2_04b_oauth_openapi` · 45 + 30 min · slajd 65
-- **Przed obiadem:** gotowy serwer MCP (`d2_04a`), potem własny serwer MCP (STDIO).
+### D2.4 MCP + OAuth – `d2_04a_mcp_servers`, `d2_04b_oauth_openapi` · 45 + 30 min · slajd 65
+- **Przed obiadem:** `d2_04a` łączy 2 serwery STDIO i 1 zdalny. Zdalny to usługa z D1.12 (Cloud Run, `/mcp`, kod w `d1_12_deploy_cloud_run/mcp_server.py`). Potem własny serwer MCP (STDIO).
 - **Ext:** `d2_04x_ext_a2a` (A2A), `d2_04x_ext_gmail` (Gmail + OAuth).
 - **Po obiedzie:** OAuth (consent screen, redirect URI, People API).
 - **Pułapki:**

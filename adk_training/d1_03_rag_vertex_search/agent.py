@@ -19,8 +19,8 @@ from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
 from google.adk.tools import VertexAiSearchTool
 
-# .env z TEGO katalogu, z override=True – d1_04 używa tych samych nazw zmiennych.
-load_dotenv(os.path.join(os.path.dirname(__file__), ".env"), override=True)
+# Załaduj zmienne środowiskowe z pliku .env
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 

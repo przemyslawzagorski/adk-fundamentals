@@ -65,7 +65,7 @@ W notatkach prelegenta jest mapowanie na dawne numery „zad” z czatu.
 | D1.1 | zad1 | d1_01_hello_agent |
 | D1.2 | zad2 | d1_02_custom_tools |
 | D1.3 | zad3 | d1_03_rag_vertex_search |
-| D1.4 | zad4 | konsola GCP + d1_04_own_index |
+| D1.4 | zad4 | konsola GCP + d1_03_rag_vertex_search |
 | D1.5 | **zad7** (przesunięte wcześniej) | d1_05_runner_session_gradio |
 | D1.6 | zad5 + 5b | d1_06a → d1_06b_workflow_sequence |
 | D1.7 | zad6 + 6b | d1_07a → d1_07b_workflow_parallel |

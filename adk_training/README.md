@@ -75,7 +75,7 @@ Wyjątek: D1.5 (`python ui.py` z katalogu modułu).
 | D1.2 | `d1_02_custom_tools` | Własne narzędzia, łańcuch wywołań |
 | D1.3 | `d1_03_rag_vertex_search` | RAG: Vertex AI Search (indeks prowadzącego) |
 | ext | `d1_03x_ext_local_rag` | RAG na lokalnych plikach |
-| D1.4 | `d1_04_own_index` | RAG na **własnym** indeksie (bucket → datastore → app) |
+| D1.4 | `d1_03_rag_vertex_search` (zmiana `.env`) | RAG na **własnym** indeksie (bucket → datastore → app) |
 | D1.5 | `d1_05_runner_session_gradio` | Runner, sesja i stan we własnym UI (Gradio) |
 | D1.6 | `d1_06a_sequence_adk1_legacy` → `d1_06b_workflow_sequence` | Sekwencja: `SequentialAgent` → `Workflow` |
 | ext | `d1_06x_ext_data_handling` | Przepływ danych w grafie |
