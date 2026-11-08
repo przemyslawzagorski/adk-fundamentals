@@ -3,6 +3,23 @@
 Przewodnik prowadzącego do `Google_ADK_Architektura_Agentow_v2.pptx`. Numery slajdów
 odnoszą się do tej wersji. Kod: branch `training_09_10_11`, katalog `adk_training/`.
 
+### Nazewnictwo katalogów = kolejność prowadzenia
+
+`d<dzień>_<nr ćwiczenia><wariant>_<temat>`, np. `d1_06b_workflow_sequence` to ćwiczenie D1.6, wariant b.
+
+- `a` / `b`: warianty tego samego ćwiczenia (np. `a` = ADK 1 legacy do pokazania, `b` = ADK 2 do zrobienia);
+- `x_ext`: moduł rozszerzający (opcjonalny), wstawiony tam, gdzie pasuje tematycznie.
+
+Dropdown `adk web` (uruchamiany z `adk_training/`) sortuje alfabetycznie, więc pokazuje moduły
+dokładnie w kolejności szkolenia. Wszystkie moduły (także dawne `pz_bonus`) leżą bezpośrednio
+w `adk_training/`. Moduły spoza programu (13, 20, 22–25) są tylko na `main`.
+
+**Rozwiązania** (`agent_solution.py`) są w `.gitignore`. Publikujesz je po ćwiczeniu z katalogu modułu:
+```powershell
+git add -f agent_solution.py; git commit -m "solution: $(Split-Path -Leaf (Get-Location))" -- agent_solution.py; git push
+```
+Uczestnicy robią `git pull`.
+
 ## 0. Przed szkoleniem (checklista)
 
 - [ ] **Model.** Wszystkie moduły czytają `ADK_MODEL` z `.env`; domyślnie `gemini-3.5-flash-lite`.
@@ -26,10 +43,10 @@ odnoszą się do tej wersji. Kod: branch `training_09_10_11`, katalog `adk_train
 Ceny pochodzą ze źródła zewnętrznego; przed szkoleniem warto je zweryfikować w cenniku Vertex AI.
 
 Flash-lite przetestowany na modułach:
-- 01, 02, 03, 04w (z rozwiązaniem), 05, 07w, 08, 08w, 12 (z rozwiązaniem), 26, 33;
-- pz_bonus 02c i 02d.
+- d1_01, d1_02, d1_03, d1_06b (z rozwiązaniem), d1_07b, d1_08a, d1_08b, d1_09, d1_10a (z rozwiązaniem), d1_10b, d1_10x;
+- d1_11a i d1_11b.
 
-Lite jest słabszy w delegacji. W module 33 sub-agent zapętlał `transfer_to_agent`; naprawione blokadą transferu, a ćwiczenie 33.3 pokazuje ten problem na żywo. Gdy któryś moduł zachowuje się dziwnie, uczestnik może przełączyć `ADK_MODEL=gemini-3.5-flash` – **to też jest lekcja**: słabszy model wymaga mocniejszej architektury.
+Lite jest słabszy w delegacji. W d1_10b sub-agent zapętlał `transfer_to_agent`; naprawione blokadą transferu, a ćwiczenie 33.3 (README d1_10b) pokazuje ten problem na żywo. Gdy któryś moduł zachowuje się dziwnie, uczestnik może przełączyć `ADK_MODEL=gemini-3.5-flash` – **to też jest lekcja**: słabszy model wymaga mocniejszej architektury.
 
 ---
 
@@ -61,7 +78,7 @@ Lite jest słabszy w delegacji. W module 33 sub-agent zapętlał `transfer_to_ag
 | 16:25–16:30 | 54 | Podsumowanie dnia, pytania kontrolne |
 
 **Gdy jesteś w niedoczasie** (kolejność cięć):
-1. D1.7 – tylko 07w;
+1. D1.7 – tylko `d1_07b` bez 7W.2;
 2. D1.11 – demo prowadzącego;
 3. D1.12 – tylko URL usługi.
 
@@ -93,7 +110,7 @@ Nie tnij D1.6 ani D1.8, bo to rdzeń szkolenia (Workflow).
 Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (szybsi) →
 **Sprawdzenie** → **Pułapki** → **Wniosek** (wypowiedz go na głos na koniec).
 
-### D1.1 Hello Agent – `module_01_hello_world` · 25 min · slajd 22 (dawne zad1)
+### D1.1 Hello Agent – `d1_01_hello_agent` · 25 min · slajd 22
 - **Pokazuję:**
   - struktura modułu (`agent.py`, `__init__.py`, `.env`);
   - zakładki `adk web`: Chat / Events / Trace / State.
@@ -110,7 +127,7 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
   - Lista modeli: cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions
 - **Wniosek:** model to konfiguracja, nie kod; koszt i jakość zmieniasz w `.env`.
 
-### D1.2 Własne narzędzia – `module_02_custom_tool` · 20 min · slajd 24 (zad2)
+### D1.2 Własne narzędzia – `d1_02_custom_tools` · 20 min · slajd 24
 - **Pokazuję:**
   - docstring i type hints jako kontrakt narzędzia;
   - co się dzieje przy złym docstringu.
@@ -122,7 +139,7 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
 - **Pułapki:** graf nie odświeża się bez restartu `adk web` (pytanie z poprzedniej grupy).
 - **Wniosek:** narzędzie zwraca status, a błąd to dane, nie wyjątek; LLM sam łączy wywołania.
 
-### D1.3 RAG – `module_03_rag_agent` · 20 min · slajd 29 (zad3)
+### D1.3 RAG – `d1_03_rag_vertex_search` · 20 min · slajd 29
 - **Robią:**
   1. Wpisują w `.env` jedno z: `SEARCH_ENGINE_ID` (preferowany) albo `SEARCH_DATASTORE_ID`.
   2. Pytają o treść dokumentów.
@@ -135,29 +152,30 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
   - `UnicodeEncodeError` naprawia `PYTHONUTF8=1`.
 - **Wniosek:** jakość RAG zależy od indeksu, nie od promptu.
 
-### D1.4 Własny indeks – konsola GCP + module_03 · 15 + 15 min · slajd 30 (zad4)
+### D1.4 Własny indeks – konsola GCP + `d1_04_own_index` · 15 + 15 min · slajd 30
 - **Część 1** (przed Blokiem 4):
   1. Bucket i własne PDF/MD.
   2. AI Applications: datastore z bucketa, potem app.
   3. **Start importu.**
-- **Część 2** (12:15, po D1.5): podmiana ID w `.env` i pytania o *swoje* dokumenty.
+- **Część 2** (12:15, po D1.5): ID *swojego* engine w `d1_04_own_index/.env`, potem to samo pytanie do `d1_03` i `d1_04` (oba agenty w jednym `adk web`).
+- Instrukcja krok po kroku: `d1_04_own_index/README.md`.
 - **Pułapki:**
   - „Unable to create your bucket” – ponów (u części osób działało za drugim razem);
   - brak wyników – indeks jeszcze się buduje.
 - **Wniosek:** pipeline wiedzy (źródło → indeks → agent) aktualizujesz bez zmiany kodu.
 
-### D1.5 Agent z Pythona – `pz_bonus/adk_services_01_session_gradio` · 25 min · slajd 35 (zad7)
+### D1.5 Agent z Pythona – `d1_05_runner_session_gradio` · 25 min · slajd 35
 - **Dlaczego wcześniej niż w poprzedniej edycji:** stan (`output_key`, `{klucz}`, prefiksy) jest fundamentem Workflow w D1.6.
 - **Robią:**
-  1. `cd adk_training\pz_bonus\adk_services_01_session_gradio`, potem `python ui.py`.
+  1. `cd adk_training\d1_05_runner_session_gradio`, potem `python ui.py`.
   2. Podgląd stanu w UI.
   3. Nowa sesja kontra kontynuacja.
 - **Dodają:** prefiksy `user:` / `app:` / `temp:`; trwały SessionService.
 - **Wniosek:** Runner i SessionService to runtime agenta; `adk web` to tylko jeden z klientów.
 
-### D1.6 Sekwencja – module_04 → `module_04w_workflow_sequence` · 25 min · slajd 39 (zad5 + 5b)
+### D1.6 Sekwencja – `d1_06a_sequence_adk1_legacy` → `d1_06b_workflow_sequence` · 25 min · slajd 39
 - **Pokazuję:**
-  - ten sam rajd w 04 (SequentialAgent, deprecated) i w 04w (`Workflow(edges=[...])`);
+  - ten sam rajd w `d1_06a` (SequentialAgent, deprecated) i w `d1_06b` (`Workflow(edges=[...])`); wariant `a` **tylko pokazujesz** (2 min), uczestnicy pracują na `b`;
   - funkcja jako węzeł.
 - **Robią:**
   1. 4W.2: agent `kwatermistrz` (`output_key="lista_zapasow"`) przed Kapitanem.
@@ -169,25 +187,26 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
   - nowy węzeł pojawia się dopiero po restarcie.
 - **Wniosek:** proces o znanej kolejności to graf w kodzie, nie decyzja LLM.
 
-### D1.7 Równoległość – module_07 → `module_07w_workflow_parallel` · 20 min · slajd 40 (zad6 + 6b)
+### D1.7 Równoległość – `d1_07a_parallel_adk1_legacy` → `d1_07b_workflow_parallel` · 20 min · slajd 40
+- **Pokazuję:** `d1_07a` (ParallelAgent) obok `d1_07b`; uczestnicy pracują na `b`.
 - **Robią:** „Zbadaj wyspę Skull Island”, kolejność zakończenia w Events, 7W.1 (czwarty zwiadowca, tylko `edges`).
 - **Dodają:** 7W.2, czyli `podsumuj_zbiorke(node_input: dict)` po `JoinNode`. Klucze słownika to nazwy węzłów.
 - **Pułapki:** `429 RESOURCE_EXHAUSTED`, gdy cała grupa startuje naraz.
 - **Wniosek:** niezależne kroki równolegle skracają czas, a JoinNode zbiera wyniki.
 
-### D1.8 Pętla krytyki – module_08 → `module_08w_workflow_loop` · 25 min · slajdy 41–42 (zad9 + 9b)
+### D1.8 Pętla krytyki – `d1_08a_loop_adk1_legacy` → `d1_08b_workflow_loop` · 25 min · slajdy 41–42
 - **Pokazuję:**
   - slajd 41: custom `_run_async_impl` z ADK 1;
   - w ADK 2 to samo robi funkcja-router `yield Event(route=...)`.
 - **Robią:**
-  1. 08 i 08w z tym samym tematem.
+  1. `d1_08a` (pokaz) i `d1_08b` z tym samym tematem.
   2. Zmiana kryteriów krytyka.
   3. Znalezienie `MAX_ITERACJI` i routera.
 - **Dodają:** 8W.2 (kapitan jako funkcja, mniej wywołań LLM); 8W.1 (`RequestInput`).
-- **Tip od uczestnika poprzedniej edycji:** w schemacie `reason` przed `decision`, bo model generuje token po tokenie (wdrożone w 05, 08, 08w).
+- **Tip od uczestnika poprzedniej edycji:** w schemacie `reason` przed `decision`, bo model generuje token po tokenie (wdrożone w d1_09, d1_08a, d1_08b).
 - **Wniosek:** jakość przez iterację, a twardy limit pętli daje przewidywalny koszt.
 
-### D1.9 HITL przez callbacki – `module_05_human_in_loop` · 20 min · slajdy 43–45 (zad8)
+### D1.9 HITL przez callbacki – `d1_09_hitl_callbacks` · 20 min · slajdy 43–45
 - **Robią:**
   1. „Potrzebuję 500 dublonów na naprawę żagli”.
   2. Sprawdzają `pending_approval` w State.
@@ -197,25 +216,25 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
 - **Pułapki:** „uparty” agent to zamierzone zabezpieczenie, nie błąd.
 - **Wniosek:** callbacki to punkt kontroli (guardrails, zatwierdzenia) bez zmiany agenta. W grafie natywnie: `RequestInput` (Z2).
 
-### D1.10 Delegacja – `module_12_router_agent` + `module_33_task_api` · 30 min · slajdy 46–47 (zad10 + nowe)
+### D1.10 Delegacja – `d1_10a_router_transfer` + `d1_10b_task_api` · 30 min · slajdy 46–47
 - **Robią:**
-  1. 12: dodają specjalistę do `sub_agents` (transfer).
-  2. AgentTool: `from .agent_solution import root_agent` w `__init__.py`, prompt „Mamy rannego marynarza i trzeba wyznaczyć kurs na Jamajkę”.
+  1. `d1_10a`: dodają specjalistę do `sub_agents` (transfer).
+  2. AgentTool (**najpierw wypchnij `agent_solution.py` dla d1_10a**): `from .agent_solution import root_agent` w `__init__.py`, prompt „Mamy rannego marynarza i trzeba wyznaczyć kurs na Jamajkę”.
      - AgentTool woła `doctor` i `navigator` **naraz**, a kapitan zostaje w rozmowie;
      - przy transferze rozmowę przejmuje jeden specjalista.
-  3. 33: „Przygotuj statek, płyniemy do Tortugi”, potem lista zapasów, potem „To wszystko”.
-- **Dodają:** agent `skarbnik` (`mode="single_turn"`); porównanie z routingiem w kodzie (moduł 26).
+  3. `d1_10b`: „Przygotuj statek, płyniemy do Tortugi”, potem lista zapasów, potem „To wszystko”.
+- **Dodają:** agent `skarbnik` (`mode="single_turn"`); porównanie z routingiem w kodzie (`d1_10x_ext_graph_routes`).
 - **Pułapka lite (do pokazania!):**
   - bez `disallow_transfer_to_parent/peers` sub-agent w trybie task zapętla `transfer_to_agent` zamiast wołać `finish_task`;
   - naprawione w module; ćwiczenie 33.3 każe zdjąć blokadę i zobaczyć pętlę.
 - **Wniosek:** wybór delegacji to wybór, kto kontroluje rozmowę i ile wywołań LLM płacisz.
 
-### D1.11 Plannery – `pz_bonus` 02c vs 02d · 15 min · slajdy 48–49 (zad11)
-- `cd adk_training\pz_bonus`, potem `adk web .`; to samo pytanie w obu modułach.
+### D1.11 Plannery – `d1_11a_react_planner` vs `d1_11b_builtin_planner` · 15 min · slajdy 48–49
+- `adk web` z `adk_training/`, jak przy pozostałych modułach; to samo pytanie w `d1_11a` i `d1_11b`.
 - **Na lite:** `thinking_level=LOW` daje 0 thoughts; `HIGH` myśli. To nie błąd, tylko gotowy materiał do dyskusji o koszcie, bo thinking jest płatny jak output.
 - **Wniosek:** jawny plan (ReAct) kontra thinking modelu, czyli koszt tokenów kontra jakość.
 
-### D1.12 Deploy – `module_06_cloud_run` · 10 min demo · slajdy 50–53 (zad12)
+### D1.12 Deploy – `d1_12_deploy_cloud_run` · 10 min demo · slajdy 50–53
 - URL usługi: `pirate-navigator-28948426345.us-central1.run.app`; `pirate_navigator/agent.py` to ten sam kod co lokalnie.
 - Chętni wdrażają wieczorem wg `DEPLOY_GCLOUD_GUIDE.md`.
 - **Wniosek:** agent to usługa, a konfiguracja idzie przez zmienne środowiskowe.
@@ -224,7 +243,7 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
 
 ## 4. Ćwiczenia – Dzień 2
 
-### D2.1 Artefakty – `pz_bonus/a01_intro` · 30 min · slajd 57
+### D2.1 Artefakty – `d2_01_artifacts` · 30 min · slajd 57
 - **Robią:**
   1. Generują obraz (zapisuje się jako artefakt).
   2. W **nowej sesji** proszą o opis poprzedniego obrazu.
@@ -234,7 +253,7 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
   - model obrazów to `gemini-2.5-flash-image`.
 - **Wniosek:** pliki trzymamy poza kontekstem LLM, a sesja przechowuje tylko referencje.
 
-### D2.2 Memory Bank – `module_11_memory_bank` · 30 min · slajd 59
+### D2.2 Memory Bank – `d2_02_memory_bank` · 30 min · slajd 59
 - **Robią:**
   1. `python create_agent_engine.py`.
   2. `adk web --memory_service_uri=agentengine://projects/<P>/locations/us-central1/reasoningEngines/<ID>`
@@ -243,13 +262,15 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
 - **Pułapka:** krótki `agentengine://<ID>` użyje lokalizacji `global` i nie znajdzie banku, więc **zawsze podawaj pełny URI z regionem**.
 - **Wniosek:** stan `user:` to pamięć ustrukturyzowana; Memory Bank to wspomnienia wyszukiwane semantycznie.
 
-### D2.3 Baza danych – `module_09_database_postgres` / `_simple` · 35 min · slajd 64
-- Postgres (Neon) przez MCP Toolbox, `sslmode=require`; plan B to `module_09_database_simple`.
+### D2.3 Baza danych – `d2_03a_database_sqlite` → `d2_03b_database_postgres_mcp` · 35 min · slajd 64
+- **Wszyscy:** `d2_03a` (SQLite, działa od ręki).
+- **Chętni:** `d2_03b`, czyli Postgres (Neon) przez MCP Toolbox, `sslmode=require`.
 - **Pułapka:** Toolbox na Windows działa najpewniej pod WSL2.
 - **Wniosek:** dane udostępniamy przez wąskie narzędzia (read-only, limity), nie przez surowy SQL.
 
-### D2.4 MCP + OAuth – `module_16`, `module_06` (MCP), `pz_bonus/adk06_oauth_api` · 45 + 30 min · slajd 65
-- **Przed obiadem:** gotowy serwer MCP, potem własny serwer MCP (STDIO).
+### D2.4 MCP + OAuth – `d2_04a_mcp_servers`, `d1_12_deploy_cloud_run/mcp_server.py`, `d2_04b_oauth_openapi` · 45 + 30 min · slajd 65
+- **Przed obiadem:** gotowy serwer MCP (`d2_04a`), potem własny serwer MCP (STDIO).
+- **Ext:** `d2_04x_ext_a2a` (A2A), `d2_04x_ext_gmail` (Gmail + OAuth).
 - **Po obiedzie:** OAuth (consent screen, redirect URI, People API).
 - **Pułapki:**
   - `403` – brak test usera albo wyłączone API;
@@ -257,21 +278,22 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
   - **sekretów nie wklejamy na czat**.
 - **Wniosek:** MCP to standard; własny serwer daje narzędzia reużywalne przez wielu agentów.
 
-### D2.5 Skills – `module_14_agent_skills` · 30 min · slajd 67
-- Uruchamiamy **z katalogu modułu** (`adk web .`); kolejność: `agent.py` → `agent_dynamic.py` → `agent_self_loading.py`.
+### D2.5 Skills – `d2_05_agent_skills` · 30 min · slajd 67
+- Uruchamiamy z `adk_training/` jak resztę (**nie** `adk web .` z wnętrza modułu, bo wtedy ADK widzi `skills/` jako aplikację).
+- Kolejność: `agent.py` → `agent_dynamic.py` → `agent_self_loading.py`; wariant przełączasz przez `from .agent_dynamic import root_agent` w `__init__.py`, potem restart.
 - **Wniosek:** wiedza doładowana na żądanie daje mniejszy prompt i niższy koszt. Porównaj ze slajdem o instructions / skills / MCP.
 
-### D2.6 Testy i ewaluacja – `module_21_adk_tester` + `module_31_evaluation` · 40 min · slajd 69
-- **Robią:**
+### D2.6 Testy i ewaluacja – `d2_06a_evaluation` → `d2_06b_e2e_tester` · 40 min · slajd 69
+- **Robią (główne):** `d2_06a`, czyli dataset, kryteria (`tool_trajectory`, response match) i `adk eval`.
+- **Pokazuję / chętni:** `d2_06b`:
   1. `python -m playwright install chromium`.
   2. Scenariusz dla własnego agenta z dnia 1.
   3. Raport testera.
-  4. W module 31: dataset i kryteria.
 - **Pułapki:**
   - `COMPUTER_USE_MODEL` to preview, sprawdź dostępność;
   - porty 8000/8001;
   - raport mailowy może trafić do spamu.
-- **Uwaga:** API ewaluacji (moduł 31) nie zostało przetestowane na lite; przećwicz przed szkoleniem.
+- **Uwaga:** API ewaluacji (`d2_06a`) nie zostało przetestowane na lite; przećwicz przed szkoleniem.
 - **Wniosek:** agent bez testów to prototyp. Kolejność: testy narzędzi, potem E2E, potem ewaluacja trajektorii.
 
 ---
@@ -280,21 +302,23 @@ Format: **Pokazuję** (prowadzący, 2–5 min) → **Robią** → **Dodają** (s
 
 | # | Moduł | Kiedy | Wartość |
 |---|---|---|---|
-| Z1 | `module_26_graph_routes` | po D1.10 | routing deterministyczny `Event(route=)` vs router LLM |
-| Z2 | `module_28_human_input` | po D1.9 | HITL natywnie w Workflow (`RequestInput`) |
-| Z3 | `module_31_evaluation` | w D2.6 | ewaluacja zamiast ręcznego testu |
-| Z4 | `module_27_data_handling` | po D1.6 | przepływ danych w grafie |
-| Z5 | guardrail `before_model_callback` w module 05 | po D1.9 | bezpieczeństwo, 10 min |
-| Z6 | `module_32_a2a` | dzień 2, blok 11 | agent przez granicę procesu (uvicorn :8001) |
-| Z7 | `module_29_collaboration` / `30_dynamic` | tylko pokaz | `@node`, `ctx.run_node`, dynamiczne grafy |
+| Z1 | `d1_10x_ext_graph_routes` | po D1.10 | routing deterministyczny `Event(route=)` vs router LLM |
+| Z2 | `d1_09x_ext_human_input_workflow` | po D1.9 | HITL natywnie w Workflow (`RequestInput`) |
+| Z4 | `d1_06x_ext_data_handling` | po D1.6 | przepływ danych w grafie |
+| Z8 | `d1_03x_ext_local_rag` | po D1.3 | RAG na lokalnych plikach, bez Vertex AI Search |
+| Z9 | `d2_01x_ext_autoimport_artifacts` | po D2.1 | `SaveFilesAsArtifactsPlugin` |
+| Z5 | guardrail `before_model_callback` w `d1_09_hitl_callbacks` | po D1.9 | bezpieczeństwo, 10 min |
+| Z6 | `d2_04x_ext_a2a` | dzień 2, blok 11 | agent przez granicę procesu (uvicorn :8001) |
+| Z7 | `d1_08x_ext_collaboration` / `d1_08x_ext_dynamic_graphs` | tylko pokaz | `@node`, `ctx.run_node`, dynamiczne grafy |
 
-Moduły 25–32 nie mają README; omawiaj je bezpośrednio z kodu.
+Moduły ext z grafami (`d1_06x`, `d1_08x`, `d1_09x`, `d1_10x`, `d2_04x_ext_a2a`) i `d2_06a` nie mają README; omawiaj je z kodu i `ARCHITECTURE.md`.
+Wzmianki o „Module 23/24” w ich komentarzach dotyczą modułów produkcyjnych dostępnych na `main`.
 
 ## 6. Tricki z poprzedniej edycji
 
 - `adk web --reload_agents`; na Windows `--reload` jest wymuszone na `--no-reload`, więc restartuj ręcznie.
 - `$env:PYTHONUTF8 = '1'` usuwa całą klasę błędów `UnicodeEncodeError`.
-- Moduły `pz_bonus` uruchamiamy z katalogu `pz_bonus` (`adk web .`).
+- Wszystkie moduły uruchamiamy z `adk_training/` (`adk web`); wyjątek: D1.5 (`python ui.py`).
 - W schematach strukturalnych najpierw `reason`, potem `decision`.
 - Region Cloud Run (us-central1) to co innego niż lokalizacja modelu (global).
 - Nowy agent albo węzeł jest widoczny w grafie dopiero po restarcie `adk web`.

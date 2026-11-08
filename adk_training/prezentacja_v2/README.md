@@ -62,19 +62,19 @@ W notatkach prelegenta jest mapowanie na dawne numery „zad” z czatu.
 
 | Nowe | Dawne | Moduł |
 |---|---|---|
-| D1.1 | zad1 | module_01_hello_world |
-| D1.2 | zad2 | module_02_custom_tool |
-| D1.3 | zad3 | module_03_rag_agent |
-| D1.4 | zad4 | konsola GCP + module_03 |
-| D1.5 | **zad7** (przesunięte wcześniej) | pz_bonus/adk_services_01_session_gradio |
-| D1.6 | zad5 + 5b | module_04 → module_04w_workflow_sequence |
-| D1.7 | zad6 + 6b | module_07 → module_07w_workflow_parallel |
-| D1.8 | **zad9** + 9b (przed HITL) | module_08 → module_08w_workflow_loop |
-| D1.9 | **zad8** | module_05_human_in_loop |
-| D1.10 | zad10 + nowe | module_12_router_agent + module_33_task_api |
-| D1.11 | zad11 | pz_bonus 02c vs 02d |
-| D1.12 | zad12 | module_06_cloud_run |
-| D2.1–D2.6 | dzień 2, zad1–zad6 | a01, 11, 09, 16/06/adk06, 14, 21 + 31 |
+| D1.1 | zad1 | d1_01_hello_agent |
+| D1.2 | zad2 | d1_02_custom_tools |
+| D1.3 | zad3 | d1_03_rag_vertex_search |
+| D1.4 | zad4 | konsola GCP + d1_04_own_index |
+| D1.5 | **zad7** (przesunięte wcześniej) | d1_05_runner_session_gradio |
+| D1.6 | zad5 + 5b | d1_06a → d1_06b_workflow_sequence |
+| D1.7 | zad6 + 6b | d1_07a → d1_07b_workflow_parallel |
+| D1.8 | **zad9** + 9b (przed HITL) | d1_08a → d1_08b_workflow_loop |
+| D1.9 | **zad8** | d1_09_hitl_callbacks |
+| D1.10 | zad10 + nowe | d1_10a_router_transfer + d1_10b_task_api |
+| D1.11 | zad11 | d1_11a vs d1_11b |
+| D1.12 | zad12 | d1_12_deploy_cloud_run |
+| D2.1–D2.6 | dzień 2, zad1–zad6 | d2_01, d2_02, d2_03a/b, d2_04a/b, d2_05, d2_06a/b |
 
 ## Regeneracja
 

@@ -27,7 +27,7 @@ venv\Scripts\activate
 source venv/bin/activate
 
 # Zainstaluj zależności
-pip install -r module_01_hello_world/requirements.txt
+pip install -r d1_01_hello_agent/requirements.txt
 ```
 
 ### 3. Konfiguracja GCP
@@ -51,92 +51,66 @@ cp .env.example .env
 # - GOOGLE_CLOUD_LOCATION=global
 ```
 
-## �️ Program szkolenia (ADK 2.13, model `gemini-3.5-flash`)
+## 🗓️ Program szkolenia (ADK 2.13, model `gemini-3.5-flash-lite`)
 
-Rdzeń ADK (agent, narzędzia, callbacki, sesje, pamięć, RAG, MCP) jest wspólny
-dla ADK 1 i 2. W ADK 2 zmieniła się **orkiestracja**: `SequentialAgent`,
-`ParallelAgent` i `LoopAgent` są *deprecated* na rzecz `Workflow` (graf).
-Moduły 04/07/08 pokazują starą wersję, a moduły **04W/07W/08W** ten sam scenariusz w ADK 2.
+Katalogi mają nazwy `d<dzień>_<nr ćwiczenia><wariant>_<temat>`, zgodne z numeracją ćwiczeń
+na slajdach (D1.1 … D2.6). Dropdown `adk web` sortuje alfabetycznie, więc pokazuje moduły
+**dokładnie w kolejności szkolenia**.
 
-**Dzień 1 – Agent i orkiestracja**
+- `a` / `b`: warianty jednego ćwiczenia (np. `a` = ADK 1 legacy, `b` = ADK 2 `Workflow`);
+- `x_ext`: moduł rozszerzający (opcjonalny), wstawiony tam, gdzie pasuje tematycznie.
 
-| Blok | Moduły | Temat |
+```powershell
+cd adk_training
+adk web --reload_agents      # wszystkie moduły w jednym dropdownie
+```
+
+Wyjątek: D1.5 (`python ui.py` z katalogu modułu).
+
+### Dzień 1 – agent i orkiestracja
+
+| Ćw. | Katalog | Temat |
 |---|---|---|
-| 1 | 01, 02 | Pierwszy agent, własne narzędzia |
-| 2 | 03 | RAG (Vertex AI Search) |
-| 3 | 04 → **04W** | Sekwencja: `SequentialAgent` (ADK 1) → `Workflow` (ADK 2) |
-| 4 | 07 → **07W** | Równoległość: `ParallelAgent` → fan-out + `JoinNode` |
-| 5 | 08 → **08W** | Pętla: `LoopAgent` → routing wstecz + `RequestInput` (HITL) |
-| 6 | 05, 28 | Human-in-the-loop: callback (ADK 1) vs `RequestInput` (ADK 2) |
-| 7 | 12 → **33** | Delegowanie: router z `sub_agents` → Task API (`mode="task"/"single_turn"`) |
+| D1.1 | `d1_01_hello_agent` | Pierwszy agent, model w `.env`, `google_search` |
+| D1.2 | `d1_02_custom_tools` | Własne narzędzia, łańcuch wywołań |
+| D1.3 | `d1_03_rag_vertex_search` | RAG: Vertex AI Search (indeks prowadzącego) |
+| ext | `d1_03x_ext_local_rag` | RAG na lokalnych plikach |
+| D1.4 | `d1_04_own_index` | RAG na **własnym** indeksie (bucket → datastore → app) |
+| D1.5 | `d1_05_runner_session_gradio` | Runner, sesja i stan we własnym UI (Gradio) |
+| D1.6 | `d1_06a_sequence_adk1_legacy` → `d1_06b_workflow_sequence` | Sekwencja: `SequentialAgent` → `Workflow` |
+| ext | `d1_06x_ext_data_handling` | Przepływ danych w grafie |
+| D1.7 | `d1_07a_parallel_adk1_legacy` → `d1_07b_workflow_parallel` | Równoległość: fan-out + `JoinNode` |
+| D1.8 | `d1_08a_loop_adk1_legacy` → `d1_08b_workflow_loop` | Pętla krytyki przez routing |
+| ext | `d1_08x_ext_collaboration`, `d1_08x_ext_dynamic_graphs` | `@node`, `ctx.run_node`, dynamiczne grafy |
+| D1.9 | `d1_09_hitl_callbacks` | Human-in-the-loop przez callbacki |
+| ext | `d1_09x_ext_human_input_workflow` | HITL natywnie w Workflow (`RequestInput`) |
+| D1.10 | `d1_10a_router_transfer`, `d1_10b_task_api` | Delegacja: transfer / AgentTool / Task API |
+| ext | `d1_10x_ext_graph_routes` | Routing deterministyczny `Event(route=)` |
+| D1.11 | `d1_11a_react_planner` vs `d1_11b_builtin_planner` | Plannery: ReAct vs thinking modelu |
+| D1.12 | `d1_12_deploy_cloud_run` | Deploy na Cloud Run |
 
-**Dzień 2 – Integracje i produkcja**
+### Dzień 2 – integracje i produkcja
 
-| Blok | Moduły | Temat |
+| Ćw. | Katalog | Temat |
 |---|---|---|
-| 1 | 11 | Memory Bank (Agent Engine) |
-| 2 | 09 | Baza danych |
-| 3 | 16 | MCP |
-| 4 | 14 | Agent Skills |
-| 5 | 06 | Deploy na Cloud Run |
-| 6 | 25–30, 31, 32 | Zaawansowane ADK 2 (routing, dane, dynamiczne grafy), ewaluacja, A2A |
+| D2.1 | `d2_01_artifacts` | Obrazy i wersjonowane artefakty |
+| ext | `d2_01x_ext_autoimport_artifacts` | `SaveFilesAsArtifactsPlugin` |
+| D2.2 | `d2_02_memory_bank` | Memory Bank (Agent Engine) |
+| D2.3 | `d2_03a_database_sqlite` → `d2_03b_database_postgres_mcp` | Baza danych: SQLite, potem Postgres przez MCP Toolbox |
+| D2.4 | `d2_04a_mcp_servers`, `d2_04b_oauth_openapi` | MCP (gotowy i własny serwer), OAuth + OpenAPI |
+| ext | `d2_04x_ext_a2a`, `d2_04x_ext_gmail` | A2A, Gmail |
+| D2.5 | `d2_05_agent_skills` | Agent Skills |
+| D2.6 | `d2_06a_evaluation` → `d2_06b_e2e_tester` | Ewaluacja (`adk eval`), testy E2E |
 
 > `Workflow` nie może jeszcze być sub-agentem `LlmAgent` (ograniczenie ADK 2.13),
-> dlatego router z Modułu 12 i ewaluacja z Modułu 31 nadal bazują na `Agent`/`LlmAgent`.
+> dlatego router z `d1_10a` i ewaluacja z `d2_06a` nadal bazują na `Agent`/`LlmAgent`.
 
-## 📚 Moduły
+**Rozwiązania** (`agent_solution.py`) prowadzący publikuje po ćwiczeniu, a Ty pobierasz je przez `git pull`.
 
-### 🆕 ADK 2 (Workflow, Task API)
+Moduły produkcyjne spoza programu (code analyst, analyst system, spec generator, Auggie,
+AuditOps, workflows) są dostępne na branchu `main`.
 
-- **Module 04W**: Workflow – sekwencja jako graf, funkcje jako węzły
-- **Module 07W**: Workflow – fan-out / fan-in (`JoinNode`)
-- **Module 08W**: Workflow – pętla krytyki przez routing + HITL (`RequestInput`)
-- **Module 33**: Task API – sub-agenci w trybach `task` i `single_turn`
-- **Module 25–30**: zaawansowane wzorce Workflow (PR review, routing, dane, HITL, równoległość, dynamiczne grafy)
-
-### ✅ Gotowe do uruchomienia (bez dodatkowej konfiguracji)
-
-- **Module 01**: Hello World - Podstawowy agent
-- **Module 02**: Custom Tool - Agent z niestandardowymi narzędziami
-- **Module 05**: Human-in-Loop - Agent z zatwierdzaniem przez człowieka
-- **Module 11**: Memory Bank - Agent z pamięcią
-- **Module 12**: Router Agent - Agent routujący zapytania
-
-### ⚙️ Wymagają dodatkowej konfiguracji
-
-- **Module 03**: RAG Agent - wymaga Vertex AI Search (SEARCH_ENGINE_ID)
-- **Module 09**: Database - wymaga bazy danych (SQLite lub Postgres)
-- **Module 15**: Gmail Integration - wymaga OAuth credentials (patrz niżej)
-
-### 🚫 Pominięte w testach automatycznych
-
-- **Module 06**: Cloud Run Deployment
-- **Module 10**: Debugging
-- **Module 13**: Agent Engine
-- **Module 14**: BigQuery Observability
-- **Module 16**: Resilience
-
-## 🧪 Uruchamianie testów
-
-### Wszystkie testy automatyczne
-
-```bash
-python adk_training/e2e_tests/run_all_tests.py
-```
-
-### Pojedynczy moduł
-
-```bash
-python adk_training/e2e_tests/test_module_01.py
-```
-
-### Wyniki testów
-
-- ✅ **6/6 testów automatycznych** przechodzi pomyślnie
-- ⚠️ **3 testy** mają znane ograniczenia (Module 04, 07, 08 - session state)
-- 📝 **2 testy manualne** (Module 09 - bazy danych)
-
-## 📧 Module 15: Gmail Integration - Konfiguracja OAuth
+## 📧 `d2_04x_ext_gmail`: Gmail Integration – konfiguracja OAuth
 
 **WAŻNE**: Każdy użytkownik musi skonfigurować własne OAuth credentials!
 
@@ -186,7 +160,7 @@ cp .env.example .env
 # GMAIL_CLIENT_SECRET=twoj-client-secret
 
 # 3. Uruchom ADK web interface
-cd adk_training/module_15_gmail_integration
+cd adk_training/d2_04x_ext_gmail
 adk web
 
 # 4. Otwórz przeglądarkę i zaloguj się do SWOJEGO Gmaila
@@ -201,13 +175,11 @@ adk_training/
 ├── .env.example              # Przykładowa konfiguracja
 ├── .gitignore               # Ignorowane pliki
 ├── README.md                # Ten plik
-├── module_01_hello_world/   # Moduły szkoleniowe
-├── module_02_custom_tool/
+├── d1_01_hello_agent/       # Dzień 1, ćwiczenie D1.1
+├── d1_02_custom_tools/
 ├── ...
-└── e2e_tests/               # Testy E2E
-    ├── run_all_tests.py     # Uruchom wszystkie testy
-    ├── test_module_01.py    # Testy poszczególnych modułów
-    └── README.md            # Dokumentacja testów
+├── d2_06b_e2e_tester/       # Dzień 2, ćwiczenie D2.6
+└── prezentacja_v2/          # Prowadzenie i skrypt budujący deck
 ```
 
 ## ⚠️ Bezpieczeństwo
@@ -223,7 +195,7 @@ Wszystkie te pliki są w `.gitignore`!
 
 ## 🆘 Troubleshooting
 
-### "Permission denied" przy uruchamianiu testów
+### "Permission denied" / brak dostępu do Vertex AI
 
 ```bash
 # Upewnij się że jesteś zalogowany do GCP

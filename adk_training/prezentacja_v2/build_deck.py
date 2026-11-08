@@ -294,20 +294,20 @@ s = base("Plan dwóch dni: teoria → praktyka, blok po bloku", "Agenda",
          subtitle="Każdy blok: krótka teoria (slajdy) → ćwiczenie w module → omówienie")
 d1 = [
     ("1", "Po co agenci? Architektura i rynek", "—"),
-    ("2", "Pierwszy agent, model, narzędzia", "D1.1–D1.2 · 01, 02"),
-    ("3", "Grounding i RAG (Vertex AI Search)", "D1.3–D1.4 · 03"),
-    ("4", "Runtime: Runner, sesja, stan", "D1.5 · gradio"),
-    ("5", "Multi-agent → Workflow (ADK 2)", "D1.6–D1.8 · 04w, 07w, 08w"),
-    ("6", "Callbacki i human-in-the-loop", "D1.9 · 05"),
-    ("7", "Delegacja i planowanie", "D1.10–D1.11 · 12, 33, 02c/d"),
-    ("8", "Deploy (Cloud Run)", "D1.12 · 06"),
+    ("2", "Pierwszy agent, model, narzędzia", "D1.1–D1.2 · d1_01, d1_02"),
+    ("3", "Grounding i RAG (Vertex AI Search)", "D1.3–D1.4 · d1_03, d1_04"),
+    ("4", "Runtime: Runner, sesja, stan", "D1.5 · d1_05"),
+    ("5", "Multi-agent → Workflow (ADK 2)", "D1.6–D1.8 · d1_06 – d1_08"),
+    ("6", "Callbacki i human-in-the-loop", "D1.9 · d1_09"),
+    ("7", "Delegacja i planowanie", "D1.10–D1.11 · d1_10, d1_11"),
+    ("8", "Deploy (Cloud Run)", "D1.12 · d1_12"),
 ]
 d2 = [
-    ("9", "Artefakty i multimodalność", "D2.1 · a01"),
-    ("10", "Pamięć długoterminowa (Memory Bank)", "D2.2 · 11"),
-    ("11", "Integracje: MCP, A2A, bazy danych", "D2.3–D2.4 · 09, 16, adk06"),
-    ("12", "Skills i narzędzia deweloperskie", "D2.5 · 14"),
-    ("13", "Jakość: testy i ewaluacja", "D2.6 · 21, 31"),
+    ("9", "Artefakty i multimodalność", "D2.1 · d2_01"),
+    ("10", "Pamięć długoterminowa (Memory Bank)", "D2.2 · d2_02"),
+    ("11", "Integracje: MCP, A2A, bazy danych", "D2.3–D2.4 · d2_03, d2_04"),
+    ("12", "Skills i narzędzia deweloperskie", "D2.5 · d2_05"),
+    ("13", "Jakość: testy i ewaluacja", "D2.6 · d2_06"),
     ("14", "Enterprise, rejestr agentów, roadmapa", "podsumowanie"),
 ]
 for col, (hdr, rows, color) in enumerate([("DZIEŃ 1 · fundamenty i orkiestracja", d1, BLUE),
@@ -349,7 +349,7 @@ card(s, 7.75, 1.5, 5.0, 5.3, "Znane problemy → fix", [
     "`--reload` nie działa na Windows → używamy `--reload_agents`",
     "Nowy folder agenta / zmiana grafu → restart `adk web`",
     "Ostrzeżenia `SequentialAgent ... deprecated` – oczekiwane (temat bloku 5)",
-    "`adk web` zawsze z `adk_training/` (wyjątek: moduł 14)",
+    "`adk web` zawsze z `adk_training/` (wyjątek: D1.5 – `python ui.py`)",
 ], color=RED, size=12)
 notes(s, """Setup robimy razem, zanim ktokolwiek zacznie ćwiczenie 1. Sprawdź u każdego: `adk web` otwiera się na http://localhost:8000 i widać listę modułów.
 Najczęstsze problemy z poprzedniej edycji są po prawej – miej je pod ręką.
@@ -372,7 +372,7 @@ root_agent = Agent(
     description="Liczy łupy załogi.",
     instruction="Odpowiadaj zwięźle. Licz narzędziem.",
     tools=[policz_lup],
-)""", size=13, title="module_xx/agent.py")
+)""", size=13, title="d1_NN_temat/agent.py")
 card(s, 8.05, 1.5, 4.7, 2.55, "Co robi ADK", [
     "Docstring + type hints → schemat narzędzia dla LLM",
     "`root_agent` w `agent.py` → `adk web` sam znajdzie moduł",
@@ -385,7 +385,7 @@ card(s, 8.05, 4.2, 4.7, 2.6, "Dobre praktyki", [
     "Mały, nazwany agent = mikroserwis",
 ], color=GREEN, size=12)
 notes(s, """Zamiast starych slajdów z kodem (gemini-2.0-flash, literówki LinAgent/google_adk).
-Pokaż na żywo module_01 i module_02: struktura folderu (__init__.py, agent.py, root_agent), adk web: Chat / Events / Trace / State.
+Pokaż na żywo d1_01 i d1_02: struktura folderu (__init__.py, agent.py, root_agent), adk web: Chat / Events / Trace / State.
 Podkreśl: opis narzędzia (docstring) to prompt dla modelu – zła nazwa/opis = złe wywołania.""")
 NEW["code_first"] = s
 
@@ -417,26 +417,26 @@ card(s, 0.6, 4.3, 7.6, 2.5, "Szacunek: 12 osób × 2 dni", [
     "Workflow z funkcjami zamiast agentów = mniej wywołań LLM",
 ], color=TEAL, size=12)
 card(s, 8.45, 1.5, 4.3, 5.3, "Zmierzone na naszym projekcie", [
-    "Lite: tool calling, sekwencje i pętle działają (moduły 01–08w, 12, 33)",
+    "Lite: tool calling, sekwencje i pętle działają (d1_01–d1_08b, d1_10a, d1_10b)",
     "`thinking_level=LOW` na lite → **0 tokenów thinking** – odpowiedź bywa niejednoznaczna",
     "`HIGH` na lite → myśli i odpowiada poprawnie",
     "Zmiana modelu = jedna linia w `.env`: `ADK_MODEL=gemini-3.5-flash`",
     "Modele 3.5 tylko na `GOOGLE_CLOUD_LOCATION=global`",
-    "Moduł 33 na lite: pętla `transfer_to_agent` zamiast `finish_task` → fix: `disallow_transfer_to_parent=True`",
+    "d1_10b na lite: pętla `transfer_to_agent` zamiast `finish_task` → fix: `disallow_transfer_to_parent=True`",
     "Słabszy model = więcej pracy po stronie architektury (jasne narzędzia, routing w kodzie)",
 ], color=ORANGE, size=12)
 notes(s, """Dlaczego flash-lite: ~5x taniej na wejściu i ~3,6x na wyjściu niż 3.5-flash, a dla zadań szkoleniowych (tools, routing, proste workflow) jakość wystarcza – przetestowane na modułach.
 Liczby szacunkowe – pokaż, jak samemu policzyć: Events → usage_metadata (prompt/candidates/thoughts tokens).
-Ćwiczenie D1.1 zawiera porównanie lite vs flash. Ciekawostka do 02d: lite na LOW nie myśli wcale.""")
+Ćwiczenie D1.1 zawiera porównanie lite vs flash. Ciekawostka do d1_11b: lite na LOW nie myśli wcale.""")
 NEW["cost"] = s
 
 # --- Workflow API (concept)
 s = base("ADK 2: Workflow = graf węzłów", "Dzień 1 · Blok 5: Multi-agent → Workflow",
          subtitle="Zamiast SequentialAgent / ParallelAgent / LoopAgent (deprecated w v2)")
-textbox(s, 0.6, 1.45, 6, 0.35, "Sekwencja  ·  module_04w", size=14, color=BLUE)
+textbox(s, 0.6, 1.45, 6, 0.35, "Sekwencja  ·  d1_06b", size=14, color=BLUE)
 s.shapes[-1].text_frame.paragraphs[0].runs[0].font.bold = True
 flow(s, 0.6, 1.9, ["START", "przyjmij", "zwiadowca", "strateg", "kapitan"], BLUE, w=1.2, gap=0.25)
-textbox(s, 0.6, 2.65, 6, 0.35, "Fan-out / fan-in  ·  module_07w", size=14, color=TEAL)
+textbox(s, 0.6, 2.65, 6, 0.35, "Fan-out / fan-in  ·  d1_07b", size=14, color=TEAL)
 s.shapes[-1].text_frame.paragraphs[0].runs[0].font.bold = True
 st = label(s, 0.6, 3.6, 1.1, 0.48, "START", NAVY, size=11)
 for i, n in enumerate(["zwiad_N", "zwiad_S", "zwiad_E"]):
@@ -449,7 +449,7 @@ j = label(s, 3.95, 3.6, 1.35, 0.48, "JoinNode", TEAL, size=11, mono=True)
 k = label(s, 5.65, 3.6, 1.6, 0.48, "szpiegmistrz", WHITE, color=TEAL, size=11, mono=True)
 k.line.color.rgb = TEAL
 arrow(s, 5.3, 3.84, 5.65, 3.84, TEAL)
-textbox(s, 0.6, 4.95, 6, 0.35, "Pętla przez routing  ·  module_08w", size=14, color=PURPLE)
+textbox(s, 0.6, 4.95, 6, 0.35, "Pętla przez routing  ·  d1_08b", size=14, color=PURPLE)
 s.shapes[-1].text_frame.paragraphs[0].runs[0].font.bold = True
 flow(s, 0.6, 5.5, ["pisarz", "krytyk", "kapitan", "decyzja"], PURPLE, w=1.15, gap=0.25)
 z = label(s, 6.45, 5.5, 1.1, 0.48, "zapisz", WHITE, color=PURPLE, size=11, mono=True)
@@ -469,7 +469,7 @@ card(s, 8.0, 1.45, 4.75, 5.35, "Reguły", [
     "Router: `yield Event(route=\"popraw\")` + mapa `{trasa: węzeł}`",
     "Parametr funkcji = klucz stanu (wstrzykiwany po nazwie)",
     "Agent: `output_key` zapisuje, `{klucz}` czyta",
-    "Człowiek w pętli: `RequestInput` (moduł 28)",
+    "Człowiek w pętli: `RequestInput` (d1_09x)",
 ], color=NAVY, size=12)
 notes(s, """Najważniejszy slajd techniczny dnia 1. ADK 2 wprowadza jeden prymityw orkiestracji: graf.
 Sekwencja, równoległość i pętla to tylko różne krawędzie. Deterministyczne kroki (walidacja, parsowanie, licznik) robimy funkcją – bez LLM, bez kosztu.
@@ -478,7 +478,7 @@ NEW["workflow"] = s
 
 # --- v1 vs v2 code
 s = base("Ten sam rajd: ADK 1 vs ADK 2", "Dzień 1 · Blok 5: Multi-agent → Workflow",
-         subtitle="module_04_sequential_agent  →  module_04w_workflow_sequence")
+         subtitle="d1_06a_sequence_adk1_legacy  →  d1_06b_workflow_sequence")
 code(s, 0.6, 1.5, 5.9, 3.6, """from google.adk.agents import SequentialAgent
 
 root_agent = SequentialAgent(  # deprecated w v2
@@ -486,7 +486,7 @@ root_agent = SequentialAgent(  # deprecated w v2
     sub_agents=[zwiadowca, strateg, kapitan],
 )
 # kod między agentami? -> własny BaseAgent
-# i _run_async_impl (dużo boilerplate)""", size=13, title="ADK 1 (module_04)")
+# i _run_async_impl (dużo boilerplate)""", size=13, title="ADK 1 (d1_06a)")
 code(s, 6.75, 1.5, 6.0, 3.6, """from google.adk import Agent, Event, Workflow
 
 def przyjmij_rozkaz(node_input: str):
@@ -496,7 +496,7 @@ root_agent = Workflow(
     name="pipeline_rajdu_v2",
     edges=[("START", przyjmij_rozkaz,
             zwiadowca, strateg, kapitan)],
-)""", size=13, title="ADK 2 (module_04w)")
+)""", size=13, title="ADK 2 (d1_06b)")
 card(s, 0.6, 5.3, 12.15, 1.5, "Co zyskujemy", [
     "Kod deterministyczny jako pełnoprawny węzeł (walidacja, parsowanie, liczniki) – bez LLM i bez własnego BaseAgent",
     "Jawny graf: łatwiej czytać, testować i debugować w adk web (Events / Trace)",
@@ -509,10 +509,10 @@ NEW["v1v2"] = s
 s = base("Delegacja: kto przejmuje rozmowę?", "Dzień 1 · Blok 7: Delegacja i planowanie",
          subtitle="Cztery sposoby łączenia agentów – różna kontrola i koszt")
 items = [
-    ("sub_agents + transfer", BLUE, ["LLM wybiera specjalistę", "Specjalista **przejmuje** rozmowę", "module_12 · agent.py"]),
-    ("AgentTool", TEAL, ["Agent wołany jak funkcja", "Wynik **wraca** do rodzica", "module_12 · agent_solution.py"]),
-    ("Task API (mode)", PURPLE, ["`mode=\"task\"`: dopytuje usera, potem wraca", "`single_turn`: w tle, bez rozmowy", "module_33"]),
-    ("Workflow route", ORANGE, ["Routing **w kodzie**, nie przez LLM", "Deterministyczny i tani", "module_26 · 08w"]),
+    ("sub_agents + transfer", BLUE, ["LLM wybiera specjalistę", "Specjalista **przejmuje** rozmowę", "d1_10a · agent.py"]),
+    ("AgentTool", TEAL, ["Agent wołany jak funkcja", "Wynik **wraca** do rodzica", "d1_10a · agent_solution.py"]),
+    ("Task API (mode)", PURPLE, ["`mode=\"task\"`: dopytuje usera, potem wraca", "`single_turn`: w tle, bez rozmowy", "d1_10b"]),
+    ("Workflow route", ORANGE, ["Routing **w kodzie**, nie przez LLM", "Deterministyczny i tani", "d1_10x · d1_08b"]),
 ]
 for i, (hdr, lines, ) in enumerate([(h, l) for h, _, l in items]):
     color = items[i][1]
@@ -529,14 +529,14 @@ NEW["delegation"] = s
 
 # --- Planners
 s = base("Plannery: plan w tekście czy w głowie modelu?", "Dzień 1 · Blok 7: Delegacja i planowanie",
-         subtitle="pz_bonus/adk_topologies_02c_react_planner  vs  02d_builtin_planner")
-card(s, 0.6, 1.5, 5.95, 3.0, "PlanReActPlanner (02c)", [
+         subtitle="d1_11a_react_planner  vs  d1_11b_builtin_planner")
+card(s, 0.6, 1.5, 5.95, 3.0, "PlanReActPlanner (d1_11a)", [
     "Plan jako tekst z tagami (PLANNING / REASONING / ACTION)",
     "Działa z każdym modelem, także bez thinkingu",
     "Widoczny i audytowalny, ale zużywa tokeny odpowiedzi",
     "Kiedy: słabszy model, wymagany ślad decyzji (audyt)",
 ], color=BLUE, size=13)
-card(s, 6.8, 1.5, 5.95, 3.0, "BuiltInPlanner (02d)", [
+card(s, 6.8, 1.5, 5.95, 3.0, "BuiltInPlanner (d1_11b)", [
     "Natywny thinking modelu: `ThinkingConfig(thinking_level=...)`",
     "`include_thoughts=True` → thoughts widoczne w adk web",
     "Często równoległe wywołania narzędzi",
@@ -548,7 +548,7 @@ card(s, 0.6, 4.7, 12.15, 2.1, "Obserwacja z testów (flash-lite)", [
     "Mierz: `thoughts_token_count` w Events (płacisz jak za output)",
 ], color=ORANGE, size=13)
 notes(s, """To samo pytanie w obu modułach, porównać Events: czas, liczba kroków, THOUGHT.
-Zadanie: zmienić thinking_level na LOW w 02d i zobaczyć, że na lite thoughts znikają.""")
+Zadanie: zmienić thinking_level na LOW w d1_11b i zobaczyć, że na lite thoughts znikają.""")
 NEW["planners"] = s
 
 # --- Day 1 summary
@@ -601,8 +601,8 @@ notes(NEW["day1"], "Start dnia 1. Po bloku 1 (teoria, ~30 min) przechodzimy do s
 s = base("Jakość agentów: od testu narzędzia do ewaluacji", "Dzień 2 · Blok 13: Jakość",
          subtitle="Agent jest niedeterministyczny – testujemy warstwami")
 levels = [("Monitoring: Trace / Cloud Trace, koszty tokenów", GREY, 4.2),
-          ("E2E: ADK Tester (module_21) – scenariusze w przeglądarce", ORANGE, 6.0),
-          ("Ewaluacja: AgentEvaluator (module_31) – trajektoria + odpowiedź", PURPLE, 7.8),
+          ("E2E: ADK Tester (d2_06b) – scenariusze w przeglądarce", ORANGE, 6.0),
+          ("Ewaluacja: AgentEvaluator (d2_06a) – trajektoria + odpowiedź", PURPLE, 7.8),
           ("Unit: narzędzia i funkcje-węzły (pytest, bez LLM)", GREEN, 9.6)]
 for i, (txt, color, wdt) in enumerate(levels):
     x = 0.6 + (9.6 - wdt) / 2
@@ -615,7 +615,7 @@ card(s, 0.6, 5.7, 12.15, 1.1, "Do zapamiętania", [
     "Ewaluacja ocenia też **trajektorię** (jakie narzędzia, w jakiej kolejności) – nie tylko tekst odpowiedzi",
 ], color=TEAL, size=13)
 notes(s, """Przed ćwiczeniem D2.6. Pokaż, że deterministyczne węzły Workflow (np. ocen_ryzyko) mają zwykłe testy jednostkowe.
-module_31: dataset + kryteria (tool_trajectory, response match). module_21: tester E2E z raportem.""")
+d2_06a: dataset + kryteria (tool_trajectory, response match). d2_06b: tester E2E z raportem.""")
 NEW["testing"] = s
 
 # --- Architect checklist
@@ -639,7 +639,7 @@ NEW["checklist"] = s
 # ============================================================================= EXERCISES
 EX = {}
 EX["D1.1"] = exercise("D1.1", "Hello Agent: model, google_search, wersja ADK", "Dzień 1 · Blok 2",
-    "adk_training/module_01_hello_world", 25,
+    "adk_training/d1_01_hello_agent", 25,
     ["Uruchom `adk web --reload_agents`, wybierz moduł, porozmawiaj",
      "Odkomentuj `google_search` (import + `tools=[...]`), zapytaj o coś aktualnego",
      "Ustaw nieistniejący model (`ADK_MODEL=gemini-9-flash`) i przeczytaj błąd",
@@ -648,9 +648,9 @@ EX["D1.1"] = exercise("D1.1", "Hello Agent: model, google_search, wersja ADK", "
     ["Porównaj tokeny w Events → `usage_metadata`", "Zmień instrukcję: persona + format odpowiedzi"],
     ["Events: wywołanie `google_search` / grounding", "Zły model → `404 NOT_FOUND`"],
     ["Model wpisujemy w `.env` (`ADK_MODEL`) albo w `agent.py`", "Brak linków z wyszukiwania – zależy od odpowiedzi; pokaż grounding w Events"],
-    "Dawne zad1. Pokazuję strukturę modułu i zakładki adk web (Chat/Events/Trace/State). Lista modeli: cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions")
+    "Pokazuję strukturę modułu i zakładki adk web (Chat/Events/Trace/State). Lista modeli: cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions")
 EX["D1.2"] = exercise("D1.2", "Własne narzędzia i łańcuch wywołań", "Dzień 1 · Blok 2",
-    "adk_training/module_02_custom_tool", 20,
+    "adk_training/d1_02_custom_tools", 20,
     ["Przeczytaj istniejące narzędzia (docstring + type hints)",
      "Dopisz własną metodę-narzędzie i dodaj ją do `tools`",
      "Jednym promptem odpal kilka narzędzi po kolei:",
@@ -659,9 +659,9 @@ EX["D1.2"] = exercise("D1.2", "Własne narzędzia i łańcuch wywołań", "Dzie�
     ["Walidacja argumentów → `{\"status\": \"error\", ...}`", "Zapis w `tool_context.state` między wywołaniami"],
     ["Events: `add_treasure` → `list_all_treasures`", "Odpowiedź korzysta z wyników narzędzi"],
     ["Graf nie odświeża się → odśwież stronę / restart `adk web`", "Nowe narzędzie niewidoczne → brak w `tools=[...]`"],
-    "Dawne zad2. Dla zaawansowanych: dobry opis narzędzia = mniej pomyłek modelu; pokaż, co się stanie przy złym docstringu.")
+    "Dla zaawansowanych: dobry opis narzędzia = mniej pomyłek modelu; pokaż, co się stanie przy złym docstringu.")
 EX["D1.3"] = exercise("D1.3", "RAG: podpięcie Vertex AI Search", "Dzień 1 · Blok 3",
-    "adk_training/module_03_rag_agent", 20,
+    "adk_training/d1_03_rag_vertex_search", 20,
     ["Wpisz w `.env` **jedno** z: `SEARCH_ENGINE_ID` (preferowany) lub `SEARCH_DATASTORE_ID`",
      "Zadaj pytanie o treść dokumentów z indeksu",
      "Zmień `max_results` i instrukcję – porównaj odpowiedzi",
@@ -669,96 +669,96 @@ EX["D1.3"] = exercise("D1.3", "RAG: podpięcie Vertex AI Search", "Dzień 1 · B
     ["Instrukcja: „cytuj źródło”, „nie wiem, jeśli brak w dokumentach”", "Porównaj engine vs datastore"],
     ["Events: wywołanie `VertexAiSearchTool` z wynikami", "Odpowiedź oparta na dokumentach"],
     ["ID zawsze z `locations/global`", "`404 DataStore not found` → stare/usunięte ID", "`400 Invalid location us-central1` → zła lokalizacja w ID"],
-    "Dawne zad3. ID engine/datastore podaję na czacie. Format: projects/adk-training-pz/locations/global/collections/default_collection/engines/<id>.")
+    "ID engine/datastore podaję na czacie. Format: projects/adk-training-pz/locations/global/collections/default_collection/engines/<id>.")
 EX["D1.4"] = exercise("D1.4", "Własny indeks: bucket → datastore → app", "Dzień 1 · Blok 3",
-    "Konsola GCP + module_03_rag_agent", "15 + 15",
+    "Konsola GCP + d1_04_own_index", "15 + 15",
     ["Utwórz bucket i wgraj kilka własnych dokumentów (PDF/MD)",
      "AI Applications: datastore z bucketa → app (search engine)",
      "**Start indeksowania → robimy D1.5 → wracamy** (indeks buduje się kilka–kilkanaście minut)",
-     "Podmień ID w `.env` i zapytaj o treść **swoich** dokumentów"],
+     "ID swojego engine w `d1_04_own_index/.env` → to samo pytanie do d1_03 i d1_04"],
     ["Pytanie wymagające połączenia 2 dokumentów", "Porównaj chunking / parsowanie w ustawieniach datastore"],
     ["Agent cytuje treść waszych dokumentów", "W konsoli: status importu = zakończony"],
     ["„Unable to create your bucket” → ponów", "Brak wyników → indeks jeszcze się buduje"],
-    "Dawne zad4. Część 1 (15 min): bucket + datastore + app, start importu. Potem Blok 4 i D1.5. Część 2 (15 min, przed obiadem): zapytania do własnego indeksu.")
+    "Część 1 (15 min): bucket + datastore + app, start importu. Potem Blok 4 i D1.5. Część 2 (15 min, przed obiadem): zapytania do własnego indeksu.")
 EX["D1.5"] = exercise("D1.5", "Agent z Pythona: Runner, sesja i stan", "Dzień 1 · Blok 4",
-    "pz_bonus/adk_services_01_session_gradio → python ui.py", 25,
-    ["`cd adk_training\\pz_bonus\\adk_services_01_session_gradio`",
+    "d1_05_runner_session_gradio → python ui.py", 25,
+    ["`cd adk_training\\d1_05_runner_session_gradio`",
      "`python ui.py` – rozmowa w UI Gradio (bez adk web)",
      "Podejrzyj stan sesji w UI",
      "Nowa sesja vs kontynuacja – co agent pamięta?"],
     ["Prefiksy stanu: `user:` / `app:` / `temp:` – co przeżywa nową sesję?", "Podmień `InMemorySessionService` na trwały"],
     ["Stan rośnie w trakcie rozmowy", "`user:` widoczne w nowej sesji, zwykły klucz – nie"],
     ["Port zajęty → zamknij poprzednie UI", "`UnicodeEncodeError` → `PYTHONUTF8=1`"],
-    "Dawne zad7 – przeniesione przed multi-agent, bo stan (output_key, {klucz}) jest podstawą Workflow.")
+    "Przeniesione przed multi-agent, bo stan (output_key, {klucz}) jest podstawą Workflow.")
 EX["D1.6"] = exercise("D1.6", "Sekwencja: od SequentialAgent do Workflow", "Dzień 1 · Blok 5",
-    "module_04_sequential_agent → module_04w_workflow_sequence", 25,
-    ["Uruchom 04: „Zaatakuj fort na wyspie Tortuga”, obejrzyj State",
-     "Uruchom 04w z tym samym promptem – porównaj Events",
+    "d1_06a_sequence_adk1_legacy → d1_06b_workflow_sequence", 25,
+    ["Pokaz prowadzącego – d1_06a: „Zaatakuj fort na wyspie Tortuga”",
+     "Uruchom d1_06b z tym samym promptem – porównaj Events i State",
      "4W.2: dodaj agenta `kwatermistrz` (`output_key=\"lista_zapasow\"`) przed Kapitanem",
      "Użyj `{lista_zapasow}` w instrukcji Kapitana"],
     ["4W.1: funkcja `ocen_ryzyko(plan_bitwy: str)` między strategiem a kapitanem", "`yield Event(state={\"poziom_ryzyka\": ...})`"],
     ["Events: przyjmij_rozkaz → zwiadowca → strateg → (kwatermistrz) → kapitan", "State: klucze z `output_key`"],
     ["`{klucz}` nie istnieje → użyj `{klucz?}`", "Nowy węzeł niewidoczny → restart `adk web`"],
-    "Dawne zad5 + 5b. Kluczowy moment szkolenia: funkcja jako węzeł (parametr wstrzykiwany ze stanu po nazwie). Rozwiązanie: agent_solution.py – włączenie: `from .agent_solution import root_agent` w __init__.py.")
+    "Kluczowy moment szkolenia: funkcja jako węzeł (parametr wstrzykiwany ze stanu po nazwie). Rozwiązanie: agent_solution.py – włączenie: `from .agent_solution import root_agent` w __init__.py.")
 EX["D1.7"] = exercise("D1.7", "Równoległość: fan-out i JoinNode", "Dzień 1 · Blok 5",
-    "module_07_parallel_agent → module_07w_workflow_parallel", 20,
-    ["Uruchom 07 i 07w: „Zbadaj wyspę Skull Island”",
+    "d1_07a_parallel_adk1_legacy → d1_07b_workflow_parallel", 20,
+    ["d1_07a (pokaz) i d1_07b: „Zbadaj wyspę Skull Island”",
      "Zobacz w Events, że zwiadowcy kończą w różnej kolejności",
      "7W.1: dodaj czwartego zwiadowcę (tylko `edges` + instrukcja)"],
     ["7W.2: `podsumuj_zbiorke(node_input: dict)` po `JoinNode`", "Klucze słownika = nazwy węzłów"],
     ["Równoległe gałęzie w Trace", "Szpiegmistrz dostaje wszystkie raporty"],
     ["`429 RESOURCE_EXHAUSTED` → odczekaj / mniej gałęzi", "Cała grupa naraz → rozłóż w czasie"],
-    "Dawne zad6 + 6b.")
+    "")
 EX["D1.8"] = exercise("D1.8", "Pętla krytyki: generator ↔ krytyk", "Dzień 1 · Blok 5",
-    "module_08_loop_critique → module_08w_workflow_loop", 25,
-    ["Uruchom 08 (LoopAgent + escalate) i 08w (route) – ten sam temat wpisu",
+    "d1_08a_loop_adk1_legacy → d1_08b_workflow_loop", 25,
+    ["d1_08a (pokaz: LoopAgent + escalate) i d1_08b (route) – ten sam temat",
      "Zmień kryteria krytyka i obserwuj liczbę iteracji",
-     "Znajdź w 08w `MAX_ITERACJI` i router `decyzja`"],
+     "Znajdź w d1_08b `MAX_ITERACJI` i router `decyzja`"],
     ["8W.2: zastąp agenta `kapitan` funkcją (mniej wywołań LLM)", "8W.1: akceptacja człowieka przez `RequestInput`"],
     ["Events: `route=popraw` / `gotowe`", "Licznik `iteracja` w State"],
     ["Pętla się nie kończy → `MAX_ITERACJI`, dokładny tekst kryterium", "Schemat: `reason` **przed** `decision` (Literal)"],
-    "Dawne zad9 + 9b. Tip z poprzedniej grupy: model generuje token po tokenie, więc najpierw uzasadnienie, potem decyzja – wdrożone w 05, 08, 08w.")
+    "Tip z poprzedniej grupy: model generuje token po tokenie, więc najpierw uzasadnienie, potem decyzja – wdrożone w d1_09, d1_08a, d1_08b.")
 EX["D1.9"] = exercise("D1.9", "Human-in-the-loop przez callbacki", "Dzień 1 · Blok 6",
-    "adk_training/module_05_human_in_loop", 20,
+    "adk_training/d1_09_hitl_callbacks", 20,
     ["Prompt: „Potrzebuję 500 dublonów na naprawę żagli”",
      "Zobacz `pending_approval` w State",
      "Spróbuj „tak, zatwierdzam” – kwatermistrz odmawia (tylko Admirał może)",
      "Prześledź callbacki: before_agent → before_tool → after_tool"],
     ["Zmień próg kwoty / dodaj regułę w `before_tool_callback`", "Guardrail: `before_model_callback` blokujący słowa/PII"],
     ["Events: decyzja Admirała (`AdmiralDecision`)", "Zablokowane narzędzie nie wykonuje się"],
-    ["„Uparty” agent – to zamierzone zabezpieczenie", "Natywnie w Workflow: `RequestInput` (moduł 28)"],
-    "Dawne zad8. Most do Workflow: ten sam problem w grafie rozwiązuje RequestInput (zapas Z2).")
+    ["„Uparty” agent – to zamierzone zabezpieczenie", "Natywnie w Workflow: `RequestInput` (d1_09x)"],
+    "Most do Workflow: ten sam problem w grafie rozwiązuje RequestInput (zapas Z2).")
 EX["D1.10"] = exercise("D1.10", "Router, agent-as-a-tool i Task API", "Dzień 1 · Blok 7",
-    "module_12_router_agent  +  module_33_task_api", 30,
-    ["12: dodaj specjalistę (np. `doctor`) do `sub_agents`, przetestuj routing",
-     "AgentTool: `from .agent_solution import root_agent` w `__init__.py`",
+    "d1_10a_router_transfer  +  d1_10b_task_api", 30,
+    ["d1_10a: dodaj specjalistę (np. `doctor`) do `sub_agents`, przetestuj routing",
+     "AgentTool (po pull rozwiązania): `from .agent_solution import root_agent` w `__init__.py`",
      "  „Ranny marynarz i kurs na Jamajkę” – porównaj Events z wersją transfer",
-     "33: „Przygotuj statek, płyniemy do Tortugi”",
+     "d1_10b: „Przygotuj statek, płyniemy do Tortugi”",
      "  potem: „10 beczek rumu, 20 sucharów, 30 wody, 5 prochu” → „To wszystko”"],
-    ["33: agent `skarbnik` (`mode=\"single_turn\"`) z narzędziem wyceny", "Porównaj z routingiem w kodzie (moduł 26)"],
+    ["d1_10b: agent `skarbnik` (`mode=\"single_turn\"`) z narzędziem wyceny", "Porównaj z routingiem w kodzie (d1_10x)"],
     ["transfer: zmienia się autor odpowiedzi", "AgentTool: 2 wywołania naraz, kapitan zostaje", "Task: `finish_task` i powrót"],
     ["Nowy agent widoczny po restarcie `adk web`", "Lite: pętla `transfer_to_agent` → `disallow_transfer_to_parent` (ćw. 33.3)"],
-    "Dawne zad10 + 10b. Na flash-lite kwatermistrz bez blokady transferu zapętlał transfer_to_agent zamiast finish_task – naprawione w module (disallow_transfer_to_parent/peers); ćwiczenie 33.3 pokazuje problem na żywo. README 12: agent nazywa się captain_router.")
+    "Na flash-lite kwatermistrz bez blokady transferu zapętlał transfer_to_agent zamiast finish_task – naprawione w module (disallow_transfer_to_parent/peers); ćwiczenie 33.3 pokazuje problem na żywo. README d1_10a: agent nazywa się captain_router.")
 EX["D1.11"] = exercise("D1.11", "Plannery: ReAct vs BuiltIn (thinking)", "Dzień 1 · Blok 7",
-    "pz_bonus/adk_topologies_02c_react_planner  vs  02d_builtin_planner", 15,
-    ["`cd adk_training\\pz_bonus ; adk web .`",
-     "To samo pytanie w 02c i 02d (np. kampania usługi chmurowej w UE)",
+    "d1_11a_react_planner  vs  d1_11b_builtin_planner", 15,
+    ["`cd adk_training ; adk web --reload_agents`",
+     "To samo pytanie w d1_11a i d1_11b (np. kampania usługi chmurowej w UE)",
      "Porównaj Events: THOUGHT, liczbę kroków, czas"],
-    ["02d: `thinking_level` LOW vs HIGH na flash-lite", "`include_thoughts=False` – co się zmienia?"],
-    ["02c: tagi planu w tekście", "02d: thoughts + często równoległe narzędzia"],
-    ["Lite na LOW → 0 thoughts (to nie błąd)", "Moduły pz_bonus uruchamiamy z `pz_bonus/`"],
-    "Dawne zad11. Wniosek kosztowy: thinking płatny jak output.")
+    ["d1_11b: `thinking_level` LOW vs HIGH na flash-lite", "`include_thoughts=False` – co się zmienia?"],
+    ["d1_11a: tagi planu w tekście", "d1_11b: thoughts + często równoległe narzędzia"],
+    ["Lite na LOW → 0 thoughts (to nie błąd)", "Oba moduły są w jednym dropdownie `adk web`"],
+    "Wniosek kosztowy: thinking płatny jak output.")
 EX["D1.12"] = exercise("D1.12", "Deploy na Cloud Run", "Dzień 1 · Blok 8",
-    "adk_training/module_06_cloud_run", "10 demo",
+    "adk_training/d1_12_deploy_cloud_run", "10 demo",
     ["Wywołaj wdrożonego agenta: pirate-navigator-28948426345.us-central1.run.app",
      "Przeczytaj `pirate_navigator/agent.py` – to ten sam kod co lokalnie",
      "Chętni: własny deploy wg `DEPLOY_GCLOUD_GUIDE.md` (PowerShell)"],
     ["`adk deploy cloud_run` vs Dockerfile – porównaj", "Zmienne środowiskowe (`ADK_MODEL`) w usłudze"],
     ["Odpowiedź z URL usługi", "Logi w Cloud Run"],
     ["Region Cloud Run (us-central1) ≠ lokalizacja modelu (global)", "Skrypty `.sh` → Git Bash / WSL"],
-    "Dawne zad12.")
+    "")
 EX["D2.1"] = exercise("D2.1", "Obrazy i artefakty (Nano Banana)", "Dzień 2 · Blok 9",
-    "pz_bonus/a01_intro", 30,
+    "d2_01_artifacts", 30,
     ["Wygeneruj obraz – zapisze się jako artefakt",
      "W **nowej sesji** poproś o opis poprzedniego obrazu",
      "Edytuj istniejący obraz → nowa wersja artefaktu",
@@ -766,9 +766,9 @@ EX["D2.1"] = exercise("D2.1", "Obrazy i artefakty (Nano Banana)", "Dzień 2 · B
     ["Proporcje i styl w prompcie", "Własne narzędzie: lista artefaktów użytkownika"],
     ["Artifacts: kolejne wersje pliku", "Nowa sesja zna obraz (stan `user:`)"],
     ["429 quota przy całej grupie → generujcie na zmianę", "Model obrazów: `gemini-2.5-flash-image` (nie Imagen na global)"],
-    "Dawne D2 zad1. Zamiast 'zmień ilość zdjęć' – edycja i wersjonowanie artefaktów.")
+    "Zamiast 'zmień ilość zdjęć' – edycja i wersjonowanie artefaktów.")
 EX["D2.2"] = exercise("D2.2", "Memory Bank: pamięć między sesjami", "Dzień 2 · Blok 10",
-    "adk_training/module_11_memory_bank", 30,
+    "adk_training/d2_02_memory_bank", 30,
     ["`python create_agent_engine.py` → zapisz ID",
      "`adk web --memory_service_uri=agentengine://projects/<P>/locations/us-central1/reasoningEngines/<ID>`",
      "Powiedz fakty o sobie („podróżuję do Gdańska”)",
@@ -776,19 +776,19 @@ EX["D2.2"] = exercise("D2.2", "Memory Bank: pamięć między sesjami", "Dzień 2
     ["Instrukcja: kiedy agent ma zapisywać wspomnienia", "Porównaj: stan `user:` vs Memory Bank"],
     ["Nowa sesja przywołuje fakt", "Konsola: wpisy pamięci"],
     ["Krótki `agentengine://ID` użyje `global` → podaj pełny URI z regionem", "Zapis asynchroniczny → odczekaj chwilę"],
-    "Dawne D2 zad2.")
+    "")
 EX["D2.3"] = exercise("D2.3", "Agent i baza danych", "Dzień 2 · Blok 11",
-    "module_09_database_postgres (Neon + Toolbox)  |  module_09_database_simple", 35,
-    ["Postgres: connection string w `toolbox.yaml` (`sslmode=require`)",
-     "Test połączenia i zapytanie w języku naturalnym",
-     "Dodaj / zmień narzędzie SQL w `toolbox.yaml`",
-     "Plan B: `module_09_database_simple` → `python init_database.py`"],
+    "d2_03a_database_sqlite  →  d2_03b_database_postgres_mcp (chętni)", 35,
+    ["d2_03a: `python init_database.py`, potem zapytanie w języku naturalnym",
+     "Dodaj własne narzędzie do `database_tools.py` (read-only, z limitem)",
+     "Chętni – d2_03b: Postgres (Neon) przez MCP Toolbox, `sslmode=require`",
+     "Dodaj / zmień narzędzie SQL w `toolbox.yaml`"],
     ["Narzędzie zapisujące (INSERT) z potwierdzeniem", "Logowanie zapytań (`query_logger`)"],
     ["Agent zwraca dane z bazy", "Nowe narzędzie widoczne w Events"],
-    ["Toolbox na Windows → najprościej WSL2", "Emoji w skryptach 09_simple → `PYTHONUTF8=1`"],
-    "Dawne D2 zad3. Toolbox to serwer MCP dla baz – dobry most do kolejnego ćwiczenia.")
+    ["Toolbox na Windows → najprościej WSL2", "Emoji w skryptach d2_03a → `PYTHONUTF8=1`"],
+    "Toolbox to serwer MCP dla baz – dobry most do kolejnego ćwiczenia.")
 EX["D2.4"] = exercise("D2.4", "MCP: gotowy serwer, własny serwer, OAuth", "Dzień 2 · Blok 11",
-    "module_16_mcp_integration · module_06 (MCP) · pz_bonus/adk06_oauth_api", "45 + 30",
+    "d2_04a_mcp_servers · d1_12/mcp_server.py · d2_04b_oauth_openapi", "45 + 30",
     ["Podepnij piracki serwer MCP i wywołaj jego narzędzia",
      "Napisz własny serwer MCP (STDIO) z 1–2 narzędziami",
      "Po obiedzie – OAuth: consent screen, redirect URI, People API",
@@ -796,34 +796,34 @@ EX["D2.4"] = exercise("D2.4", "MCP: gotowy serwer, własny serwer, OAuth", "Dzie
     ["Własny MCP jako zdalny (HTTP)", "Porównaj MCP vs zwykła funkcja-narzędzie"],
     ["Narzędzia MCP w Events", "OAuth: dane z People API"],
     ["403 → brak test usera na consent screen / wyłączone API", "Test MCP w PowerShell: here-string zamiast `echo |`", "Sekrety OAuth nie na czacie"],
-    "Dawne D2 zad4. Uczestników dodać wcześniej jako test users. GOOGLE_CLIENT_SECRET z poprzedniej edycji zrotować.")
+    "Uczestników dodać wcześniej jako test users. GOOGLE_CLIENT_SECRET z poprzedniej edycji zrotować.")
 EX["D2.5"] = exercise("D2.5", "Skills: wiedza ładowana na żądanie", "Dzień 2 · Blok 12",
-    "adk_training/module_14_agent_skills", 30,
-    ["`cd module_14_agent_skills ; adk web .` (z katalogu modułu!)",
-     "Przejdź: `agent.py` → `agent_dynamic.py` → `agent_self_loading.py`",
+    "adk_training/d2_05_agent_skills", 30,
+    ["`adk web` z `adk_training/` → `d2_05_agent_skills`",
+     "Przejdź: `agent.py` → `agent_dynamic.py` → `agent_self_loading.py` (przełączanie w `__init__.py`)",
      "Stwórz skill dynamicznie",
      "Użyj kodu z innego naszego agenta jako skill"],
     ["Skill z własną dokumentacją projektu", "Porównaj: skill vs RAG vs instrukcja"],
     ["Agent ładuje skill dopiero gdy potrzebny", "Nowy skill na liście"],
-    ["Uruchamiamy z katalogu modułu, nie z `adk_training/`"],
-    "Dawne D2 zad5. Nawiąż do slajdu 'plac budowy' (instructions / skills / MCP).")
+    ["Nie `adk web .` z wnętrza modułu – ADK uzna `skills/` za aplikację", "Po zmianie `__init__.py` → restart `adk web`"],
+    "Nawiąż do slajdu 'plac budowy' (instructions / skills / MCP).")
 EX["D2.6"] = exercise("D2.6", "Testy E2E i ewaluacja agenta", "Dzień 2 · Blok 13",
-    "module_21_adk_tester  (+ module_31_evaluation)", 40,
-    ["`python -m playwright install chromium`",
-     "Napisz scenariusz testowy dla własnego agenta z dnia 1",
-     "Uruchom tester i odbierz raport",
-     "31: dataset + kryteria (trajektoria, odpowiedź) dla tego samego agenta"],
+    "d2_06a_evaluation  →  d2_06b_e2e_tester", 40,
+    ["d2_06a: dataset + kryteria (trajektoria, odpowiedź), uruchom `adk eval`",
+     "Dopisz przypadek testowy dla własnego agenta z dnia 1",
+     "d2_06b (pokaz / chętni): `python -m playwright install chromium`",
+     "Scenariusz E2E dla własnego agenta → raport testera"],
     ["Test jednostkowy funkcji-węzła z Workflow (pytest)", "Próg jakości w CI"],
     ["Raport testera", "Wynik ewaluacji z metrykami"],
     ["`COMPUTER_USE_MODEL` (preview) – sprawdź dostępność", "Porty 8000/8001 zajęte", "Mail z raportem → sprawdź spam"],
-    "Dawne D2 zad6 + zapas Z3.")
+    "")
 
 # ============================================================================= stickers + notes on kept slides
 src = list(prs.slides)[:N_SRC]
 sticker(src[21], "**ADK 2:** Sequential / Parallel / Loop → `Workflow(edges=...)` – za chwilę", x=8.9, y=6.55, w=4.2, h=0.6)
-notes(src[21], "ADK 2: SequentialAgent/ParallelAgent/LoopAgent są deprecated (działają). Nowy kod: Workflow – następne slajdy i moduły 04w/07w/08w.")
+notes(src[21], "ADK 2: SequentialAgent/ParallelAgent/LoopAgent są deprecated (działają). Nowy kod: Workflow – następne slajdy i moduły d1_06b/d1_07b/d1_08b.")
 sticker(src[42], "**ADK 2:** zamiast własnego `_run_async_impl` → funkcja-router `yield Event(route=...)`", x=6.6, y=5.9, w=6.3, h=0.7)
-notes(src[42], "Tak wyglądał custom agent w ADK 1. W ADK 2 ten sam 'if condition: agent_A else agent_B' to funkcja-węzeł z Event(route=...) – patrz module_08w / module_26.")
+notes(src[42], "Tak wyglądał custom agent w ADK 1. W ADK 2 ten sam 'if condition: agent_A else agent_B' to funkcja-węzeł z Event(route=...) – patrz d1_08b / d1_10x.")
 sticker(src[14], "**ADK 2:** Agenci Workflow = `Workflow` (graf węzłów)", x=8.9, y=0.9, w=4.2, h=0.55)
 notes(src[46], "Do ćwiczenia D2.6 / ankieta na koniec dnia 2.")
 
@@ -874,5 +874,33 @@ for sld in order:
     sld_lst.append(by_slide[sld.part])
 missing = set(by_slide) - {x.part for x in order} - {x.part for x in dropped}
 assert not missing, f"slides not placed: {len(missing)}"
+
+# Source slides/notes still use the old module_XX names -> map to d<day>_<exercise> dirs.
+RENAMES = [
+    ("module_01_hello_world", "d1_01_hello_agent"), ("module_02_custom_tool", "d1_02_custom_tools"),
+    ("module_03_rag_agent", "d1_03_rag_vertex_search"), ("module_05_human_in_loop", "d1_09_hitl_callbacks"),
+    ("module_06_cloud_run", "d1_12_deploy_cloud_run"), ("module_07_parallel_agent", "d1_07a_parallel_adk1_legacy"),
+    ("module_08_loop_critique", "d1_08a_loop_adk1_legacy"), ("module_09_database_postgres", "d2_03b_database_postgres_mcp"),
+    ("module_11_memory_bank", "d2_02_memory_bank"), ("module_12_router_agent", "d1_10a_router_transfer"),
+    ("module_15_gmail_integration", "d2_04x_ext_gmail"),
+    ("module_03", "d1_03"), ("module_09", "d2_03"), ("module_15", "d2_04x_ext_gmail"),
+]
+
+
+def _rename(text):
+    for old, new in RENAMES:
+        text = re.sub(re.escape(old) + r"(?![A-Za-z0-9_])", new, text)
+    return text
+
+
+for sl in prs.slides:
+    frames = [sh.text_frame for sh in sl.shapes if sh.has_text_frame]
+    if sl.has_notes_slide:
+        frames.append(sl.notes_slide.notes_text_frame)
+    for tf in frames:
+        for para in tf.paragraphs:
+            for run in para.runs:
+                if "module_" in run.text:
+                    run.text = _rename(run.text)
 prs.save(OUT)
 print("saved", OUT, "slides:", len(prs.slides))
