@@ -13,6 +13,7 @@ Cele edukacyjne:
 - Obserwacja zachowania i odpowiedzi agenta
 """
 
+import os
 from google.adk.agents import LlmAgent
 #from google.adk.tools import google_search
 # =============================================================================
@@ -27,7 +28,7 @@ root_agent = LlmAgent(
 
     # Model LLM do użycia - gemini-3.5-flash jest szybki i ekonomiczny
     # Inne opcje: gemini-3.5-flash-lite, gemini-3.8-flash
-    model="gemini-3.5-flash",
+    model=os.getenv("ADK_MODEL", "gemini-3.5-flash"),
     # Instrukcja systemowa - definiuje osobowość i zachowanie agenta
     # To najważniejsza konfiguracja kształtująca odpowiedzi
     instruction="""Jesteś pomocnym asystentem AI. Twoje zadania to:

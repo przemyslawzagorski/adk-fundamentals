@@ -27,7 +27,7 @@ from google.adk.tools import load_artifacts
 
 load_dotenv()
 
-MODEL = os.getenv("MODEL", "gemini-3.5-flash")
+MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash")
 
 root_agent = Agent(
     name="file_assistant",
