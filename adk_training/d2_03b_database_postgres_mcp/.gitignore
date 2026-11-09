@@ -1,0 +1,14 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Toolbox binary
+toolbox
+toolbox.exe
+

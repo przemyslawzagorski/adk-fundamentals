@@ -1,36 +1,15 @@
 """
-Moduł 33: Task API (ADK 2) - Zespół agentów z trybami pracy
-===========================================================
-
-Kapitan Portu przygotowuje statek do rejsu i deleguje zadania podwładnym.
-Nowość ADK 2: każdy sub-agent dostaje TRYB PRACY (`mode`):
-
-| mode            | Rozmowa z użytkownikiem       | Powrót do koordynatora          |
-|-----------------|-------------------------------|---------------------------------|
-| "chat" (domyśl.)| pełna, swobodna               | ręcznie (transfer_to_agent)     |
-| "task"          | tylko pytania doprecyzowujące | AUTOMATYCZNIE po finish_task    |
-| "single_turn"   | brak                          | AUTOMATYCZNIE z wynikiem        |
-
-Kluczowe Koncepcje:
-- Koordynator dostaje automatycznie narzędzia delegujące nazwane jak sub-agenci
-- `mode="task"` + `output_schema` -> sub-agent dopytuje usera, a potem ZWRACA
-  ustrukturyzowany wynik do koordynatora (bez ręcznego transferu)
-- `mode="single_turn"` -> zadanie "w tle", bez rozmowy, może działać równolegle
-- Agent w trybie task musi być liściem (bez własnych sub_agents)
-- Root agent NIE ustawia `mode`
-
-Porównaj z Modułem 12 (router): tam sub-agent przejmował rozmowę i trzeba było
-pilnować, kiedy oddaje kontrolę. Tutaj powrót jest automatyczny.
+Moduł 33: Task API (ADK 2) — Koordynator i zespół agentów
+=========================================================
 """
 
 import os
-
+from typing import Any
 from dotenv import load_dotenv
 from google.adk import Agent
 from pydantic import BaseModel, Field
 
 load_dotenv()
-
 MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash-lite")
 
 
@@ -40,7 +19,7 @@ MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash-lite")
 
 class PozycjaZapasow(BaseModel):
     towar: str = Field(description="Jeden z: rum, suchary, woda, proch, kule armatnie")
-    beczki: int = Field(description="Liczba beczek / skrzyń")
+    beczki: int = Field(description="Liczba beczek lub skrzyń")
 
 
 class ListaZapasow(BaseModel):
@@ -51,7 +30,7 @@ class ListaZapasow(BaseModel):
 # NARZĘDZIA
 # =============================================================================
 
-def sprawdz_pogode(port_docelowy: str) -> dict:
+def sprawdz_pogode(port_docelowy: str) -> dict[str, Any]:
     """Zwraca prognozę pogody na trasie do portu docelowego."""
     prognozy = {
         "tortuga": {"wiatr": "pomyślny, 15 węzłów", "sztorm": False, "dni_rejsu": 4},
@@ -63,14 +42,19 @@ def sprawdz_pogode(port_docelowy: str) -> dict:
     )
 
 
-def zaladuj_statek(port_docelowy: str, pozycje: list[PozycjaZapasow]) -> str:
+def zaladuj_statek(port_docelowy: str, pozycje: list[dict] | list[PozycjaZapasow]) -> str:
     """Ładuje zapasy na statek i wyznacza kurs do portu docelowego."""
-    razem = sum(p.beczki for p in pozycje)
-    return f"⚓ Załadowano {razem} beczek/skrzyń. Kurs na {port_docelowy} wyznaczony!"
+    razem = 0
+    for p in pozycje:
+        if isinstance(p, dict):
+            razem += p.get("beczki", 0)
+        else:
+            razem += getattr(p, "beczki", 0)
+    return f"⚓ Załadowano łącznie {razem} beczek/skrzyń. Kurs na {port_docelowy} wyznaczony!"
 
 
 # =============================================================================
-# SUB-AGENT 1: KWATERMISTRZ (mode="task") - rozmawia z userem, potem wraca
+# SUB-AGENT 1: KWATERMISTRZ (mode="task")
 # =============================================================================
 
 kwatermistrz = Agent(
@@ -78,72 +62,56 @@ kwatermistrz = Agent(
     model=MODEL,
     mode="task",
     output_schema=ListaZapasow,
-    # A task agent returns via finish_task; without this, lighter models
-    # (flash-lite) keep calling transfer_to_agent instead of finishing.
     disallow_transfer_to_parent=True,
     disallow_transfer_to_peers=True,
-    description="Zbiera od Kapitana listę zapasów na rejs.",
-    instruction="""Jesteś Kwatermistrzem. Magazyn ma TYLKO: rum, suchary, woda,
-proch, kule armatnie. Niczego innego nie oferuj.
+    description="Zbiera bezpośrednio od użytkownika listę zapasów na rejs (rum, suchary, woda, proch, kule armatnie).",
+    instruction="""Jesteś Kwatermistrzem na statku pirackim.
+W magazynie posiadasz TYLKO: rum, suchary, woda, proch, kule armatnie.
 
-Zapytaj Kapitana, co i ile beczek załadować. Dopytuj tylko, jeśli czegoś brakuje.
-Gdy masz kompletną listę - wywołaj finish_task z listą pozycji.""",
+ZASADY:
+1. Twoim zadaniem jest rozmowa z użytkownikiem i ustalenie, jakie zapasy załadować.
+2. Jeśli użytkownik NIE podał jeszcze listy towarów i ilości:
+   - Zwróć wiadomość tekstową do użytkownika i zapytaj go wprost, co i ile beczek chce zabrać.
+   - Wymień dostępne towary.
+3. Jeśli użytkownik podał zapasy i liczby beczek:
+   - NATYCHMIAST wywołaj narzędzie `finish_task(pozycje=[...])`.
+   - Zaakceptuj każdą podaną listę (nie wymagaj zamawiania wszystkich 5 towarów).
+4. KRYTYCZNE: Gdy wywołujesz `finish_task`, NIE dodawaj tekstu w stylu "Przekazuję sprawę" ani podsumowań. Twoim jedynym działaniem kończącym MUSI być wywołanie narzędzia `finish_task`.""",
 )
 
 
 # =============================================================================
-# SUB-AGENT 2: NAWIGATOR (mode="single_turn") - bez rozmowy, tylko wynik
+# SUB-AGENT 2: NAWIGATOR (mode="single_turn")
 # =============================================================================
 
 nawigator = Agent(
     name="nawigator",
     model=MODEL,
     mode="single_turn",
-    description="Sprawdza pogodę i długość rejsu do wskazanego portu.",
-    instruction="""Jesteś Nawigatorem. Użyj narzędzia sprawdz_pogode dla podanego
-portu i zwróć krótki raport: wiatr, ryzyko sztormu, liczba dni rejsu.""",
+    description="Sprawdza pogodę i długość rejsu do portu docelowego. Działa w tle bez kontaktu z użytkownikiem.",
+    instruction="""Jesteś Nawigatorem. Użyj narzędzia `sprawdz_pogode` dla wskazanego portu i zwróć krótki raport: parametry wiatru, ryzyko sztormu i czas rejsu.""",
     tools=[sprawdz_pogode],
 )
 
 
 # =============================================================================
-# ĆWICZENIA
-# =============================================================================
-# ĆWICZENIE 33.1: Skarbnik w trybie single_turn
-#   Dodaj agenta `skarbnik` (mode="single_turn") z narzędziem
-#   `wycen_zapasy(pozycje: list[PozycjaZapasow]) -> dict` (np. rum 12 dublonów
-#   za beczkę, proch 20, reszta 5). Dodaj go do sub_agents i każ Kapitanowi
-#   Portu podać koszt PRZED załadunkiem.
-#
-# ĆWICZENIE 33.2: Obserwacja trybów w adk web
-#   W zakładce Events sprawdź:
-#   - kiedy kwatermistrz zadaje pytania, a kiedy oddaje wynik (finish_task)
-#   - że nawigator NIE pisze do użytkownika, tylko zwraca wynik koordynatorowi
-#   Zmień nawigatorowi mode na "task" i porównaj zachowanie.
-#
-# ĆWICZENIE 33.3: Pułapka transferu
-#   Usuń z kwatermistrza disallow_transfer_to_parent/peers i uruchom na
-#   gemini-3.5-flash-lite. Zobacz w Events pętlę transfer_to_agent zamiast
-#   finish_task - dlatego agent task powinien mieć zablokowany transfer.
-
-
-# =============================================================================
-# KOORDYNATOR (root) - BEZ mode
+# KOORDYNATOR (root)
 # =============================================================================
 
 root_agent = Agent(
     name="kapitan_portu",
     model=MODEL,
-    instruction="""Jesteś Kapitanem Portu. Przygotowujesz statek do rejsu.
+    instruction="""Jesteś Kapitanem Portu. Koordynujesz przygotowanie okrętu do wyprawy.
 
-1. Ustal z użytkownikiem port docelowy (Tortuga, Port Royal lub Nassau).
-2. Zleć Nawigatorowi sprawdzenie pogody na trasie.
-3. Zleć Kwatermistrzowi zebranie listy zapasów.
-4. Gdy masz oba wyniki - użyj zaladuj_statek i podsumuj rejs.
-Przy sztormie ostrzeż załogę i zasugeruj więcej wody i sucharów.
-
-Każde zadanie zlecaj tylko raz - nie powtarzaj delegacji, jeśli wynik jest już
-w rozmowie. Gdy Kwatermistrz zwróci listę zapasów, od razu wywołaj zaladuj_statek.""",
+TWOJA PROCEDURA:
+1. Port docelowy: Ustal z użytkownikiem port (Tortuga, Port Royal lub Nassau). Jeśli jeszcze go nie podał, zapytaj o port.
+2. Gdy znasz port docelowy:
+   - Wywołaj podwładnego `nawigator`, aby sprawdzić pogodę na trasie.
+   - NATYCHMIAST wywołaj podwładnego `kwatermistrz`, aby przejął rozmowę z użytkownikiem i zebrał zamówienie na zapasy.
+   - KRYTYCZNE: Ty (Kapitan) NIE pytaj użytkownika w swojej wiadomości o zapasy, beczki czy prowiant! Oddaj to zadanie w całości Kwatermistrzowi poprzez wywołanie jego narzędzia.
+3. Gdy Kwatermistrz zakończy zadanie i zwróci listę zapasów:
+   - Wywołaj narzędzie `zaladuj_statek(port_docelowy=..., pozycje=...)`.
+   - Przedstaw użytkownikowi ostateczne podsumowanie: status załadunku, pogodę i ostrzeżenie przed sztormem (jeśli występuje).""",
     sub_agents=[kwatermistrz, nawigator],
     tools=[zaladuj_statek],
 )

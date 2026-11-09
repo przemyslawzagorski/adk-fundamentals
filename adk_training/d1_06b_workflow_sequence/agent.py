@@ -1,22 +1,21 @@
 """
-Moduł 4W: Workflow (ADK 2) - Sekwencja jako graf
-================================================
+Moduł 4W - ROZWIĄZANIE ćwiczeń 4W.1 i 4W.2
+==========================================
 
-Ten sam rajd co w Module 4 (Zwiadowca -> Strateg -> Kapitan), ale zbudowany
-na nowym prymitywie ADK 2: `Workflow(edges=[...])`.
+Łańcuch: przyjmij_rozkaz -> zwiadowca -> strateg -> ocen_ryzyko -> kwatermistrz -> kapitan
 
-Kluczowe Koncepcje:
-- `Workflow` zastępuje SequentialAgent (który w ADK 2 jest oznaczony jako deprecated)
-- Krotka w `edges` = sekwencja: ("START", a, b, c) -> a, potem b, potem c
-- Węzłem może być Agent ALBO zwykła funkcja Pythona (deterministyczny krok bez LLM)
-- Funkcja-węzeł zapisuje dane do stanu przez `yield Event(state={...})`
-- Agent zapisuje wynik do stanu przez `output_key`, a czyta przez `{klucz}` w instrukcji
+- 4W.1: `ocen_ryzyko` to funkcja-węzeł (bez LLM). Parametr `plan_bitwy`
+  jest wstrzykiwany ze stanu po nazwie (zapisał go strateg przez output_key).
+- 4W.2: `kwatermistrz` to kolejny Agent; wynik trafia do stanu jako
+  `lista_zapasow` i jest czytany przez Kapitana jako {lista_zapasow}.
 
-Porównaj z Modułem 4: tam nie dało się wstawić "zwykłego kodu" między agentów
-bez pisania własnego BaseAgent. Tutaj to jedna funkcja.
+Uruchomienie: wpisz do pustego `__init__.py` linię
+`from .agent_solution import root_agent` i zrestartuj `adk web`
+(loader ADK szuka `root_agent` najpierw w pakiecie, potem w `agent.py`).
 """
 
 import os
+import re
 
 from dotenv import load_dotenv
 from google.adk import Agent, Event, Workflow
@@ -26,19 +25,9 @@ load_dotenv()
 MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash-lite")
 
 
-# =============================================================================
-# WĘZEŁ 0: FUNKCJA - przyjmuje rozkaz Kapitana (bez LLM)
-# =============================================================================
-# `node_input` to wiadomość użytkownika. Zapisujemy ją w stanie jako "cel",
-# żeby każdy kolejny agent mógł się do niej odwołać przez {cel}.
-
 def przyjmij_rozkaz(node_input: str):
     yield Event(state={"cel": node_input})
 
-
-# =============================================================================
-# WĘZEŁ 1: ZWIADOWCA
-# =============================================================================
 
 zwiadowca = Agent(
     name="zwiadowca",
@@ -56,11 +45,6 @@ Bądź zwięzły. Zakończ oceną pewności (1-10).""",
     output_key="raport_wywiadu",
 )
 
-
-# =============================================================================
-# WĘZEŁ 2: STRATEG
-# =============================================================================
-
 strateg = Agent(
     name="strateg",
     model=MODEL,
@@ -77,9 +61,30 @@ Ostatnia linia MUSI mieć format: RYZYKO: Niskie | Średnie | Wysokie""",
 )
 
 
-# =============================================================================
-# WĘZEŁ 3: KAPITAN
-# =============================================================================
+# ĆWICZENIE 4W.1 - deterministyczny krok: parsowanie zamiast kolejnego wywołania LLM
+def ocen_ryzyko(plan_bitwy: str):
+    match = re.search(r"RYZYKO:\s*\**\s*(Niskie|Średnie|Wysokie)", plan_bitwy, re.IGNORECASE)
+    poziom = match.group(1).capitalize() if match else "Nieznane"
+    yield Event(
+        message=f"⚖️ Poziom ryzyka: {poziom}",
+        state={"poziom_ryzyka": poziom},
+    )
+
+
+# ĆWICZENIE 4W.2 - nowy agent w łańcuchu
+kwatermistrz = Agent(
+    name="kwatermistrz",
+    model=MODEL,
+    instruction="""Jesteś Kwatermistrzem floty.
+
+PLAN RAJDU:
+{plan_bitwy}
+
+Wylicz zapasy potrzebne na ten rajd jako krótką listę z ilościami:
+proch, rum, prowiant, łodzie (i inne, jeśli plan ich wymaga).
+Bez komentarzy - tylko lista.""",
+    output_key="lista_zapasow",
+)
 
 kapitan = Agent(
     name="kapitan",
@@ -92,32 +97,18 @@ WYWIAD:
 PLAN:
 {plan_bitwy}
 
+POZIOM RYZYKA (wyliczony automatycznie): {poziom_ryzyka}
+
+ZAPASY OD KWATERMISTRZA:
+{lista_zapasow}
+
+Jeśli ryzyko jest Wysokie, a zapasy niewystarczające - odrzuć lub zatwierdź warunkowo.
 Werdykt: ZATWIERDZONY / ZATWIERDZONY WARUNKOWO / ODRZUCONY (z uzasadnieniem).
 Zakończ krótką mową do załogi (2-3 zdania).""",
     output_key="decyzja_kapitana",
 )
 
-
-# =============================================================================
-# ĆWICZENIA
-# =============================================================================
-# ĆWICZENIE 4W.1: Deterministyczny krok między agentami
-#   Napisz funkcję `ocen_ryzyko(plan_bitwy: str)`, która:
-#   - odczyta z planu ostatnią linię "RYZYKO: ..."
-#   - zapisze do stanu {"poziom_ryzyka": "Niskie|Średnie|Wysokie"}
-#   - wyśle komunikat: yield Event(message=f"⚖️ Poziom ryzyka: ...")
-#   Wstaw ją w edges między `strateg` a `kapitan` i użyj {poziom_ryzyka}
-#   w instrukcji Kapitana.
-#   Podpowiedź: parametry funkcji-węzła są wstrzykiwane ze stanu po nazwie.
-#
-# ĆWICZENIE 4W.2: Nowy agent w łańcuchu
-#   Dodaj agenta `kwatermistrz` (output_key="lista_zapasow"), który na podstawie
-#   {plan_bitwy} wylicza zapasy na rajd (proch, rum, prowiant, łodzie).
-#   Wstaw go przed Kapitanem i przekaż {lista_zapasow} do instrukcji Kapitana.
-#
-# Rozwiązanie: agent_solution.py
-
 root_agent = Workflow(
-    name="pipeline_rajdu_v2",
-    edges=[("START", przyjmij_rozkaz, zwiadowca, strateg, kapitan)],
+    name="pipeline_rajdu_v2_solution",
+    edges=[("START", przyjmij_rozkaz, zwiadowca, strateg, ocen_ryzyko, kwatermistrz, kapitan)],
 )

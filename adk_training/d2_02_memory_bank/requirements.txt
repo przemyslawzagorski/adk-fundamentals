@@ -1,0 +1,7 @@
+# Module 11: Memory Bank Agent Dependencies
+# ADK 2.0 + Memory Bank wymaga agent-engines extra i min 1.148.1
+# (1.148.0 ma metode ingest_events ale brakuje typed klas IngestionDirectContentsSourceEvent)
+google-adk>=2.0.0
+google-cloud-aiplatform[agent-engines]>=1.148.1,<2
+python-dotenv>=1.0.0
+

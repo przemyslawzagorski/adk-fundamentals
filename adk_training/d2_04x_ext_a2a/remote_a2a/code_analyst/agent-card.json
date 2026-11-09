@@ -1,0 +1,23 @@
+{
+  "capabilities": {},
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["application/json"],
+  "description": "Specjalistyczny agent do bezpieczeństwa kodu. Wykrywa hardkodowane sekrety i podatności SQL Injection. Zwraca strukturalny raport JSON z oceną ryzyka.",
+  "name": "code_analyst_agent",
+  "skills": [
+    {
+      "id": "secret_detection",
+      "name": "Hardcoded Secrets Detection",
+      "description": "Skanuje kod w poszukiwaniu hardkodowanych haseł, kluczy API i tokenów.",
+      "tags": ["security", "secrets", "code-review"]
+    },
+    {
+      "id": "sql_injection_detection",
+      "name": "SQL Injection Detection",
+      "description": "Wykrywa wzorce podatne na ataki SQL Injection w kodzie źródłowym.",
+      "tags": ["security", "sql", "injection", "code-review"]
+    }
+  ],
+  "url": "http://localhost:8001/a2a/code_analyst_agent",
+  "version": "1.0.0"
+}
