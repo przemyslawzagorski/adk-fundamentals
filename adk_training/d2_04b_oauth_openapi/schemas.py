@@ -717,3 +717,171 @@ paths:
             - https://www.googleapis.com/auth/profile.agerange.read
             - https://www.googleapis.com/auth/profile.language.read
 """
+calendar_openapi_schema = """
+openapi: 3.0.3
+info:
+  title: Google Calendar API - Events (subset)
+  version: v3
+  description: Minimal subset of Google Calendar API v3 used by the training agent.
+servers:
+  - url: https://www.googleapis.com/calendar/v3
+
+components:
+  schemas:
+    EventDateTime:
+      type: object
+      properties:
+        dateTime:
+          type: string
+          description: RFC3339 timestamp with offset, e.g. 2026-11-12T10:00:00+01:00.
+        date:
+          type: string
+          description: Date (yyyy-mm-dd) for all-day events. Use either date or dateTime.
+        timeZone:
+          type: string
+          description: IANA time zone, e.g. Europe/Warsaw.
+    Attendee:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Attendee email address.
+        optional:
+          type: boolean
+    Event:
+      type: object
+      properties:
+        summary:
+          type: string
+          description: Title of the event.
+        description:
+          type: string
+          description: Description / agenda of the event.
+        location:
+          type: string
+        start:
+          $ref: '#/components/schemas/EventDateTime'
+        end:
+          $ref: '#/components/schemas/EventDateTime'
+        attendees:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attendee'
+        conferenceData:
+          type: object
+          description: |-
+            Set to {"createRequest": {"conferenceSolutionKey": {"type": "hangoutsMeet"}}}
+            to attach a Google Meet link. Omit when no video call is needed.
+          properties:
+            createRequest:
+              type: object
+              properties:
+                requestId:
+                  type: string
+                conferenceSolutionKey:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: [hangoutsMeet]
+
+paths:
+  /calendars/{calendarId}/events:
+    parameters:
+      - name: calendarId
+        in: path
+        required: true
+        description: Calendar identifier. Use "primary" for the signed-in user's calendar.
+        schema:
+          type: string
+          default: primary
+    get:
+      operationId: calendar.events.list
+      summary: List events in a time range (agenda, "what do I have tomorrow").
+      parameters:
+        - name: timeMin
+          in: query
+          description: Lower bound (RFC3339 with offset) for event end time.
+          schema:
+            type: string
+        - name: timeMax
+          in: query
+          description: Upper bound (RFC3339 with offset) for event start time.
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: Free text search in summary, description, location, attendees.
+          schema:
+            type: string
+        - name: maxResults
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: singleEvents
+          in: query
+          description: Expand recurring events. Must be true when orderBy=startTime.
+          schema:
+            type: boolean
+            default: true
+        - name: orderBy
+          in: query
+          schema:
+            type: string
+            enum: [startTime, updated]
+      responses:
+        '200':
+          description: List of events.
+    post:
+      operationId: calendar.events.insert
+      summary: Create a new event (meeting) in the calendar.
+      parameters:
+        - name: conferenceDataVersion
+          in: query
+          description: Must be 1 when conferenceData is provided.
+          schema:
+            type: integer
+            enum: [0, 1]
+        - name: sendUpdates
+          in: query
+          description: Whether to email invitations to attendees.
+          schema:
+            type: string
+            enum: [all, externalOnly, none]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '200':
+          description: Created event (contains htmlLink and hangoutLink).
+
+  /calendars/{calendarId}/events/{eventId}:
+    parameters:
+      - name: calendarId
+        in: path
+        required: true
+        schema:
+          type: string
+          default: primary
+      - name: eventId
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      operationId: calendar.events.delete
+      summary: Delete an event.
+      parameters:
+        - name: sendUpdates
+          in: query
+          schema:
+            type: string
+            enum: [all, externalOnly, none]
+      responses:
+        '204':
+          description: Event deleted.
+"""

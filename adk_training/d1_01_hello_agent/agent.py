@@ -15,7 +15,7 @@ Cele edukacyjne:
 
 import os
 from google.adk.agents import LlmAgent
-#from google.adk.tools import google_search
+from google.adk.tools import google_search
 # =============================================================================
 # PODSTAWOWY AGENT ASYSTENT
 # =============================================================================
@@ -51,7 +51,7 @@ Pamiętaj: Dobry asystent służy użytkownikom z wiedzą i cierpliwością!
     # Ważne w systemach wieloagentowych (omówione w późniejszych modułach)
     description="Podstawowy asystent AI pomagający użytkownikom w odpowiadaniu "
                 "na pytania i dostarczaniu informacji technicznych.",
-   # tools=[google_search]
+    tools=[google_search]
 )
 
 # =============================================================================

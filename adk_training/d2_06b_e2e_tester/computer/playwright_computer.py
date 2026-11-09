@@ -19,6 +19,7 @@ from typing import Literal, Optional
 
 from playwright.sync_api import sync_playwright, Browser, BrowserContext, Page, Playwright
 from playwright._impl._errors import TargetClosedError
+from playwright.sync_api import Error as PlaywrightError
 
 from google.adk.tools.computer_use.base_computer import BaseComputer, ComputerState, ComputerEnvironment
 
@@ -447,11 +448,77 @@ class PlaywrightComputer(BaseComputer):
     async def key_combination(self, keys: list[str]) -> ComputerState:
         return await self._run(self._do_key_combination, keys)
 
+    # Nazwy klawiszy od modelu (różna wielkość liter / aliasy) → nazwy Playwright
+    _KEY_ALIASES = {
+        "ctrl": "Control", "control": "Control", "cmd": "Meta", "command": "Meta",
+        "meta": "Meta", "win": "Meta", "super": "Meta", "alt": "Alt", "option": "Alt",
+        "shift": "Shift", "enter": "Enter", "return": "Enter", "esc": "Escape",
+        "escape": "Escape", "tab": "Tab", "space": " ", "backspace": "Backspace",
+        "delete": "Delete", "del": "Delete", "home": "Home", "end": "End",
+        "pageup": "PageUp", "pagedown": "PageDown", "insert": "Insert",
+        "up": "ArrowUp", "down": "ArrowDown", "left": "ArrowLeft", "right": "ArrowRight",
+        "arrowup": "ArrowUp", "arrowdown": "ArrowDown",
+        "arrowleft": "ArrowLeft", "arrowright": "ArrowRight",
+    }
+    _MODIFIERS = {"Control", "Meta", "Alt", "Shift"}
+
+    @classmethod
+    def _split_keys(cls, keys: list[str] | str | None) -> list[str]:
+        """Rozbij/oczyść listę klawiszy: ["ctrl+a"] → ["ctrl","a"], usuń puste."""
+        if isinstance(keys, str):
+            keys = [keys]
+        out: list[str] = []
+        for raw in keys or []:
+            if not isinstance(raw, str) or raw == "":
+                continue
+            if raw.strip() == "":          # sama spacja → klawisz Space
+                out.append(" ")
+            elif raw == "+" or len(raw) == 1:
+                out.append(raw)
+            else:
+                out.extend(p for p in raw.split("+") if p.strip())
+        return out
+
+    @classmethod
+    def _normalize_key(cls, key: str) -> str:
+        if key == " ":
+            return " "
+        k = key.strip()
+        if len(k) > 1:
+            alias = cls._KEY_ALIASES.get(k.lower())
+            if alias:
+                return alias
+            if k.lower().startswith("f") and k[1:].isdigit():  # F1..F12
+                return k.upper()
+        return k
+
     def _do_key_combination(self, keys: list[str]) -> ComputerState:
         def _inner():
             page = self._sync_ensure_ready()
-            combo = "+".join(keys)
-            page.keyboard.press(combo)
+            norm = [self._normalize_key(k) for k in self._split_keys(keys)]
+            if not norm:
+                logger.warning("key_combination: pusta lista klawiszy %r — pomijam", keys)
+                return self._sync_current_state()
+            modifiers = [k for k in norm if k in self._MODIFIERS]
+            others = [k for k in norm if k not in self._MODIFIERS]
+
+            # Znaki spoza US layoutu (ą, ę, ś, ż...) nie są "klawiszami" dla
+            # Playwright — keyboard.press() rzuca "Unknown key". Wpisujemy je
+            # jako tekst (keyboard.type obsługuje Unicode).
+            # AltGr na Windowsie = Ctrl+Alt, więc taka kombinacja + polski znak
+            # też oznacza po prostu wpisanie znaku.
+            non_ascii = [k for k in others if len(k) == 1 and not k.isascii()]
+            if non_ascii and (not modifiers or set(modifiers) <= {"Shift", "Control", "Alt"}):
+                page.keyboard.type("".join(others))
+            else:
+                try:
+                    page.keyboard.press("+".join(norm))
+                except PlaywrightError as e:
+                    if "Unknown key" not in str(e):
+                        raise
+                    # Nie wywalaj całego testu — model zobaczy brak zmiany
+                    # na screenshocie i spróbuje inaczej.
+                    logger.warning("key_combination: nieznany klawisz %r (%s) — pomijam", keys, e)
             time.sleep(0.3)
             return self._sync_current_state()
         return self._with_retry(_inner)

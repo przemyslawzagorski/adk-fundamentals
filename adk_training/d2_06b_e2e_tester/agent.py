@@ -46,12 +46,18 @@ def _before_tool_cb(tool, args: dict, tool_context) -> Optional[dict]:
 
 
 def _after_tool_cb(tool, args: dict, tool_context, tool_response) -> Optional[dict]:
+    # Gdy model dołączył safety_decision (np. require_confirmation) do wywołania,
+    # Gemini WYMAGA safety_acknowledgement="true" w odpowiedzi tego narzędzia —
+    # inaczej kolejne zapytanie kończy się 400 INVALID_ARGUMENT.
+    # Dotyczy to też zwykłych FunctionTool (np. save_test_result), które zwracają
+    # str — ADK i tak opakowuje je w {"result": ...}, więc robimy to tutaj.
     if tool_context.state.get(_SAFETY_KEY, False):
         tool_context.state[_SAFETY_KEY] = False
-        if isinstance(tool_response, dict):
-            tool_response["safety_acknowledgement"] = "true"
-            logger.info("Added safety_acknowledgement to response")
-            return tool_response
+        if not isinstance(tool_response, dict):
+            tool_response = {"result": tool_response}
+        tool_response["safety_acknowledgement"] = "true"
+        logger.info("Added safety_acknowledgement to %s response", tool.name)
+        return tool_response
     return None
 
 

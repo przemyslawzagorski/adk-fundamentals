@@ -24,6 +24,7 @@ from google.adk.plugins.save_files_as_artifacts_plugin import (
     SaveFilesAsArtifactsPlugin,
 )
 from google.adk.tools import load_artifacts
+from google.genai import types
 
 load_dotenv()
 
@@ -41,6 +42,11 @@ files you need for the current question.
 Never guess the content of a file you have not loaded.
 Reply in the user's language.""",
     tools=[load_artifacts],
+    generate_content_config=types.GenerateContentConfig(
+        http_options=types.HttpOptions(
+            retry_options=types.HttpRetryOptions(initial_delay=2, attempts=5),
+        ),
+    ),
 )
 
 # Keep the App name equal to the folder name - `adk web` derives the app name

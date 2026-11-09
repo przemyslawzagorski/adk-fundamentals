@@ -1,235 +1,333 @@
 """
-Module 14: Agent Skills — Skarbnik Wiedzy Pirackiej
-====================================================
+Module 14: Self-Loading Agent — sam szuka, instaluje i używa skilli w locie
+============================================================================
 
-Ten moduł demonstruje ADK Agent Skills i wzorzec progressive disclosure.
-Zamiast pakować całą wiedzę w system prompt (~10 000 tokenów),
-agent ładuje umiejętności (skills) na żądanie w 3 poziomach:
+DEMO FLOW (użytkownik pisze):
+  1. "Jakie skille masz?"            → agent: 2 lokalne
+  2. "Potrzebuję coś do changelog"   → agent szuka → znajduje → instaluje
+  3. "Jakie skille masz teraz?"      → agent: 3 skille (nowy widoczny!)
+  4. "Wygeneruj changelog"           → agent używa nowo zainstalowanego skilla
 
-  L1 — Metadata (~100 tok/skill): nazwa i opis, zawsze w kontekście
-  L2 — Instructions (~300-500 tok): pełne instrukcje, ładowane gdy agent uzna skill za trafny
-  L3 — Resources (dowolny rozmiar): pliki referencyjne, ładowane tylko gdy instrukcje się do nich odwołują
-
-Kluczowe koncepcje:
-- SkillToolset — automatycznie generuje 3 narzędzia: list_skills, load_skill, load_skill_resource
-- 4 wzorce skills: inline, file-based, external, meta
-- Progressive disclosure — bazowy kontekst ~400 tok zamiast ~10 000 tok
+Kluczowy mechanizm: HOT-RELOAD
+  - skill_toolset._skills to zwykły dict
+  - install_skill() dorzuca nowy wpis
+  - list_skills / load_skill natychmiast go widzą
 
 Uruchomienie:
     cd adk_training
-    adk web
+    adk web              # po podmianie: copy agent_self_loading.py agent.py
 """
 
+import json
+import logging
 import os
 import pathlib
+import tempfile
+from typing import Any
 
+import httpx
+import yaml
 from dotenv import load_dotenv
 from google.adk import Agent
-from google.adk.skills import load_skill_from_dir
-from google.adk.skills import models
+from google.adk.skills import load_skill_from_dir, models
 from google.adk.tools.skill_toolset import SkillToolset
+from google.adk.tools.function_tool import FunctionTool
+from google.adk.tools.tool_context import ToolContext
 
 load_dotenv()
 MODEL = os.getenv("ADK_MODEL", "gemini-3.5-flash-lite")
+SKILLS_DIR = pathlib.Path(__file__).parent / "skills"
+
+logger = logging.getLogger(__name__)
 
 # =============================================================================
-# WZORZEC 1: INLINE SKILL — Kodeks Pirata
+# KONFIGURACJA REPOZYTORIUM SKILLI
 # =============================================================================
-# Najprostszy wzorzec — skill zdefiniowany bezpośrednio w Pythonie.
-# Idealne dla stabilnych, prostych reguł które rzadko się zmieniają.
-# Tylko L1 (metadata) + L2 (instructions), bez L3 (resources).
 
-pirate_code_skill = models.Skill(
-    frontmatter=models.Frontmatter(
-        name="pirate-code",
-        description=(
-            "Kodeks Pirata — zbiór zasad i praw obowiązujących na statku. "
-            "Obejmuje podział łupów, dyscyplinę, rozstrzyganie sporów, "
-            "prawa załogi i obowiązki kapitana. Używaj gdy pytanie dotyczy "
-            "regulaminu, zasad, praw lub obowiązków na statku."
-        ),
-    ),
-    instructions=(
-        "Kodeks Pirata — fundamentalne zasady każdego statku:\n\n"
-        "1. **Podział łupów**: Kapitan — 2 udziały, Oficerowie — 1.5, "
-        "Załoga — 1 udział. Dzielone uczciwie po każdym rajdzie.\n"
-        "2. **Głosowanie**: Każdy członek załogi ma 1 głos. "
-        "Kapitan wybierany i odwoływany większością głosów.\n"
-        "3. **Dyscyplina**: Kto kradnie od własnej załogi — marooned "
-        "na bezludnej wyspie z pistoletem i jednym nabojem.\n"
-        "4. **Kłótnie**: Spory rozstrzygane na lądzie, nigdy na pokładzie. "
-        "Sekundanci obowiązkowi.\n"
-        "5. **Gotowość bojowa**: Każdy utrzymuje broń w czystości i gotowości. "
-        "Kto zaniedbuje — kara wyznaczona przez załogę.\n"
-        "6. **Odszkodowania**: Utrata kończyny = 600 pieces of eight lub "
-        "6 niewolników. Utrata oka = 100 pieces of eight.\n"
-        "7. **Gaszenie świateł**: O godzinie 20:00 gaszone są wszystkie "
-        "świece pod pokładem. Kto chce pić dalej — na pokład.\n"
-        "8. **Dezercja**: Kto opuszcza statek w trakcie bitwy — "
-        "kara śmierci lub marooning.\n"
-        "9. **Muzycy**: Muzycy okrętowi mają wolne w niedzielę, "
-        "ale w pozostałe dni grają na żądanie.\n\n"
-        "Odpowiadaj powołując się na konkretne punkty Kodeksu. "
-        "Wyjaśniaj ich znaczenie i konsekwencje łamania zasad."
-    ),
-)
+SKILL_REPO = "ComposioHQ/awesome-claude-skills"
+SKILL_BRANCH = "master"
+
+# Katalog skilli w repo (cache z GitHub API, żeby nie odpytywać za każdym razem)
+# W produkcji: pobieramy z API lub z pliku index.json w repo
+_REMOTE_SKILL_CATALOG: dict[str, str] | None = None
+
+
+def _fetch_skill_catalog() -> dict[str, str]:
+    """Pobierz katalog dostępnych skilli z GitHub API (lub cache).
+
+    Returns:
+        Dict {skill_name: description} — opis z SKILL.md frontmatter.
+    """
+    global _REMOTE_SKILL_CATALOG
+    if _REMOTE_SKILL_CATALOG is not None:
+        return _REMOTE_SKILL_CATALOG
+
+    api_url = f"https://api.github.com/repos/{SKILL_REPO}/contents/?ref={SKILL_BRANCH}"
+    logger.info("📡 Fetching skill catalog from: %s", api_url)
+
+    resp = httpx.get(api_url, timeout=15, follow_redirects=True)
+    resp.raise_for_status()
+
+    catalog = {}
+    for item in resp.json():
+        if item["type"] == "dir" and item["name"] not in ("composio-skills", "template-skill"):
+            catalog[item["name"]] = ""  # opis uzupełnimy lazy
+
+    _REMOTE_SKILL_CATALOG = catalog
+    logger.info("📦 Found %d skills in remote catalog", len(catalog))
+    return catalog
+
+
+def _download_and_load_skill(skill_name: str) -> models.Skill:
+    """Pobierz skill z GitHub i załaduj jako models.Skill."""
+    base_url = (
+        f"https://raw.githubusercontent.com/{SKILL_REPO}/{SKILL_BRANCH}/{skill_name}"
+    )
+
+    # 1. Pobierz SKILL.md
+    skill_md_url = f"{base_url}/SKILL.md"
+    logger.info("⬇️  Downloading: %s", skill_md_url)
+    resp = httpx.get(skill_md_url, timeout=15, follow_redirects=True)
+    resp.raise_for_status()
+    skill_md_content = resp.text
+
+    # 2. Parsuj frontmatter
+    parts = skill_md_content.split("---", 2)
+    if len(parts) < 3:
+        raise ValueError(f"Invalid SKILL.md from {skill_md_url}")
+    frontmatter = yaml.safe_load(parts[1])
+    actual_name = frontmatter.get("name", skill_name)
+
+    # 3. Zapisz do tempdir (wymagane przez load_skill_from_dir)
+    temp_base = pathlib.Path(tempfile.mkdtemp(prefix="adk_hotload_"))
+    skill_dir = temp_base / actual_name
+    skill_dir.mkdir()
+    (skill_dir / "SKILL.md").write_text(skill_md_content, encoding="utf-8")
+
+    # 4. Spróbuj pobrać znane pliki referencyjne (GitHub Tree API)
+    try:
+        tree_url = (
+            f"https://api.github.com/repos/{SKILL_REPO}"
+            f"/git/trees/{SKILL_BRANCH}?recursive=1"
+        )
+        tree_resp = httpx.get(tree_url, timeout=15, follow_redirects=True)
+        tree_resp.raise_for_status()
+
+        prefix = f"{skill_name}/"
+        for item in tree_resp.json().get("tree", []):
+            path = item.get("path", "")
+            if path.startswith(prefix) and path != f"{prefix}SKILL.md":
+                rel = path[len(prefix):]
+                if any(rel.startswith(d) for d in ("references/", "assets/", "scripts/")):
+                    file_url = f"{base_url}/{rel}"
+                    try:
+                        fr = httpx.get(file_url, timeout=10, follow_redirects=True)
+                        fr.raise_for_status()
+                        local_path = skill_dir / rel
+                        local_path.parent.mkdir(parents=True, exist_ok=True)
+                        local_path.write_text(fr.text, encoding="utf-8")
+                        logger.info("  📄 Downloaded: %s", rel)
+                    except Exception:
+                        pass
+    except Exception as e:
+        logger.warning("Could not fetch file tree: %s", e)
+
+    # 5. Załaduj standardowo
+    return load_skill_from_dir(skill_dir)
+
 
 # =============================================================================
-# WZORZEC 2: FILE-BASED SKILL — Konserwacja Statku
+# GLOBALNE: SkillToolset + rejestr (ten dict mutujemy!)
 # =============================================================================
-# Skill przechowywany jako katalog z SKILL.md + references/.
-# L2 = instrukcje w SKILL.md, L3 = pliki w references/.
-# Reużywalny — każdy agent zgodny ze specyfikacją agentskills.io może go załadować.
 
-ship_maintenance_skill = load_skill_from_dir(
-    pathlib.Path(__file__).parent / "skills" / "ship-maintenance"
-)
+# Startujemy z 2 lokalnymi skillami
+_initial_skills = [
+    load_skill_from_dir(SKILLS_DIR / "ship-maintenance"),
+    load_skill_from_dir(SKILLS_DIR / "crew-training"),
+]
 
-# =============================================================================
-# WZORZEC 3: EXTERNAL SKILL — Szkolenie Załogi
-# =============================================================================
-# Skill pobrany z "zewnętrznego repozytorium" (symulacja awesome-claude-skills).
-# Technicznie ładowany identycznie jak file-based — ta sama funkcja load_skill_from_dir.
-# Różnica jest koncepcyjna: nie Ty pisałeś ten SKILL.md, pobrałeś go z community.
+skill_toolset = SkillToolset(skills=_initial_skills)
 
-crew_training_skill = load_skill_from_dir(
-    pathlib.Path(__file__).parent / "skills" / "crew-training"
-)
 
 # =============================================================================
-# WZORZEC 4: META SKILL — Kreator Nowych Skilli
+# NARZĘDZIA AGENTA: search + install (FunctionTool)
 # =============================================================================
-# Najciekawszy wzorzec — skill który uczy agenta TWORZYĆ nowe skille.
-# Agent staje się "self-extending" — sam generuje pliki SKILL.md na żądanie.
-# Wykorzystuje L3 resources (embedded) z dołączoną specyfikacją i przykładem.
 
-skill_creator = models.Skill(
-    frontmatter=models.Frontmatter(
-        name="skill-creator",
-        description=(
-            "Kreator nowych umiejętności — generuje kompletne pliki SKILL.md "
-            "zgodne ze specyfikacją agentskills.io. Używaj gdy użytkownik pyta "
-            "o stworzenie nowego skilla, nowej procedury lub nowego zestawu "
-            "instrukcji dla agenta."
-        ),
-    ),
-    instructions=(
-        "Gdy użytkownik prosi o stworzenie nowego skilla:\n\n"
-        "1. Załaduj `references/skill-spec.md` — specyfikacja formatu SKILL.md\n"
-        "2. Załaduj `references/example-skill.md` — działający przykład\n\n"
-        "Zasady generowania SKILL.md:\n"
-        "1. **name**: kebab-case, max 64 znaki (np. `sea-navigation`)\n"
-        "2. **description**: max 1024 znaki, konkretne słowa kluczowe "
-        "które pomogą agentowi rozpoznać kiedy skill jest przydatny\n"
-        "3. **instructions**: jasne, krokowe procedury w Markdown\n"
-        "4. **references/**: opcjonalny katalog z plikami szczegółowymi\n"
-        "5. Ogranicz SKILL.md do ~500 linii — szczegóły przenieś do references/\n\n"
-        "Wygeneruj kompletny plik SKILL.md z YAML frontmatter "
-        "który użytkownik może zapisać i natychmiast użyć.\n"
-        "Dodatkowo zaproponuj ewentualne pliki references/ jeśli skill "
-        "wymaga szczegółowej wiedzy domenowej."
-    ),
-    resources=models.Resources(
-        references={
-            "skill-spec.md": (
-                "# Specyfikacja Agent Skills (agentskills.io)\n\n"
-                "## Format pliku SKILL.md\n"
-                "Plik SKILL.md składa się z dwóch części:\n\n"
-                "### 1. YAML Frontmatter (obowiązkowe)\n"
-                "```yaml\n"
-                "---\n"
-                "name: kebab-case-name      # max 64 znaki, musi być unikatowy\n"
-                "description: >             # max 1024 znaki\n"
-                "  Opis skilla widoczny w L1 metadata.\n"
-                "  Powinien zawierać słowa kluczowe ułatwiające dopasowanie.\n"
-                "---\n"
-                "```\n\n"
-                "### 2. Markdown Instructions (L2)\n"
-                "Treść po frontmatter to instrukcje ładowane przez `load_skill`.\n"
-                "- Używaj nagłówków ## do sekcji\n"
-                "- Krokowe procedury z numeracją\n"
-                "- Odwołuj się do plików w references/ przez `load_skill_resource`\n\n"
-                "### 3. Katalog references/ (opcjonalny, L3)\n"
-                "Pliki Markdown z detaliczną wiedzą domenową.\n"
-                "Ładowane tylko gdy instrukcje L2 się do nich odwołują.\n\n"
-                "### Struktura katalogowa\n"
-                "```\n"
-                "my-skill/\n"
-                "├── SKILL.md           # Frontmatter + instrukcje\n"
-                "└── references/        # Opcjonalne pliki L3\n"
-                "    └── details.md\n"
-                "```\n"
-            ),
-            "example-skill.md": (
-                "# Przykład: Skill do przeglądu kodu\n\n"
-                "```markdown\n"
-                "---\n"
-                "name: code-review\n"
-                "description: >\n"
-                "  Skill do przeglądu kodu Python. Sprawdza styl, bezpieczeństwo,\n"
-                "  wydajność i czytelność. Generuje raport z priorytetami.\n"
-                "---\n\n"
-                "# Procedura Przeglądu Kodu\n\n"
-                "## Krok 1: Analiza struktury\n"
-                "Sprawdź organizację modułów, importy, separację warstw.\n\n"
-                "## Krok 2: Bezpieczeństwo\n"
-                "Załaduj `references/security-rules.md` i sprawdź:\n"
-                "- Walidacja inputów\n"
-                "- Brak hardcoded credentials\n"
-                "- Poprawna obsługa wyjątków\n\n"
-                "## Krok 3: Raport\n"
-                "Wygeneruj raport w formacie:\n"
-                "- 🔴 Krytyczne (blokujące merge)\n"
-                "- 🟡 Ważne (do poprawy)\n"
-                "- 🟢 Sugestie (opcjonalne)\n"
-                "```\n"
-            ),
+def search_skill_store(query: str) -> dict:
+    """Przeszukaj zdalny sklep z umiejętnościami (GitHub repo).
+
+    Szuka skilli, których nazwa zawiera frazę z query.
+    Zwraca listę dostępnych do instalacji.
+
+    Args:
+        query: Fraza do wyszukania (np. "changelog", "resume", "testing").
+    """
+    try:
+        catalog = _fetch_skill_catalog()
+    except Exception as e:
+        return {"error": f"Nie udało się pobrać katalogu: {e}"}
+
+    query_lower = query.lower()
+    matches = []
+    already_installed = set(skill_toolset._skills.keys())
+
+    for name in sorted(catalog.keys()):
+        if query_lower in name.lower():
+            status = "✅ zainstalowany" if name in already_installed else "📦 dostępny"
+            matches.append({"name": name, "status": status})
+
+    if not matches:
+        # Zwróć wszystkie jako sugesię
+        all_names = sorted(catalog.keys())
+        return {
+            "message": f"Brak wyników dla '{query}'. Dostępne skille:",
+            "available": all_names[:15],
+            "total": len(all_names),
         }
-    ),
-)
+
+    return {
+        "query": query,
+        "results": matches,
+        "hint": "Użyj install_skill(name) aby zainstalować wybrany skill.",
+    }
+
+
+def install_skill(name: str) -> dict:
+    """Zainstaluj skill ze zdalnego repozytorium.
+
+    Pobiera SKILL.md + references/ z GitHub i dodaje do aktywnych skilli.
+    Po instalacji skill jest natychmiast dostępny przez list_skills i load_skill.
+
+    Args:
+        name: Nazwa skilla do zainstalowania (np. "changelog-generator").
+    """
+    # Sprawdź czy już zainstalowany
+    if name in skill_toolset._skills:
+        skill = skill_toolset._skills[name]
+        return {
+            "status": "already_installed",
+            "message": f"Skill '{name}' jest już zainstalowany.",
+            "description": skill.frontmatter.description,
+        }
+
+    # Sprawdź czy istnieje w katalogu
+    try:
+        catalog = _fetch_skill_catalog()
+        if name not in catalog:
+            return {
+                "status": "not_found",
+                "message": f"Skill '{name}' nie istnieje w repozytorium.",
+                "hint": "Użyj search_skill_store() aby znaleźć dostępne skille.",
+            }
+    except Exception as e:
+        return {"status": "error", "message": f"Katalog niedostępny: {e}"}
+
+    # Pobierz i zaladuj
+    try:
+        skill = _download_and_load_skill(name)
+    except Exception as e:
+        return {
+            "status": "download_error",
+            "message": f"Błąd pobierania '{name}': {e}",
+        }
+
+    # === HOT-RELOAD: dodaj do SkillToolset._skills ===
+    skill_toolset._skills[skill.frontmatter.name] = skill
+
+    installed_count = len(skill_toolset._skills)
+    has_refs = bool(skill.resources and skill.resources.references)
+    ref_files = list(skill.resources.references.keys()) if has_refs else []
+
+    logger.info(
+        "🔥 HOT-RELOAD: skill '%s' zainstalowany! Łącznie: %d",
+        name,
+        installed_count,
+    )
+
+    return {
+        "status": "installed",
+        "message": f"✅ Skill '{skill.frontmatter.name}' zainstalowany i gotowy!",
+        "description": skill.frontmatter.description,
+        "references": ref_files,
+        "total_skills": installed_count,
+        "hint": (
+            f"Teraz użyj load_skill(name='{skill.frontmatter.name}') "
+            "aby przeczytać instrukcje i zacząć korzystać."
+        ),
+    }
+
+
+def list_installed_skills() -> dict:
+    """Pokaż wszystkie aktualnie zainstalowane skille (lokalne + pobrane).
+
+    Zwraca listę z nazwami, opisami i źródłem (local/remote).
+    """
+    result = []
+    for name, skill in skill_toolset._skills.items():
+        result.append({
+            "name": name,
+            "description": skill.frontmatter.description[:120],
+            "has_references": bool(
+                skill.resources and skill.resources.references
+            ),
+        })
+    return {
+        "total": len(result),
+        "skills": result,
+    }
+
 
 # =============================================================================
-# SKILLTOOLSET — łączy wszystkie 4 skille w jeden toolset
-# =============================================================================
-# SkillToolset automatycznie generuje 3 narzędzia dla agenta:
-#   - list_skills   → L1: listuje nazwy i opisy wszystkich skilli
-#   - load_skill    → L2: ładuje pełne instrukcje wybranego skilla
-#   - load_skill_resource → L3: ładuje plik referencyjny z references/
-
-skill_toolset = SkillToolset(
-    skills=[
-        pirate_code_skill,          # Wzorzec 1: Inline
-        ship_maintenance_skill,     # Wzorzec 2: File-based
-        crew_training_skill,        # Wzorzec 3: External
-        skill_creator,              # Wzorzec 4: Meta
-    ]
-)
-
-# =============================================================================
-# AGENT — Skarbnik Wiedzy Pirackiej
+# AGENT
 # =============================================================================
 
 root_agent = Agent(
     model=MODEL,
-    name="knowledge_treasurer",
-    description="Skarbnik Wiedzy Pirackiej — agent z modularną wiedzą ładowaną na żądanie.",
-    instruction=(
-        "Ahoj! Jesteś Skarbnikiem Wiedzy Pirackiej Floty.\n\n"
-        "Posiadasz cztery zestawy wiedzy (skills) dostępne na żądanie:\n"
-        "- **pirate-code**: Kodeks Pirata — zasady, prawa, obowiązki\n"
-        "- **ship-maintenance**: Konserwacja statku — naprawy, przeglądy, materiały\n"
-        "- **crew-training**: Szkolenie załogi — rekrutacja, programy treningowe, awanse\n"
-        "- **skill-creator**: Kreator skilli — tworzenie nowych zestawów wiedzy\n\n"
-        "Jak działasz:\n"
-        "1. Gdy użytkownik zada pytanie, sprawdź listę dostępnych skilli\n"
-        "2. Załaduj odpowiedni skill (lub kilka) aby uzyskać szczegółowe instrukcje\n"
-        "3. Jeśli instrukcje odwołują się do plików referencyjnych — załaduj je\n"
-        "4. Odpowiadaj na podstawie załadowanej wiedzy\n\n"
-        "Mów jak doświadczony pirat — z godnością Skarbnika, który strzeże "
-        "najcenniejszego skarbu: WIEDZY.\n\n"
-        "Jeśli pytanie nie pasuje do żadnego skilla — powiedz uczciwie, "
-        "że nie masz takiej wiedzy, i zaproponuj stworzenie nowego skilla "
-        "za pomocą skill-creatora."
+    name="self_loading_agent",
+    description=(
+        "Agent z dynamicznym ładowaniem skilli — sam szuka, "
+        "instaluje i używa umiejętności z GitHub w locie."
     ),
-    tools=[skill_toolset],
+    instruction="""\
+Jesteś Agentem z dynamicznym ładowaniem umiejętności (skills).
+
+## Twoje narzędzia:
+
+### 🔍 Wyszukiwanie
+- **search_skill_store(query)** — przeszukaj zdalny katalog skilli na GitHub
+- **list_installed_skills()** — pokaż aktualnie zainstalowane skille
+
+### 📥 Instalacja  
+- **install_skill(name)** — pobierz skill z GitHub i zainstaluj w locie
+  Po instalacji skill jest NATYCHMIAST dostępny!
+
+### 📚 Korzystanie ze skilli (z SkillToolset)
+- **list_skills()** — lista zainstalowanych skilli (ta sama co list_installed_skills)
+- **load_skill(name)** — załaduj instrukcje skilla
+- **load_skill_resource(skill_name, path)** — załaduj plik referencyjny
+
+## Jak działasz:
+
+1. Gdy user prosi o coś czego nie wiesz — **szukaj** w skill store
+2. Gdy znajdziesz pasujący skill — **zainstaluj** go
+3. Po instalacji — **załaduj** instrukcje i działaj według nich
+4. Zawsze informuj usera co robisz: "Szukam...", "Instaluję...", "Gotowe!"
+
+## Przykładowa rozmowa:
+- User: "Pomóż mi z changelogiem"
+- Ty: "Sprawdzam skill store..." → search_skill_store("changelog")
+- Ty: "Znalazłem! Instaluję..." → install_skill("changelog-generator")
+- Ty: "Zainstalowany! Ładuję instrukcje..." → load_skill("changelog-generator")
+- Ty: [działasz według instrukcji skilla]
+
+## Stan początkowy:
+Masz 2 lokalne skille: ship-maintenance, crew-training.
+Resztę możesz doinstalować w locie z GitHub!
+""",
+    tools=[
+        skill_toolset,
+        FunctionTool(search_skill_store),
+        FunctionTool(install_skill),
+        FunctionTool(list_installed_skills),
+    ],
 )

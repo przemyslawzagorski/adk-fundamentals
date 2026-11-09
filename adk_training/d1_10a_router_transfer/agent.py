@@ -52,6 +52,7 @@ gunner_agent = LlmAgent(
 cook_agent = LlmAgent(
     model=MODEL,
     name="cook",
+    disallow_transfer_to_peers=True,
     description="Ekspert od jedzenia, przygotowywania posiłków, morale załogi i racji rumu.",
     instruction="""Jesteś Okrętowym Kucharzem!
     Odpowiadaj na pytania o jedzenie, zdrowie załogi i racje rumu.
